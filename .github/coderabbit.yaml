@@ -1,0 +1,92 @@
+# CodeRabbit Configuration for Quote Builder
+# https://docs.coderabbit.ai/guides/review-instructions
+
+language: en-US
+early_access: true
+
+# Review settings
+reviews:
+  profile: chill # Options: chill, assertive
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false # No poems in reviews
+  review_status: true
+
+  # Auto-review on these events
+  auto_review:
+    enabled: true
+    drafts: false # Don't review draft PRs
+    base_branches:
+      - main
+      - develop
+
+# What to focus on
+knowledge_base:
+  learnings:
+    scope: global
+
+  # Project-specific context
+  custom_instructions: |
+    This is a Next.js 15 construction quote builder with:
+    - TypeScript + React Server Components
+    - Supabase (PostgreSQL) backend
+    - AI-powered construction plan extraction
+
+    Key areas to review:
+    1. TypeScript type safety
+    2. Database field naming (snake_case DB, camelCase frontend)
+    3. Authentication (service role vs user session)
+    4. UUID constraints (no fake IDs like 'test-lead')
+    5. Error handling and user feedback
+    6. Security (SQL injection, XSS, authentication)
+
+# Code patterns to check
+path_filters:
+  # Skip generated files
+  excluded:
+    - "**/*.lock"
+    - "**/*.log"
+    - ".next/**"
+    - "node_modules/**"
+    - "public/**/*.pdf"
+    - "**/*.min.js"
+
+  # Focus on these
+  included:
+    - "app/**/*.{ts,tsx}"
+    - "lib/**/*.{ts,tsx}"
+    - "components/**/*.{tsx}"
+    - "scripts/**/*.{js,mjs}"
+
+# What to check for
+path_instructions:
+  - path: "app/api/**"
+    instructions: |
+      - Verify proper authentication (service role vs user session)
+      - Check field transformations (snake_case ↔ camelCase)
+      - Validate Zod schemas match database constraints
+      - Ensure error responses include helpful messages
+
+  - path: "app/quote-builder/**"
+    instructions: |
+      - Check UUID usage (no hardcoded fake IDs)
+      - Verify sessionStorage is used correctly
+      - Ensure loading states and error handling
+
+  - path: "lib/**"
+    instructions: |
+      - Review TypeScript types for correctness
+      - Check for proper exports
+      - Verify utility functions have tests
+
+# Tools to enable
+chat:
+  auto_reply: true
+
+# Issues to auto-create
+issues:
+  # Create issues for security vulnerabilities
+  create_on_vulnerability: true
+
+  # Create issues for important findings
+  create_on_important_finding: true

@@ -1,0 +1,70 @@
+{
+  "jurisdictions": [
+    {
+      "id": "us-ca",
+      "name": "California",
+      "state": "CA",
+      "aliases": ["California", "CA"]
+    },
+    {
+      "id": "us-tx",
+      "name": "Texas",
+      "state": "TX",
+      "aliases": ["Texas", "TX"]
+    }
+  ],
+  "categories": ["windows", "doors", "insulation"],
+  "rules": [
+    {
+      "id": "rule-ca-windows-1",
+      "version": "1.0",
+      "jurisdictionId": "us-ca",
+      "itemCategory": "windows",
+      "allowedOptions": ["vinyl", "fiberglass"],
+      "disallowedOptions": ["aluminum"],
+      "rationale": "Informational energy-efficiency baseline for window materials.",
+      "updatedAt": "2026-01-16T00:00:00Z",
+      "updatedBy": "admin@example.com",
+      "citations": [
+        {
+          "title": "California Title 24 (informational)",
+          "pointer": "manual-entry:window-material-baseline"
+        }
+      ]
+    },
+    {
+      "id": "rule-ca-doors-1",
+      "version": "1.0",
+      "jurisdictionId": "us-ca",
+      "itemCategory": "doors",
+      "allowedOptions": ["solid-wood", "steel"],
+      "disallowedOptions": ["hollow-core"],
+      "rationale": "Informational durability baseline for exterior doors.",
+      "updatedAt": "2026-01-16T00:00:00Z",
+      "updatedBy": "admin@example.com",
+      "citations": [
+        {
+          "title": "California Title 24 (informational)",
+          "pointer": "manual-entry:door-durability-baseline"
+        }
+      ]
+    },
+    {
+      "id": "rule-tx-windows-1",
+      "version": "1.0",
+      "jurisdictionId": "us-tx",
+      "itemCategory": "windows",
+      "allowedOptions": ["vinyl", "aluminum"],
+      "disallowedOptions": ["unrated"],
+      "rationale": "Informational baseline for wind-rated windows in applicable zones.",
+      "updatedAt": "2026-01-16T00:00:00Z",
+      "updatedBy": "admin@example.com",
+      "citations": [
+        {
+          "title": "Texas adopted codes (informational)",
+          "pointer": "manual-entry:window-wind-rating-baseline"
+        }
+      ]
+    }
+  ]
+}

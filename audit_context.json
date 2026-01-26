@@ -1,0 +1,1197 @@
+{
+  "generated_at": "2026-01-10 11:39:15",
+  "root": "/Users/anitavallabha/goldarch_web_copy",
+  "stats": {
+    "total_files": 1431,
+    "total_size_bytes": 246002880,
+    "ignored_dirs": [
+      ".git",
+      ".hg",
+      ".idea",
+      ".mypy_cache",
+      ".next",
+      ".nuxt",
+      ".pytest_cache",
+      ".svn",
+      ".venv",
+      ".vscode",
+      "__pycache__",
+      "build",
+      "dist",
+      "node_modules",
+      "venv"
+    ]
+  },
+  "tree": "goldarch_web_copy/\n\u251c\u2500\u2500 .claude/\n\u2502   \u2514\u2500\u2500 settings.local.json\n\u251c\u2500\u2500 .vercel/\n\u2502   \u251c\u2500\u2500 project.json\n\u2502   \u2514\u2500\u2500 README.txt\n\u251c\u2500\u2500 _implementation_sandbox/\n\u2502   \u251c\u2500\u2500 CLONED/\n\u2502   \u2502   \u251c\u2500\u2500 app/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 api/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 app-dashboard/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 auth/\n\u2502   \u2502   \u251c\u2500\u2500 components/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 ui/\n\u2502   \u2502   \u251c\u2500\u2500 lib/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 auth-provider.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 supabase-client.ts\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 supabase-types.ts\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 utils.ts\n\u2502   \u2502   \u2514\u2500\u2500 README.md\n\u2502   \u251c\u2500\u2500 MODULES/\n\u2502   \u2502   \u251c\u2500\u2500 MODULE-0A/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 middleware/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 utils/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 INTEGRATION_CHECKLIST.md\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 README.md\n\u2502   \u2502   \u251c\u2500\u2500 MODULE-0B/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 migrations/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 policies/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 schema/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 types/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 .DS_Store\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 README.md\n\u2502   \u2502   \u251c\u2500\u2500 MODULE-0C/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 api/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 components/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 hooks/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 pages/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 README.md\n\u2502   \u2502   \u251c\u2500\u2500 MODULE-1A/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 components/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 hooks/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 middleware/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 utils/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 README.md\n\u2502   \u2502   \u251c\u2500\u2500 MODULE-1B/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 components/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 hooks/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 utils/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 README.md\n\u2502   \u2502   \u251c\u2500\u2500 MODULE-1C/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 api/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 components/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 hooks/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 types/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 README.md\n\u2502   \u2502   \u2514\u2500\u2500 .DS_Store\n\u2502   \u251c\u2500\u2500 NOTES/\n\u2502   \u2502   \u251c\u2500\u2500 clone_manifest_MODULE-0A.md\n\u2502   \u2502   \u251c\u2500\u2500 clone_manifest_MODULE-0B.md\n\u2502   \u2502   \u251c\u2500\u2500 clone_manifest_MODULE-0C.md\n\u2502   \u2502   \u251c\u2500\u2500 clone_manifest_MODULE-1A.md\n\u2502   \u2502   \u251c\u2500\u2500 clone_manifest_MODULE-1B.md\n\u2502   \u2502   \u251c\u2500\u2500 clone_manifest_MODULE-1C.md\n\u2502   \u2502   \u251c\u2500\u2500 clone_manifest_MODULE-2A.md\n\u2502   \u2502   \u251c\u2500\u2500 clone_manifest_MODULE-3A.md\n\u2502   \u2502   \u251c\u2500\u2500 clone_manifests_summary.md\n\u2502   \u2502   \u251c\u2500\u2500 module_0a_completion.md\n\u2502   \u2502   \u251c\u2500\u2500 module_0b_completion.md\n\u2502   \u2502   \u251c\u2500\u2500 module_0c_completion.md\n\u2502   \u2502   \u251c\u2500\u2500 module_1a_completion.md\n\u2502   \u2502   \u251c\u2500\u2500 module_1b_completion.md\n\u2502   \u2502   \u251c\u2500\u2500 module_1c_completion.md\n\u2502   \u2502   \u251c\u2500\u2500 module_map.md\n\u2502   \u2502   \u251c\u2500\u2500 phase3_completion_summary.md\n\u2502   \u2502   \u251c\u2500\u2500 phase3_verification.sh\n\u2502   \u2502   \u251c\u2500\u2500 phase5_handoff_summary.md\n\u2502   \u2502   \u251c\u2500\u2500 phase5_integration_guide.md\n\u2502   \u2502   \u251c\u2500\u2500 phase5_testing_documentation.md\n\u2502   \u2502   \u2514\u2500\u2500 phase5_verification_checklist.md\n\u2502   \u251c\u2500\u2500 .DS_Store\n\u2502   \u251c\u2500\u2500 README.md\n\u2502   \u2514\u2500\u2500 STRUCTURE.md\n\u251c\u2500\u2500 activity_page/\n\u2502   \u251c\u2500\u2500 Activities.tsx\n\u2502   \u251c\u2500\u2500 ActivityFormDialog.tsx\n\u2502   \u251c\u2500\u2500 App-2.tsx\n\u2502   \u251c\u2500\u2500 DashboardLayout-3.tsx\n\u2502   \u2514\u2500\u2500 DeleteConfirmDialog-3.tsx\n\u251c\u2500\u2500 add_pages/\n\u2502   \u251c\u2500\u2500 activity_page/\n\u2502   \u2502   \u251c\u2500\u2500 Activities.tsx\n\u2502   \u2502   \u251c\u2500\u2500 ActivityFormDialog.tsx\n\u2502   \u2502   \u251c\u2500\u2500 App-2.tsx\n\u2502   \u2502   \u251c\u2500\u2500 DashboardLayout-3.tsx\n\u2502   \u2502   \u2514\u2500\u2500 DeleteConfirmDialog-3.tsx\n\u2502   \u251c\u2500\u2500 auth_page/\n\u2502   \u2502   \u251c\u2500\u2500 DashboardLayout.tsx\n\u2502   \u2502   \u251c\u2500\u2500 DealFormDialog.tsx\n\u2502   \u2502   \u251c\u2500\u2500 Deals.tsx\n\u2502   \u2502   \u251c\u2500\u2500 DeleteConfirmDialog.tsx\n\u2502   \u2502   \u251c\u2500\u2500 ProjectFormDialog.tsx\n\u2502   \u2502   \u251c\u2500\u2500 Projects.tsx\n\u2502   \u2502   \u251c\u2500\u2500 SupplierFormDialog.tsx\n\u2502   \u2502   \u2514\u2500\u2500 Suppliers.tsx\n\u2502   \u251c\u2500\u2500 quote_page/\n\u2502   \u2502   \u251c\u2500\u2500 App.tsx\n\u2502   \u2502   \u251c\u2500\u2500 index.css\n\u2502   \u2502   \u251c\u2500\u2500 Index.tsx\n\u2502   \u2502   \u251c\u2500\u2500 main.tsx\n\u2502   \u2502   \u251c\u2500\u2500 NotFound.tsx\n\u2502   \u2502   \u251c\u2500\u2500 QuoteCard.tsx\n\u2502   \u2502   \u251c\u2500\u2500 QuoteDetail.tsx\n\u2502   \u2502   \u251c\u2500\u2500 Quotes.tsx\n\u2502   \u2502   \u251c\u2500\u2500 tailwind.config.ts\n\u2502   \u2502   \u251c\u2500\u2500 useQuotes.ts\n\u2502   \u2502   \u2514\u2500\u2500 utils.ts\n\u2502   \u251c\u2500\u2500 remix-of-stark-architect-showcase-main/\n\u2502   \u2502   \u251c\u2500\u2500 public/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 favicon.ico\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 placeholder.svg\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 robots.txt\n\u2502   \u2502   \u251c\u2500\u2500 src/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 assets/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 components/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 data/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 hooks/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 integrations/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 lib/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 pages/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 App.css\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 App.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 index.css\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 main.tsx\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 vite-env.d.ts\n\u2502   \u2502   \u251c\u2500\u2500 supabase/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 migrations/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 config.toml\n\u2502   \u2502   \u251c\u2500\u2500 .env\n\u2502   \u2502   \u251c\u2500\u2500 .gitignore\n\u2502   \u2502   \u251c\u2500\u2500 bun.lockb\n\u2502   \u2502   \u251c\u2500\u2500 components.json\n\u2502   \u2502   \u251c\u2500\u2500 eslint.config.js\n\u2502   \u2502   \u251c\u2500\u2500 index.html\n\u2502   \u2502   \u251c\u2500\u2500 package-lock.json\n\u2502   \u2502   \u251c\u2500\u2500 package.json\n\u2502   \u2502   \u251c\u2500\u2500 postcss.config.js\n\u2502   \u2502   \u251c\u2500\u2500 README.md\n\u2502   \u2502   \u251c\u2500\u2500 tailwind.config.ts\n\u2502   \u2502   \u251c\u2500\u2500 tsconfig.app.json\n\u2502   \u2502   \u251c\u2500\u2500 tsconfig.json\n\u2502   \u2502   \u251c\u2500\u2500 tsconfig.node.json\n\u2502   \u2502   \u2514\u2500\u2500 vite.config.ts\n\u2502   \u251c\u2500\u2500 task_managment_page/\n\u2502   \u2502   \u251c\u2500\u2500 App.tsx\n\u2502   \u2502   \u251c\u2500\u2500 DashboardLayout-2.tsx\n\u2502   \u2502   \u251c\u2500\u2500 DashboardLayout.tsx\n\u2502   \u2502   \u251c\u2500\u2500 DealFormDialog.tsx\n\u2502   \u2502   \u251c\u2500\u2500 Deals.tsx\n\u2502   \u2502   \u251c\u2500\u2500 DeleteConfirmDialog-2.tsx\n\u2502   \u2502   \u251c\u2500\u2500 DeleteConfirmDialog.tsx\n\u2502   \u2502   \u251c\u2500\u2500 ProjectFormDialog.tsx\n\u2502   \u2502   \u251c\u2500\u2500 Projects.tsx\n\u2502   \u2502   \u251c\u2500\u2500 SupplierFormDialog.tsx\n\u2502   \u2502   \u251c\u2500\u2500 Suppliers.tsx\n\u2502   \u2502   \u251c\u2500\u2500 TaskFormDialog.tsx\n\u2502   \u2502   \u2514\u2500\u2500 Tasks.tsx\n\u2502   \u2514\u2500\u2500 .DS_Store\n\u251c\u2500\u2500 Andy_Project_Planning/\n\u2502   \u251c\u2500\u2500 _implementation_sandbox/\n\u2502   \u2502   \u251c\u2500\u2500 CLONED/\n\u2502   \u2502   \u251c\u2500\u2500 MODULES/\n\u2502   \u2502   \u251c\u2500\u2500 NEW/\n\u2502   \u2502   \u2514\u2500\u2500 NOTES/\n\u2502   \u251c\u2500\u2500 client_requirement/\n\u2502   \u2502   \u251c\u2500\u2500 Layer_2_Transcript_(intent)/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 meeting_transcript.md\n\u2502   \u2502   \u251c\u2500\u2500 Layer_3_Visual_Evidence/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 Visuals/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 .DS_Store\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 visual_evidence_index.md\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 visual_evidence_overview.md\n\u2502   \u2502   \u2514\u2500\u2500 .DS_Store\n\u2502   \u251c\u2500\u2500 untitled folder/\n\u2502   \u2502   \u251c\u2500\u2500 Visuals/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 10_19.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 10_25.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 11_05.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 11_50.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 12_43.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 13_11.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 14_03.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 15_40.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 15_42.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 16_37.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 16_44.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 16_46.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 17_08.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 17_13.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 18_16.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 18_18.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 18_19.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 18_20.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 18_42.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 18_49.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 19_08.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 19_24.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 19_33.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 20_56.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 21_06.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 21_16.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 21_18.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 21_21.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 21_25.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 21_38.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 21_47.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 21_55.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 23_21.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 25_11.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 25_19.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 26_00.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 26_32.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 26_54.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 27_17.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 27_21.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 27_36.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 27_41.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 27_48.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 27_58.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 28_48.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 8_36.png\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 9_02.png\n\u2502   \u2502   \u251c\u2500\u2500 .DS_Store\n\u2502   \u2502   \u251c\u2500\u2500 analysis_prompt.md\n\u2502   \u2502   \u251c\u2500\u2500 analysis_prompt_openai.md\n\u2502   \u2502   \u251c\u2500\u2500 current_system.md\n\u2502   \u2502   \u2514\u2500\u2500 visual_evidence_index.md\n\u2502   \u251c\u2500\u2500 .DS_Store\n\u2502   \u251c\u2500\u2500 Anthropic's Prompt_Engineering_Interactive_Tutorial_[PUBLIC_ACCESS].xlsx\n\u2502   \u251c\u2500\u2500 audit_context.json\n\u2502   \u251c\u2500\u2500 audit_context.md\n\u2502   \u251c\u2500\u2500 complete_chatgpt_prompt_engineering_course.docx\n\u2502   \u251c\u2500\u2500 deep_analysis_report 2.md\n\u2502   \u251c\u2500\u2500 deep_analysis_report.md\n\u2502   \u251c\u2500\u2500 difference_in_prompt.pages\n\u2502   \u251c\u2500\u2500 gap_matrix.md\n\u2502   \u251c\u2500\u2500 intent_contract.md\n\u2502   \u2514\u2500\u2500 refactor_plan.md\n\u251c\u2500\u2500 app/\n\u2502   \u251c\u2500\u2500 api/\n\u2502   \u2502   \u251c\u2500\u2500 auth-test/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 admin-only/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 route.js\n\u2502   \u2502   \u251c\u2500\u2500 framework-b/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 chat/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 documents/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 health/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 README.md\n\u2502   \u2502   \u251c\u2500\u2500 send-invite/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 route.js\n\u2502   \u2502   \u251c\u2500\u2500 send-notification/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 route.js\n\u2502   \u2502   \u251c\u2500\u2500 send-quote/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 route.js\n\u2502   \u2502   \u251c\u2500\u2500 team/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 users/\n\u2502   \u2502   \u2514\u2500\u2500 test-simple/\n\u2502   \u2502       \u2514\u2500\u2500 route.js\n\u2502   \u251c\u2500\u2500 app-dashboard/\n\u2502   \u2502   \u251c\u2500\u2500 activities/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 page.tsx\n\u2502   \u2502   \u251c\u2500\u2500 deals/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 page.tsx\n\u2502   \u2502   \u251c\u2500\u2500 documents/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 page.tsx\n\u2502   \u2502   \u251c\u2500\u2500 projects/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 page.tsx\n\u2502   \u2502   \u251c\u2500\u2500 quotes/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 page.tsx\n\u2502   \u2502   \u251c\u2500\u2500 suppliers/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 page.tsx\n\u2502   \u2502   \u251c\u2500\u2500 tasks/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 page.tsx\n\u2502   \u2502   \u251c\u2500\u2500 layout.tsx\n\u2502   \u2502   \u2514\u2500\u2500 page.tsx\n\u2502   \u251c\u2500\u2500 auth/\n\u2502   \u2502   \u2514\u2500\u2500 page.tsx\n\u2502   \u251c\u2500\u2500 category/\n\u2502   \u2502   \u2514\u2500\u2500 [category]/\n\u2502   \u2502       \u2514\u2500\u2500 page.js\n\u2502   \u251c\u2500\u2500 dashboard/\n\u2502   \u2502   \u2514\u2500\u2500 page.js\n\u2502   \u251c\u2500\u2500 debug/\n\u2502   \u2502   \u2514\u2500\u2500 page.js\n\u2502   \u251c\u2500\u2500 supplier/\n\u2502   \u2502   \u2514\u2500\u2500 [id]/\n\u2502   \u2502       \u2514\u2500\u2500 page.js\n\u2502   \u251c\u2500\u2500 test/\n\u2502   \u2502   \u2514\u2500\u2500 page.js\n\u2502   \u251c\u2500\u2500 globals.css\n\u2502   \u251c\u2500\u2500 layout.js\n\u2502   \u2514\u2500\u2500 page.tsx\n\u251c\u2500\u2500 apply_theme/\n\u2502   \u251c\u2500\u2500 app/\n\u2502   \u2502   \u251c\u2500\u2500 category/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 [category]/\n\u2502   \u2502   \u251c\u2500\u2500 dashboard/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 page.js\n\u2502   \u2502   \u251c\u2500\u2500 debug/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 page.js\n\u2502   \u2502   \u251c\u2500\u2500 supplier/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 [id]/\n\u2502   \u2502   \u251c\u2500\u2500 test/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 page.js\n\u2502   \u2502   \u251c\u2500\u2500 globals.css\n\u2502   \u2502   \u251c\u2500\u2500 layout.js\n\u2502   \u2502   \u2514\u2500\u2500 page.js\n\u2502   \u251c\u2500\u2500 lib/\n\u2502   \u2502   \u251c\u2500\u2500 supabase.js\n\u2502   \u2502   \u251c\u2500\u2500 theme-context.js\n\u2502   \u2502   \u2514\u2500\u2500 use-suppliers.js\n\u2502   \u251c\u2500\u2500 public/\n\u2502   \u2502   \u251c\u2500\u2500 apple-icon.png\n\u2502   \u2502   \u251c\u2500\u2500 icon-dark-32x32.png\n\u2502   \u2502   \u251c\u2500\u2500 icon-light-32x32.png\n\u2502   \u2502   \u251c\u2500\u2500 icon.svg\n\u2502   \u2502   \u251c\u2500\u2500 placeholder-logo.png\n\u2502   \u2502   \u251c\u2500\u2500 placeholder-logo.svg\n\u2502   \u2502   \u251c\u2500\u2500 placeholder-user.jpg\n\u2502   \u2502   \u251c\u2500\u2500 placeholder.jpg\n\u2502   \u2502   \u2514\u2500\u2500 placeholder.svg\n\u2502   \u251c\u2500\u2500 package-lock.json\n\u2502   \u251c\u2500\u2500 package.json\n\u2502   \u251c\u2500\u2500 postcss.config.js\n\u2502   \u2514\u2500\u2500 tailwind.config.js\n\u251c\u2500\u2500 auth_page/\n\u2502   \u251c\u2500\u2500 DashboardLayout.tsx\n\u2502   \u251c\u2500\u2500 DealFormDialog.tsx\n\u2502   \u251c\u2500\u2500 Deals.tsx\n\u2502   \u251c\u2500\u2500 DeleteConfirmDialog.tsx\n\u2502   \u251c\u2500\u2500 ProjectFormDialog.tsx\n\u2502   \u251c\u2500\u2500 Projects.tsx\n\u2502   \u251c\u2500\u2500 SupplierFormDialog.tsx\n\u2502   \u2514\u2500\u2500 Suppliers.tsx\n\u251c\u2500\u2500 chat-bot_framework/\n\u2502   \u251c\u2500\u2500 Modular_Multi-AI_Project_Plan_Skeleton_Architecture.md\n\u2502   \u251c\u2500\u2500 Plan_for_Building_an_AI-Powered_Chatbot_Platform.md\n\u2502   \u251c\u2500\u2500 RAG Workflow For( Customer service chat-bot) copy.json\n\u2502   \u251c\u2500\u2500 RAG Workflow For( Customer service chat-bot).json\n\u2502   \u251c\u2500\u2500 RAG_Customer_Service_Chatbot_Business_Overview.docx\n\u2502   \u251c\u2500\u2500 RAG_Customer_Service_Chatbot_Business_Overview.pdf\n\u2502   \u251c\u2500\u2500 RAG_Customer_Service_Chatbot_Technical_Documentation.docx\n\u2502   \u2514\u2500\u2500 RAG_Customer_Service_Chatbot_Technical_Documentation.pdf\n\u251c\u2500\u2500 components/\n\u2502   \u251c\u2500\u2500 landing/\n\u2502   \u2502   \u251c\u2500\u2500 Categories.tsx\n\u2502   \u2502   \u251c\u2500\u2500 CTA.tsx\n\u2502   \u2502   \u251c\u2500\u2500 Dashboard.tsx\n\u2502   \u2502   \u251c\u2500\u2500 Features.tsx\n\u2502   \u2502   \u251c\u2500\u2500 Footer.tsx\n\u2502   \u2502   \u251c\u2500\u2500 Header.tsx\n\u2502   \u2502   \u2514\u2500\u2500 Hero.tsx\n\u2502   \u251c\u2500\u2500 ui/\n\u2502   \u2502   \u251c\u2500\u2500 accordion.tsx\n\u2502   \u2502   \u251c\u2500\u2500 alert-dialog.tsx\n\u2502   \u2502   \u251c\u2500\u2500 alert.tsx\n\u2502   \u2502   \u251c\u2500\u2500 aspect-ratio.tsx\n\u2502   \u2502   \u251c\u2500\u2500 avatar.tsx\n\u2502   \u2502   \u251c\u2500\u2500 badge.tsx\n\u2502   \u2502   \u251c\u2500\u2500 breadcrumb.tsx\n\u2502   \u2502   \u251c\u2500\u2500 button.tsx\n\u2502   \u2502   \u251c\u2500\u2500 calendar.tsx\n\u2502   \u2502   \u251c\u2500\u2500 card.tsx\n\u2502   \u2502   \u251c\u2500\u2500 checkbox.tsx\n\u2502   \u2502   \u251c\u2500\u2500 collapsible.tsx\n\u2502   \u2502   \u251c\u2500\u2500 context-menu.tsx\n\u2502   \u2502   \u251c\u2500\u2500 dialog.tsx\n\u2502   \u2502   \u251c\u2500\u2500 dropdown-menu.tsx\n\u2502   \u2502   \u251c\u2500\u2500 form.tsx\n\u2502   \u2502   \u251c\u2500\u2500 hover-card.tsx\n\u2502   \u2502   \u251c\u2500\u2500 input.tsx\n\u2502   \u2502   \u251c\u2500\u2500 label.tsx\n\u2502   \u2502   \u251c\u2500\u2500 menubar.tsx\n\u2502   \u2502   \u251c\u2500\u2500 navigation-menu.tsx\n\u2502   \u2502   \u251c\u2500\u2500 popover.tsx\n\u2502   \u2502   \u251c\u2500\u2500 progress.tsx\n\u2502   \u2502   \u251c\u2500\u2500 radio-group.tsx\n\u2502   \u2502   \u251c\u2500\u2500 scroll-area.tsx\n\u2502   \u2502   \u251c\u2500\u2500 select.tsx\n\u2502   \u2502   \u251c\u2500\u2500 separator.tsx\n\u2502   \u2502   \u251c\u2500\u2500 sheet.tsx\n\u2502   \u2502   \u251c\u2500\u2500 sidebar.tsx\n\u2502   \u2502   \u251c\u2500\u2500 skeleton.tsx\n\u2502   \u2502   \u251c\u2500\u2500 slider.tsx\n\u2502   \u2502   \u251c\u2500\u2500 sonner.tsx\n\u2502   \u2502   \u251c\u2500\u2500 switch.tsx\n\u2502   \u2502   \u251c\u2500\u2500 table.tsx\n\u2502   \u2502   \u251c\u2500\u2500 tabs.tsx\n\u2502   \u2502   \u251c\u2500\u2500 textarea.tsx\n\u2502   \u2502   \u251c\u2500\u2500 toast.tsx\n\u2502   \u2502   \u251c\u2500\u2500 toaster.tsx\n\u2502   \u2502   \u251c\u2500\u2500 toggle-group.tsx\n\u2502   \u2502   \u251c\u2500\u2500 toggle.tsx\n\u2502   \u2502   \u251c\u2500\u2500 tooltip.tsx\n\u2502   \u2502   \u2514\u2500\u2500 use-toast.ts\n\u2502   \u251c\u2500\u2500 ai-chat-widget.tsx\n\u2502   \u251c\u2500\u2500 document-filters.tsx\n\u2502   \u251c\u2500\u2500 document-summary-modal.tsx\n\u2502   \u2514\u2500\u2500 providers.tsx\n\u251c\u2500\u2500 docs/\n\u2502   \u251c\u2500\u2500 TECHNICAL_DOCUMENTATION.docx\n\u2502   \u251c\u2500\u2500 TECHNICAL_DOCUMENTATION.md\n\u2502   \u251c\u2500\u2500 USER_MANUAL.docx\n\u2502   \u2514\u2500\u2500 USER_MANUAL.md\n\u251c\u2500\u2500 Framework_B/\n\u2502   \u251c\u2500\u2500 api/\n\u2502   \u2502   \u251c\u2500\u2500 chat/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 route.example.ts\n\u2502   \u2502   \u251c\u2500\u2500 documents/\n\u2502   \u2502   \u2514\u2500\u2500 search/\n\u2502   \u251c\u2500\u2500 config/\n\u2502   \u2502   \u251c\u2500\u2500 ai-services.config.ts\n\u2502   \u2502   \u251c\u2500\u2500 n8n-workflows.config.ts\n\u2502   \u2502   \u2514\u2500\u2500 pinecone.config.ts\n\u2502   \u251c\u2500\u2500 hooks/\n\u2502   \u2502   \u251c\u2500\u2500 useAIChat.ts\n\u2502   \u2502   \u251c\u2500\u2500 useDocumentProcessor.ts\n\u2502   \u2502   \u2514\u2500\u2500 useVectorSearch.ts\n\u2502   \u251c\u2500\u2500 n8n-workflows/\n\u2502   \u2502   \u251c\u2500\u2500 chatbot-qa.json\n\u2502   \u2502   \u2514\u2500\u2500 document-ingestion.json\n\u2502   \u251c\u2500\u2500 services/\n\u2502   \u2502   \u251c\u2500\u2500 ai-chat/\n\u2502   \u2502   \u251c\u2500\u2500 document-processor/\n\u2502   \u2502   \u251c\u2500\u2500 embeddings/\n\u2502   \u2502   \u251c\u2500\u2500 rag/\n\u2502   \u2502   \u2514\u2500\u2500 vector-store/\n\u2502   \u251c\u2500\u2500 tests/\n\u2502   \u2502   \u2514\u2500\u2500 integration/\n\u2502   \u2502       \u2514\u2500\u2500 text-splitter.test.ts\n\u2502   \u251c\u2500\u2500 types/\n\u2502   \u2502   \u251c\u2500\u2500 document.types.ts\n\u2502   \u2502   \u251c\u2500\u2500 embeddings.types.ts\n\u2502   \u2502   \u2514\u2500\u2500 rag.types.ts\n\u2502   \u251c\u2500\u2500 utils/\n\u2502   \u2502   \u2514\u2500\u2500 text-splitter.ts\n\u2502   \u251c\u2500\u2500 .env.example\n\u2502   \u251c\u2500\u2500 ARCHITECTURE.md\n\u2502   \u251c\u2500\u2500 index.ts\n\u2502   \u251c\u2500\u2500 INTEGRATION_GUIDE.md\n\u2502   \u251c\u2500\u2500 package.json\n\u2502   \u251c\u2500\u2500 QUICKSTART.md\n\u2502   \u251c\u2500\u2500 README.md\n\u2502   \u2514\u2500\u2500 SUMMARY.md\n\u251c\u2500\u2500 Framework_B_Implementation/\n\u2502   \u251c\u2500\u2500 config/\n\u2502   \u2502   \u251c\u2500\u2500 ai-services.config.ts\n\u2502   \u2502   \u251c\u2500\u2500 n8n-workflows.config.ts\n\u2502   \u2502   \u2514\u2500\u2500 pinecone.config.ts\n\u2502   \u251c\u2500\u2500 lib/\n\u2502   \u2502   \u2514\u2500\u2500 services.ts\n\u2502   \u251c\u2500\u2500 services/\n\u2502   \u2502   \u251c\u2500\u2500 ai-chat/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 ChatService.ts\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 index.ts\n\u2502   \u2502   \u251c\u2500\u2500 document-processor/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 extractors/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 DocumentProcessor.ts\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 index.ts\n\u2502   \u2502   \u251c\u2500\u2500 document-summarizer/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 DocumentSummarizer.ts\n\u2502   \u2502   \u251c\u2500\u2500 embeddings/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 providers/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 batch.ts\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 cache.ts\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 EmbeddingsService.ts\n\u2502   \u2502   \u251c\u2500\u2500 rag/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 answer-generator.ts\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 citation-tracker.ts\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 context-retriever.ts\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 prompt-builder.ts\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 query-processor.ts\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 RAGEngine.ts\n\u2502   \u2502   \u2514\u2500\u2500 vector-store/\n\u2502   \u2502       \u251c\u2500\u2500 namespace-manager.ts\n\u2502   \u2502       \u251c\u2500\u2500 PineconeClient.ts\n\u2502   \u2502       \u251c\u2500\u2500 query-builder.ts\n\u2502   \u2502       \u2514\u2500\u2500 VectorStore.ts\n\u2502   \u251c\u2500\u2500 types/\n\u2502   \u2502   \u251c\u2500\u2500 document.types.ts\n\u2502   \u2502   \u251c\u2500\u2500 embeddings.types.ts\n\u2502   \u2502   \u2514\u2500\u2500 rag.types.ts\n\u2502   \u251c\u2500\u2500 utils/\n\u2502   \u2502   \u2514\u2500\u2500 text-splitter.ts\n\u2502   \u251c\u2500\u2500 IMPLEMENTATION_SUMMARY.md\n\u2502   \u251c\u2500\u2500 index.ts\n\u2502   \u251c\u2500\u2500 README.md\n\u2502   \u2514\u2500\u2500 SETUP.md\n\u251c\u2500\u2500 gold_arch_project/\n\u2502   \u251c\u2500\u2500 Visuals/\n\u2502   \u2502   \u251c\u2500\u2500 10_19.png\n\u2502   \u2502   \u251c\u2500\u2500 10_25.png\n\u2502   \u2502   \u251c\u2500\u2500 11_05.png\n\u2502   \u2502   \u251c\u2500\u2500 11_50.png\n\u2502   \u2502   \u251c\u2500\u2500 12_43.png\n\u2502   \u2502   \u251c\u2500\u2500 13_11.png\n\u2502   \u2502   \u251c\u2500\u2500 14_03.png\n\u2502   \u2502   \u251c\u2500\u2500 15_40.png\n\u2502   \u2502   \u251c\u2500\u2500 15_42.png\n\u2502   \u2502   \u251c\u2500\u2500 16_37.png\n\u2502   \u2502   \u251c\u2500\u2500 16_44.png\n\u2502   \u2502   \u251c\u2500\u2500 16_46.png\n\u2502   \u2502   \u251c\u2500\u2500 17_08.png\n\u2502   \u2502   \u251c\u2500\u2500 17_13.png\n\u2502   \u2502   \u251c\u2500\u2500 18_16.png\n\u2502   \u2502   \u251c\u2500\u2500 18_18.png\n\u2502   \u2502   \u251c\u2500\u2500 18_19.png\n\u2502   \u2502   \u251c\u2500\u2500 18_20.png\n\u2502   \u2502   \u251c\u2500\u2500 18_42.png\n\u2502   \u2502   \u251c\u2500\u2500 18_49.png\n\u2502   \u2502   \u251c\u2500\u2500 19_08.png\n\u2502   \u2502   \u251c\u2500\u2500 19_24.png\n\u2502   \u2502   \u251c\u2500\u2500 19_33.png\n\u2502   \u2502   \u251c\u2500\u2500 20_56.png\n\u2502   \u2502   \u251c\u2500\u2500 21_06.png\n\u2502   \u2502   \u251c\u2500\u2500 21_16.png\n\u2502   \u2502   \u251c\u2500\u2500 21_18.png\n\u2502   \u2502   \u251c\u2500\u2500 21_21.png\n\u2502   \u2502   \u251c\u2500\u2500 21_25.png\n\u2502   \u2502   \u251c\u2500\u2500 21_38.png\n\u2502   \u2502   \u251c\u2500\u2500 21_47.png\n\u2502   \u2502   \u251c\u2500\u2500 21_55.png\n\u2502   \u2502   \u251c\u2500\u2500 23_21.png\n\u2502   \u2502   \u251c\u2500\u2500 25_11.png\n\u2502   \u2502   \u251c\u2500\u2500 25_19.png\n\u2502   \u2502   \u251c\u2500\u2500 26_00.png\n\u2502   \u2502   \u251c\u2500\u2500 26_32.png\n\u2502   \u2502   \u251c\u2500\u2500 26_54.png\n\u2502   \u2502   \u251c\u2500\u2500 27_17.png\n\u2502   \u2502   \u251c\u2500\u2500 27_21.png\n\u2502   \u2502   \u251c\u2500\u2500 27_36.png\n\u2502   \u2502   \u251c\u2500\u2500 27_41.png\n\u2502   \u2502   \u251c\u2500\u2500 27_48.png\n\u2502   \u2502   \u251c\u2500\u2500 27_58.png\n\u2502   \u2502   \u251c\u2500\u2500 28_48.png\n\u2502   \u2502   \u251c\u2500\u2500 8_36.png\n\u2502   \u2502   \u2514\u2500\u2500 9_02.png\n\u2502   \u251c\u2500\u2500 .DS_Store\n\u2502   \u251c\u2500\u2500 analysis_prompt.md\n\u2502   \u251c\u2500\u2500 analysis_prompt_openai.md\n\u2502   \u251c\u2500\u2500 current_system.md\n\u2502   \u2514\u2500\u2500 visual_evidence_index.md\n\u251c\u2500\u2500 gold_arch_website/\n\u2502   \u251c\u2500\u2500 pics_of_the website/\n\u2502   \u2502   \u2514\u2500\u2500 .DS_Store\n\u2502   \u251c\u2500\u2500 public/\n\u2502   \u2502   \u251c\u2500\u2500 placeholder.svg\n\u2502   \u2502   \u2514\u2500\u2500 robots.txt\n\u2502   \u251c\u2500\u2500 src/\n\u2502   \u2502   \u251c\u2500\u2500 components/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 landing/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 ui/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 .DS_Store\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 NavLink.tsx\n\u2502   \u2502   \u251c\u2500\u2500 hooks/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 use-mobile.tsx\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 use-toast.ts\n\u2502   \u2502   \u251c\u2500\u2500 lib/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 utils.ts\n\u2502   \u2502   \u251c\u2500\u2500 pages/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 Index.tsx\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 NotFound.tsx\n\u2502   \u2502   \u251c\u2500\u2500 .DS_Store\n\u2502   \u2502   \u251c\u2500\u2500 App.css\n\u2502   \u2502   \u251c\u2500\u2500 App.tsx\n\u2502   \u2502   \u251c\u2500\u2500 index.css\n\u2502   \u2502   \u251c\u2500\u2500 main.tsx\n\u2502   \u2502   \u2514\u2500\u2500 vite-env.d.ts\n\u2502   \u251c\u2500\u2500 .DS_Store\n\u2502   \u251c\u2500\u2500 bun.lock\n\u2502   \u251c\u2500\u2500 components.json\n\u2502   \u251c\u2500\u2500 eslint.config.js\n\u2502   \u251c\u2500\u2500 gitignore.txt\n\u2502   \u251c\u2500\u2500 index.html\n\u2502   \u251c\u2500\u2500 package.json\n\u2502   \u251c\u2500\u2500 postcss.config.js\n\u2502   \u251c\u2500\u2500 README.md\n\u2502   \u251c\u2500\u2500 tailwind.config.ts\n\u2502   \u251c\u2500\u2500 tsconfig.app.json\n\u2502   \u251c\u2500\u2500 tsconfig.app.tsbuildinfo\n\u2502   \u251c\u2500\u2500 tsconfig.json\n\u2502   \u251c\u2500\u2500 tsconfig.node.json\n\u2502   \u251c\u2500\u2500 tsconfig.node.tsbuildinfo\n\u2502   \u2514\u2500\u2500 vite.config.ts\n\u251c\u2500\u2500 hooks/\n\u2502   \u251c\u2500\u2500 use-mobile.tsx\n\u2502   \u2514\u2500\u2500 use-toast.ts\n\u251c\u2500\u2500 lib/\n\u2502   \u251c\u2500\u2500 middleware/\n\u2502   \u2502   \u251c\u2500\u2500 api-auth.ts\n\u2502   \u2502   \u2514\u2500\u2500 page-auth.ts\n\u2026 (tree truncated)",
+  "embedded_docs": [
+    {
+      "type": "plan_doc",
+      "file": "Andy_Project_Planning/refactor_plan.md",
+      "included": true,
+      "content": "# Refactor Plan (Plan-only)\n\n_Generated: 2026-01-09 10:14:18_\n\n## Plan Refactoring for Web Application Project Alignment, Risk Management, and System Improvement Strategies\n\n---\n\n### Phase 0: Quick Wins\n**Objective:** Address immediate security concerns without disrupting ongoing development activities. Focus on authentication handling issues to ensure user data protection before moving forward with other features or releases into production environments.\n\n- **Target Files/Modules**: Authentication service components within the `backend_services/` directory, specifically in services like `user_authentication/` and related API endpoints (`login`, `logout`, etc.).\n  \n- **What to Change (High-Level)**: \n    - Implement secure authentication methods such as OAuth or JWT tokens.\n    - Ensure all sensitive data is encrypted using industry-standard encryption algorithms before storage and transmission, especially in the database layer (`user_data.db`).\n  \n- **Why**: To mitigate high severity risks associated with security vulnerabilities that could lead to unauthorized access or non-compliance with regulations (e.g., GDPR). This is critical for user trust and legal compliance, aligning with the risk register's identified concerns in `deep_analysis_report.md`.\n  \n- **How to Verify**: \n    - Use security testing tools like OWASP ZAP or Bandit (Python) on API endpoints related to authentication services (`curl` commands and expected outcomes for successful secure token generation, validation).\n    - Perform database encryption tests using `openssl enc` command-line tool with AES256 cipher mode. Expected outcome: encrypted data that can only be decrypted by the application's backend service (using appropriate keys stored in a secured environment variable or secret management system like HashiCorp Vault).\n    - Conduct user acceptance testing to ensure authentication flows work as expected without exposing sensitive information, using tools such as Cypress for end-to-end tests. Expected outcome: Successful login/logout with proper session handling and no data leaks in test reports or logs.\n  \n### Phase 1: Stabilize (Mitigate Medium Severity Risks)\n**Objective:** Enhance SEO efforts by updating Open Graph tags to improve content discoverability on platforms like Facebook's News Feed, aligning with future development plans for RAG pipeline improvements. This phase also includes resolving any low severity issues identified in the risk register related to Bun runtime environment compatibility and developer productivity.\n\n- **Target Files/Modules**: HTML files within `app/` directory containing TODO items regarding Open Graph tags (`index.html`, etc.). Also, address potential conflicts with existing tools or libraries used by developers that might affect local testing workflow efficiency due to the use of Bun runtime environment.\n  \n- **What to Change (High-Level)**: \n    - Update and complete documentation for SEO enhancements using Open Graph tags in HTML files (`og:` prefixes). Ensure proper document titles are set on each page, which will improve content discoverability across search engines like Facebook's News Feed. This aligns with future plans to implement RAG pipeline improvements (Medium Severity Risks mitigation strategy from the risk register).\n  \n- **Why**: To enhance user engagement and organic traffic growth by improving SEO, which is a medium severity concern identified in `deep_analysis_report.md`. This step also aligns with future development plans for RAG pipeline improvements (Medium Severity Risks mitigation strategy from the risk register).\n  \n- **How to Verify**: \n    - Use browser developer tools or SEO analysis services like Screaming Frog SEO Spider and Moz ProbeRater to verify Open Graph tags are correctly implemented in HTML files. Expected outcome: All `og:` prefixes followed by appropriate metadata values for images, titles, descriptions, etc., as per best practices (e.g., `<meta property=\"og:title\" content=\"Example Title\">`).\n    - Conduct local testing of the application using Bun to ensure compatibility with existing tools or libraries and developer productivity is not significantly impacted due to potential learning curve associated with new runtime environment (`bun run app/index.html` command). Expected outcome: Application runs without errors, indicating no significant disruption in workflow efficiency (Low Severity Risks mitigation strategy from the risk register).\n  \n### Phase 2: Structural Improvements and Alignment with Future Plans\n**Objective:** Refactor system architecture to better support future expansions such as RAG pipeline improvements, while ensuring maintainability. This phase also includes aligning ongoing development activities with the project's roadmap constraints for enhancing user experience through interactive dashboards/architectural design showcases using React (with TypeScript), Tailwind CSS, and Bun runtime environment.\n\n- **Target Files/Modules**: Frontend components within `app/` directory that are intended to be part of the RAG pipeline improvements (`React_Assistant_Generator`). Also, consider API service documentation or discovery mechanisms for backend services as identified in Phase 0 and Phase 1.\n  \n- **What to Change (High-Level)**: \n    - Refactor frontend components using React with TypeScript by adopting best practices such as component reusability, state management optimization, or integrating RAG pipeline enhancements for improved content generation based on user interactions and preferences. This aligns with future development plans to improve the overall user experience (Phase 2 Structural Improvements objective).\n  \n- **Why**: To ensure a robust architectural design that promotes scalability, maintainability, and alignment with project's roadmap constraints for enhancing user experience through interactive dashboards/architectural design showcases using React (with TypeScript), Tailwind CSS, and Bun runtime environment. This step also addresses the lack of detailed API documentation or service discovery mechanisms identified in Phase 0 as a potential issue affecting maintainability (Phase 2 Structural Improvements objective).\n  \n- **How to Verify**: \n    - Conduct code reviews and refactor sessions with development teams focusing on best practices for React components, state management optimization using TypeScript interfaces or context API. Expected outcome: Refactored frontend components that are more efficient, reusable, and aligned with project's roadmap constraints (Phase 2 Structural Improvements objective).\n    - Perform end-to-end testing of the RAG pipeline enhancements using tools like Cypress or Playwright to ensure seamless integration within frontend components. Expected outcome: Successful content generation based on user interactions and preferences, with no disruin in application flow (Phase 2 Structural Improvements objective).\n    - Evaluate the effectiveness of API service documentation or discovery mechanisms by conducting internal testing sessions where developers attempt to integrate new services into existing workflows without prior knowledge. Expected outcome: Smooth integration process, indicating well-documented and discoverable APIs (Phase 2 Structural Improvements objective).\n  \n---\n",
+      "note": ""
+    }
+  ],
+  "top_files": [
+    {
+      "file": "gold_arch_project/Visuals/9_02.png",
+      "size": 3906930,
+      "mtime": 1767870428.8646965
+    },
+    {
+      "file": "Andy_Project_Planning/untitled folder/Visuals/9_02.png",
+      "size": 3906930,
+      "mtime": 1767870428.8646965
+    },
+    {
+      "file": "Andy_Project_Planning/client_requirement/Layer_3_Visual_Evidence/Visuals/9_02.png",
+      "size": 3906930,
+      "mtime": 1767870428.8646965
+    },
+    {
+      "file": "gold_arch_project/Visuals/12_43.png",
+      "size": 3063564,
+      "mtime": 1767870954.766016
+    },
+    {
+      "file": "Andy_Project_Planning/untitled folder/Visuals/12_43.png",
+      "size": 3063564,
+      "mtime": 1767870954.766016
+    },
+    {
+      "file": "Andy_Project_Planning/client_requirement/Layer_3_Visual_Evidence/Visuals/12_43.png",
+      "size": 3063564,
+      "mtime": 1767870954.766016
+    },
+    {
+      "file": "gold_arch_project/Visuals/21_38.png",
+      "size": 3017447,
+      "mtime": 1767873120.9800484
+    },
+    {
+      "file": "Andy_Project_Planning/untitled folder/Visuals/21_38.png",
+      "size": 3017447,
+      "mtime": 1767873120.9800484
+    },
+    {
+      "file": "Andy_Project_Planning/client_requirement/Layer_3_Visual_Evidence/Visuals/21_38.png",
+      "size": 3017447,
+      "mtime": 1767873120.9800482
+    },
+    {
+      "file": "gold_arch_project/Visuals/8_36.png",
+      "size": 2639257,
+      "mtime": 1767870323.3799794
+    },
+    {
+      "file": "Andy_Project_Planning/untitled folder/Visuals/8_36.png",
+      "size": 2639257,
+      "mtime": 1767870323.3799794
+    },
+    {
+      "file": "Andy_Project_Planning/client_requirement/Layer_3_Visual_Evidence/Visuals/8_36.png",
+      "size": 2639257,
+      "mtime": 1767870323.3799794
+    },
+    {
+      "file": "gold_arch_project/Visuals/23_21.png",
+      "size": 2338981,
+      "mtime": 1767873337.1267915
+    },
+    {
+      "file": "Andy_Project_Planning/untitled folder/Visuals/23_21.png",
+      "size": 2338981,
+      "mtime": 1767873337.1267915
+    },
+    {
+      "file": "Andy_Project_Planning/client_requirement/Layer_3_Visual_Evidence/Visuals/23_21.png",
+      "size": 2338981,
+      "mtime": 1767873337.1267915
+    },
+    {
+      "file": "gold_arch_project/Visuals/16_37.png",
+      "size": 2185149,
+      "mtime": 1767871843.8882573
+    },
+    {
+      "file": "Andy_Project_Planning/untitled folder/Visuals/16_37.png",
+      "size": 2185149,
+      "mtime": 1767871843.8882573
+    },
+    {
+      "file": "Andy_Project_Planning/client_requirement/Layer_3_Visual_Evidence/Visuals/16_37.png",
+      "size": 2185149,
+      "mtime": 1767871843.8882573
+    },
+    {
+      "file": "gold_arch_project/Visuals/16_46.png",
+      "size": 1968490,
+      "mtime": 1767871917.3667357
+    },
+    {
+      "file": "Andy_Project_Planning/untitled folder/Visuals/16_46.png",
+      "size": 1968490,
+      "mtime": 1767871917.3667357
+    },
+    {
+      "file": "Andy_Project_Planning/client_requirement/Layer_3_Visual_Evidence/Visuals/16_46.png",
+      "size": 1968490,
+      "mtime": 1767871917.3667355
+    },
+    {
+      "file": "gold_arch_project/Visuals/15_42.png",
+      "size": 1961187,
+      "mtime": 1767871767.072064
+    },
+    {
+      "file": "Andy_Project_Planning/untitled folder/Visuals/15_42.png",
+      "size": 1961187,
+      "mtime": 1767871767.072064
+    },
+    {
+      "file": "Andy_Project_Planning/client_requirement/Layer_3_Visual_Evidence/Visuals/15_42.png",
+      "size": 1961187,
+      "mtime": 1767871767.072064
+    },
+    {
+      "file": "gold_arch_project/Visuals/16_44.png",
+      "size": 1831015,
+      "mtime": 1767871882.8386455
+    },
+    {
+      "file": "Andy_Project_Planning/untitled folder/Visuals/16_44.png",
+      "size": 1831015,
+      "mtime": 1767871882.8386455
+    },
+    {
+      "file": "Andy_Project_Planning/client_requirement/Layer_3_Visual_Evidence/Visuals/16_44.png",
+      "size": 1831015,
+      "mtime": 1767871882.8386455
+    },
+    {
+      "file": "gold_arch_project/Visuals/27_58.png",
+      "size": 1786028,
+      "mtime": 1767874093.6744215
+    },
+    {
+      "file": "Andy_Project_Planning/untitled folder/Visuals/27_58.png",
+      "size": 1786028,
+      "mtime": 1767874093.6744215
+    },
+    {
+      "file": "Andy_Project_Planning/client_requirement/Layer_3_Visual_Evidence/Visuals/27_58.png",
+      "size": 1786028,
+      "mtime": 1767874093.6744215
+    }
+  ],
+  "todo_hits": [
+    {
+      "file": "Andy_Project_Planning/audit_context.json",
+      "line": 183,
+      "text": "\"text\": \"// TODO: Implement actual RAG pipeline:\""
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.json",
+      "line": 188,
+      "text": "\"text\": \"- PDF/DOCX review adds evidence of authentication/secret handling concerns (mentions of auth, API keys, tokens) but no additional TODO/FIXME-style backlog items.\""
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.json",
+      "line": 193,
+      "text": "\"text\": \"<!-- TODO: Set the document title to the name of your application -->\""
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.json",
+      "line": 198,
+      "text": "\"text\": \"<!-- TODO: Update og:title to match your application name -->\""
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.json",
+      "line": 203,
+      "text": "\"text\": \"<!-- TODO: Set the document title to the name of your application -->\""
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.json",
+      "line": 208,
+      "text": "\"text\": \"<!-- TODO: Update og:title to match your application name -->\""
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.json",
+      "line": 213,
+      "text": "\"text\": \"<!-- TODO: Set the document title to the name of your application -->\""
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.json",
+      "line": 218,
+      "text": "\"text\": \"<!-- TODO: Update og:title to match your application name -->\""
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.json",
+      "line": 223,
+      "text": "\"text\": \"<!-- TODO: Set the document title to the name of your application -->\""
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.json",
+      "line": 228,
+      "text": "\"text\": \"<!-- TODO: Update og:title to match your application name -->\""
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.json",
+      "line": 233,
+      "text": "\"text\": \"<Input placeholder=\\\"GA-XXXXXXXXX-X\\\" className=\\\"h-8\\\" />\""
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.json",
+      "line": 238,
+      "text": "\"text\": \"<Input placeholder=\\\"GTM-XXXXXXX\\\" className=\\\"h-8\\\" />\""
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.md",
+      "line": 11,
+      "text": "- TODO hits: **12** (capped)"
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.md",
+      "line": 672,
+      "text": "## TODO / FIXME hits"
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.md",
+      "line": 676,
+      "text": "| `Framework_B/api/chat/route.example.ts` | 29 | // TODO: Implement actual RAG pipeline: |"
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.md",
+      "line": 677,
+      "text": "| `deep_analysis_report.md` | 6 | - PDF/DOCX review adds evidence of authentication/secret handling concerns (mentions of auth, API keys, tokens) but no additional TODO/FIXME-style backlog items. |"
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.md",
+      "line": 678,
+      "text": "| `gold_arch_website/index.html` | 6 | <!-- TODO: Set the document title to the name of your application --> |"
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.md",
+      "line": 679,
+      "text": "| `gold_arch_website/index.html` | 11 | <!-- TODO: Update og:title to match your application name --> |"
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.md",
+      "line": 680,
+      "text": "| `index.html` | 6 | <!-- TODO: Set the document title to the name of your application --> |"
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.md",
+      "line": 681,
+      "text": "| `index.html` | 11 | <!-- TODO: Update og:title to match your application name --> |"
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.md",
+      "line": 682,
+      "text": "| `source_code/source_code.html` | 7 | <!-- TODO: Set the document title to the name of your application --> |"
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.md",
+      "line": 683,
+      "text": "| `source_code/source_code.html` | 12 | <!-- TODO: Update og:title to match your application name --> |"
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.md",
+      "line": 684,
+      "text": "| `source_code/source_code.html` | 36 | <!-- TODO: Set the document title to the name of your application --> |"
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.md",
+      "line": 685,
+      "text": "| `source_code/source_code.html` | 41 | <!-- TODO: Update og:title to match your application name --> |"
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.md",
+      "line": 686,
+      "text": "| `themes/cms-full-form-admin-dashboard-tailwind-templates/components/plugins/allsite-seo/settings/content.tsx` | 710 | <Input placeholder=\"GA-XXXXXXXXX-X\" className=\"h-8\" /> |"
+    },
+    {
+      "file": "Andy_Project_Planning/audit_context.md",
+      "line": 687,
+      "text": "| `themes/cms-full-form-admin-dashboard-tailwind-templates/components/plugins/allsite-seo/settings/content.tsx` | 714 | <Input placeholder=\"GTM-XXXXXXX\" className=\"h-8\" /> |"
+    },
+    {
+      "file": "Andy_Project_Planning/deep_analysis_report.md",
+      "line": 8,
+      "text": "This report provides a comprehensive analysis of the current state of an ongoing web application project. The repository is in development with plans to enhance user experience through interactive dashboards or architectural design showcases using React (with TypeScript), Tailwind CSS, and Bun as its runtime environment. Critical TODO items include authentication handling concerns highlighted by README documentation which could pose security risks if not addressed promptly. The project's architecture suggests a microservices approach for backend functionalities such as task management, API services, health monitoring, etc., with plans to implement RAG (React-Assistant Generator) pipeline and improve SEO through better Open Graph tags documentation in the future phases of development."
+    },
+    {
+      "file": "Andy_Project_Planning/deep_analysis_report.md",
+      "line": 15,
+      "text": "- The TODO items in the HTML files align well with future development plans as they are intended enhancements rather than current functionalities of the application. These include setting proper document titles and updating Open Graph tags for better SEO, which is a common requirement when making web applications publicly accessible or searchable on platforms like Facebook's News Feed (as indicated by `og:` prefixes)."
+    },
+    {
+      "file": "Andy_Project_Planning/deep_analysis_report.md",
+      "line": 27,
+      "text": "TODO: Set document title and OG tags|       - Authentication handling concerns need to be addressed before deployment or release into production environments"
+    },
+    {
+      "file": "Andy_Project_Planning/deep_analysis_report.md",
+      "line": 45,
+      "text": "- `deep_analysis_report.md` within README documentation highlighted authentication handling concerns and incomplete SEO enhancements as TODO items that need to be addressed before deployment or release into production environments, aligning with future development plans for improving user experience through interactive dashboards/architectural design showcases (Plan Documents Found)."
+    },
+    {
+      "file": "Andy_Project_Planning/refactor_plan.md",
+      "line": 28,
+      "text": "- **Target Files/Modules**: HTML files within `app/` directory containing TODO items regarding Open Graph tags (`index.html`, etc.). Also, address potential conflicts with existing tools or libraries used by developers that might affect local testing workflow efficiency due to the use of Bun runtime environment."
+    },
+    {
+      "file": "Framework_B/api/chat/route.example.ts",
+      "line": 29,
+      "text": "// TODO: Implement actual RAG pipeline:"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/README.md",
+      "line": 174,
+      "text": "// TODO: Replace in validateSessionToken()"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/README.md",
+      "line": 206,
+      "text": "// TODO: Add after user validation"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/README.md",
+      "line": 227,
+      "text": "// TODO: Import and use actual useAuth"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/README.md",
+      "line": 259,
+      "text": "// TODO: Add this hook"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/middleware/api-auth.ts",
+      "line": 75,
+      "text": "// TODO: Implement actual authentication check"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/middleware/api-auth.ts",
+      "line": 96,
+      "text": "// TODO: Validate session token from request headers"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/middleware/api-auth.ts",
+      "line": 106,
+      "text": "// TODO: Implement role check"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/middleware/api-auth.ts",
+      "line": 165,
+      "text": "* TODO (Full Implementation):"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/middleware/page-auth.ts",
+      "line": 93,
+      "text": "// TODO: Implement actual authentication check"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/middleware/page-auth.ts",
+      "line": 108,
+      "text": "// TODO: Check if user is authenticated"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/middleware/page-auth.ts",
+      "line": 114,
+      "text": "// TODO: Check role requirements"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/middleware/page-auth.ts",
+      "line": 142,
+      "text": "const isAuthenticated = true; // TODO: Get from auth context"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/middleware/page-auth.ts",
+      "line": 171,
+      "text": "// TODO: Get user role from auth context or API"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/middleware/page-auth.ts",
+      "line": 174,
+      "text": "const userRole = 'Admin'; // TODO: Get from useAuth() or user_roles table"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/middleware/page-auth.ts",
+      "line": 184,
+      "text": "// TODO: Get auth state from context"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/middleware/page-auth.ts",
+      "line": 186,
+      "text": "return true; // TODO: Get from useAuth().user !== null"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/middleware/page-auth.ts",
+      "line": 222,
+      "text": "* TODO (Full Implementation):"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/utils/session-validator.ts",
+      "line": 65,
+      "text": "// TODO: Implement actual token validation"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/utils/session-validator.ts",
+      "line": 79,
+      "text": "// TODO: Create Supabase client with service role"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/utils/session-validator.ts",
+      "line": 82,
+      "text": "// TODO: Validate token with Supabase"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/utils/session-validator.ts",
+      "line": 134,
+      "text": "// TODO: Also check cookies for session token"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/utils/session-validator.ts",
+      "line": 165,
+      "text": "// TODO: Implement actual session refresh"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/utils/session-validator.ts",
+      "line": 168,
+      "text": "// TODO: Create Supabase client"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/utils/session-validator.ts",
+      "line": 171,
+      "text": "// TODO: Refresh session"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/utils/session-validator.ts",
+      "line": 177,
+      "text": "return null; // TODO: Return actual refreshed session"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/utils/session-validator.ts",
+      "line": 219,
+      "text": "// TODO: Decode JWT to extract user ID"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0A/utils/session-validator.ts",
+      "line": 259,
+      "text": "* TODO (Full Implementation):"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0B/policies/rls_policies.sql",
+      "line": 289,
+      "text": "TODO (Full Implementation):"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0B/schema/supplier_access_rules.sql",
+      "line": 226,
+      "text": "TODO (Full Implementation):"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0B/schema/user_roles.sql",
+      "line": 174,
+      "text": "TODO (Full Implementation):"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0B/types/rbac.types.ts",
+      "line": 385,
+      "text": "* TODO (Full Implementation):"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0C/README.md",
+      "line": 189,
+      "text": "**TODO**: Replace mock data with real Supabase queries"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0C/api/team-routes.ts",
+      "line": 559,
+      "text": "* TODO (Full Implementation):"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0C/components/edit-role-dialog.tsx",
+      "line": 346,
+      "text": "* TODO (Full Implementation):"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0C/components/invite-user-dialog.tsx",
+      "line": 292,
+      "text": "* TODO (Full Implementation):"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0C/components/supplier-access-dialog.tsx",
+      "line": 394,
+      "text": "* TODO (Full Implementation):"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0C/components/user-list-table.tsx",
+      "line": 317,
+      "text": "* TODO (Full Implementation):"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0C/hooks/use-team-data.ts",
+      "line": 381,
+      "text": "* TODO (Full Implementation):"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-0C/pages/team-page.tsx",
+      "line": 293,
+      "text": "* TODO (Full Implementation):"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-1A/components/supplier-filter-indicator.tsx",
+      "line": 261,
+      "text": "* TODO (Full Implementation):"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-1A/hooks/use-filtered-suppliers.ts",
+      "line": 402,
+      "text": "* TODO (Full Implementation):"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-1A/middleware/supplier-filter.ts",
+      "line": 463,
+      "text": "* TODO (Full Implementation):"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-1A/utils/supplier-query-builder.ts",
+      "line": 391,
+      "text": "* TODO (Full Implementation):"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-1B/README.md",
+      "line": 108,
+      "text": "- `date-range`: (TODO) Date range picker"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-1B/components/filter-panel.tsx",
+      "line": 234,
+      "text": "{/* TODO: Add date-range type implementation if needed */}"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-1C/api/quote-approval-routes.ts",
+      "line": 256,
+      "text": "// TODO: Send email notification to managers/admins"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-1C/api/quote-approval-routes.ts",
+      "line": 362,
+      "text": "// TODO: Send email notification to quote creator"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-1C/api/quote-approval-routes.ts",
+      "line": 532,
+      "text": "* TODO (Full Implementation):"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-1C/components/quote-approval-dialog.tsx",
+      "line": 347,
+      "text": "* TODO (Full Implementation):"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-1C/hooks/use-quote-approval.ts",
+      "line": 407,
+      "text": "* TODO (Full Implementation):"
+    },
+    {
+      "file": "_implementation_sandbox/MODULES/MODULE-1C/types/quote-approval.types.ts",
+      "line": 466,
+      "text": "* TODO (Full Implementation):"
+    },
+    {
+      "file": "_implementation_sandbox/NOTES/module_0a_completion.md",
+      "line": 222,
+      "text": "- Inline comments mark TODO items"
+    },
+    {
+      "file": "_implementation_sandbox/NOTES/module_0a_completion.md",
+      "line": 238,
+      "text": "### TODO (Implementation):"
+    },
+    {
+      "file": "_implementation_sandbox/NOTES/module_1b_completion.md",
+      "line": 105,
+      "text": "- `date-range` - (TODO placeholder, not implemented)"
+    },
+    {
+      "file": "_implementation_sandbox/NOTES/module_1b_completion.md",
+      "line": 490,
+      "text": "### Integration Tests (TODO - needs real implementation)"
+    },
+    {
+      "file": "_implementation_sandbox/NOTES/module_1b_completion.md",
+      "line": 523,
+      "text": "1. **No Date Range Filter**: date-range field type is TODO placeholder"
+    },
+    {
+      "file": "_implementation_sandbox/NOTES/module_1c_completion.md",
+      "line": 304,
+      "text": "- TODO: Email notification to managers"
+    },
+    {
+      "file": "_implementation_sandbox/NOTES/module_1c_completion.md",
+      "line": 311,
+      "text": "- TODO: Email notification to creator"
+    },
+    {
+      "file": "_implementation_sandbox/NOTES/module_1c_completion.md",
+      "line": 318,
+      "text": "- TODO: Email notification to creator"
+    },
+    {
+      "file": "_implementation_sandbox/NOTES/module_1c_completion.md",
+      "line": 433,
+      "text": "1. **No Email Notifications**: TODO comments in API handlers"
+    },
+    {
+      "file": "_implementation_sandbox/NOTES/phase5_testing_documentation.md",
+      "line": 938,
+      "text": "#### TC-1C-021: Notification - Submitted (TODO)"
+    },
+    {
+      "file": "_implementation_sandbox/NOTES/phase5_testing_documentation.md",
+      "line": 946,
+      "text": "#### TC-1C-022: Notification - Approved (TODO)"
+    },
+    {
+      "file": "_implementation_sandbox/NOTES/phase5_testing_documentation.md",
+      "line": 954,
+      "text": "#### TC-1C-023: Notification - Rejected (TODO)"
+    },
+    {
+      "file": "audit_context.json",
+      "line": 31,
+      "text": "\"content\": \"# Refactor Plan (Plan-only)\\n\\n_Generated: 2026-01-09 10:14:18_\\n\\n## Plan Refactoring for Web Application Project Alignment, Risk Management, and System Improvement Strategies\\n\\n---\\n\\n### Phase 0: Quick Wins\\n**Objective:** Address immediate security concerns without disrupting ongoing development activities. Focus on authentication handling issues to ensure user data protection before moving forward with other features or releases into production environments.\\n\\n- **Target Files/Modules**: Authentication service components within the `backend_services/` directory, specifically in services like `user_authentication/` and related API endpoints (`login`, `logout`, etc.).\\n  \\n- **What to Change (High-Level)**: \\n    - Implement secure authentication methods such as OAuth or JWT tokens.\\n    - Ensure all sensitive data is encrypted using industry-standard encryption algorithms before storage and transmission, especially in the database layer (`user_data.db`).\\n  \\n- **Why**: To mitigate high severity risks associated with security vulnerabilities that could lead to unauthorized access or non-compliance with regulations (e.g., GDPR). This is critical for user trust and legal compliance, aligning with the risk register's identified concerns in `deep_analysis_report.md`.\\n  \\n- **How to Verify**: \\n    - Use security testing tools like OWASP ZAP or Bandit (Python) on API endpoints related to authentication services (`curl` commands and expected outcomes for successful secure token generation, validation).\\n    - Perform database encryption tests using `openssl enc` command-line tool with AES256 cipher mode. Expected outcome: encrypted data that can only be decrypted by the application's backend service (using appropriate keys stored in a secured environment variable or secret management system like HashiCorp Vault).\\n    - Conduct user acceptance testing to ensure authentication flows work as expected without exposing sensitive information, using tools such as Cypress for end-to-end tests. Expected outcome: Successful login/logout with proper session handling and no data leaks in test reports or logs.\\n  \\n### Phase 1: Stabilize (Mitigate Medium Severity Risks)\\n**Objective:** Enhance SEO efforts by updating Open Graph tags to improve content discoverability on platforms like Facebook's News Feed, aligning with future development plans for RAG pipeline improvements. This phase also includes resolving any low severity issues identified in the risk register related to Bun runtime environment compatibility and developer productivity.\\n\\n- **Target Files/Modules**: HTML files within `app/` directory containing TODO items regarding Open Graph tags (`index.html`, etc.). Also, address potential conflicts with existing tools or libraries used by developers that might affect local testing workflow efficiency due to the use of Bun runtime environment.\\n  \\n- **What to Change (High-Level)**: \\n    - Update and complete documentation for SEO enhancements using Open Graph tags in HTML files (`og:` prefixes). Ensure proper document titles are set on each page, which will improve content discoverability across search engines like Facebook's News Feed. This aligns with future plans to implement RAG pipeline improvements (Medium Severity Risks mitigation strategy from the risk register).\\n  \\n- **Why**: To enhance user engagement and organic traffic growth by improving SEO, which is a medium severity concern identified in `deep_analysis_report.md`. This step also aligns with future development plans for RAG pipeline improvements (Medium Severity Risks mitigation strategy from the risk register).\\n  \\n- **How to Verify**: \\n    - Use browser developer tools or SEO analysis services like Screaming Frog SEO Spider and Moz ProbeRater to verify Open Graph tags are correctly implemented in HTML files. Expected outcome: All `og:` prefixes followed by appropriate metadata values for images, titles, descriptions, etc., as per best practices (e.g., `<meta property=\\\"og:title\\\" content=\\\"Example Title\\\">`).\\n    - Conduct local testing of the application using Bun to ensure compatibility with existing tools or libraries and developer productivity is not significantly impacted due to potential learning curve associated with new runtime environment (`bun run app/index.html` command). Expected outcome: Application runs without errors, indicating no significant disruption in workflow efficiency (Low Severity Risks mitigation strategy from the risk register).\\n  \\n### Phase 2: Structural Improvements and Alignment with Future Plans\\n**Objective:** Refactor system architecture to better support future expansions such as RAG pipeline improvements, while ensuring maintainability. This phase also includes aligning ongoing development activities with the project's roadmap constraints for enhancing user experience through interactive dashboards/architectural design showcases using React (with TypeScript), Tailwind CSS, and Bun runtime environment.\\n\\n- **Target Files/Modules**: Frontend components within `app/` directory that are intended to be part of the RAG pipeline improvements (`React_Assistant_Generator`). Also, consider API service documentation or discovery mechanisms for backend services as identified in Phase 0 and Phase 1.\\n  \\n- **What to Change (High-Level)**: \\n    - Refactor frontend components using React with TypeScript by adopting best practices such as component reusability, state management optimization, or integrating RAG pipeline enhancements for improved content generation based on user interactions and preferences. This aligns with future development plans to improve the overall user experience (Phase 2 Structural Improvements objective).\\n  \\n- **Why**: To ensure a robust architectural design that promotes scalability, maintainability, and alignment with project's roadmap constraints for enhancing user experience through interactive dashboards/architectural design showcases using React (with TypeScript), Tailwind CSS, and Bun runtime environment. This step also addresses the lack of detailed API documentation or service discovery mechanisms identified in Phase 0 as a potential issue affecting maintainability (Phase 2 Structural Improvements objective).\\n  \\n- **How to Verify**: \\n    - Conduct code reviews and refactor sessions with development teams focusing on best practices for React components, state management optimization using TypeScript interfaces or context API. Expected outcome: Refactored frontend components that are more efficient, reusable, and aligned with project's roadmap constraints (Phase 2 Structural Improvements objective).\\n    - Perform end-to-end testing of the RAG pipeline enhancements using tools like Cypress or Playwright to ensure seamless integration within frontend components. Expected outcome: Successful content generation based on user interactions and preferences, with no disruin in application flow (Phase 2 Structural Improvements objective).\\n    - Evaluate the effectiveness of API service documentation or discovery mechanisms by conducting internal testing sessions where developers attempt to integrate new services into existing workflows without prior knowledge. Expected outcome: Smooth integration process, indicating well-documented and discoverable APIs (Phase 2 Structural Improvements objective).\\n  \\n---\\n\","
+    },
+    {
+      "file": "audit_context.json",
+      "line": 191,
+      "text": "\"text\": \"\\\"text\\\": \\\"// TODO: Implement actual RAG pipeline:\\\"\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 196,
+      "text": "\"text\": \"\\\"text\\\": \\\"- PDF/DOCX review adds evidence of authentication/secret handling concerns (mentions of auth, API keys, tokens) but no additional TODO/FIXME-style backlog items.\\\"\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 201,
+      "text": "\"text\": \"\\\"text\\\": \\\"<!-- TODO: Set the document title to the name of your application -->\\\"\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 206,
+      "text": "\"text\": \"\\\"text\\\": \\\"<!-- TODO: Update og:title to match your application name -->\\\"\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 211,
+      "text": "\"text\": \"\\\"text\\\": \\\"<!-- TODO: Set the document title to the name of your application -->\\\"\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 216,
+      "text": "\"text\": \"\\\"text\\\": \\\"<!-- TODO: Update og:title to match your application name -->\\\"\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 221,
+      "text": "\"text\": \"\\\"text\\\": \\\"<!-- TODO: Set the document title to the name of your application -->\\\"\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 226,
+      "text": "\"text\": \"\\\"text\\\": \\\"<!-- TODO: Update og:title to match your application name -->\\\"\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 231,
+      "text": "\"text\": \"\\\"text\\\": \\\"<!-- TODO: Set the document title to the name of your application -->\\\"\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 236,
+      "text": "\"text\": \"\\\"text\\\": \\\"<!-- TODO: Update og:title to match your application name -->\\\"\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 241,
+      "text": "\"text\": \"\\\"text\\\": \\\"<Input placeholder=\\\\\\\"GA-XXXXXXXXX-X\\\\\\\" className=\\\\\\\"h-8\\\\\\\" />\\\"\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 246,
+      "text": "\"text\": \"\\\"text\\\": \\\"<Input placeholder=\\\\\\\"GTM-XXXXXXX\\\\\\\" className=\\\\\\\"h-8\\\\\\\" />\\\"\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 251,
+      "text": "\"text\": \"- TODO hits: **12** (capped)\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 256,
+      "text": "\"text\": \"## TODO / FIXME hits\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 261,
+      "text": "\"text\": \"| `Framework_B/api/chat/route.example.ts` | 29 | // TODO: Implement actual RAG pipeline: |\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 266,
+      "text": "\"text\": \"| `deep_analysis_report.md` | 6 | - PDF/DOCX review adds evidence of authentication/secret handling concerns (mentions of auth, API keys, tokens) but no additional TODO/FIXME-style backlog items. |\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 271,
+      "text": "\"text\": \"| `gold_arch_website/index.html` | 6 | <!-- TODO: Set the document title to the name of your application --> |\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 276,
+      "text": "\"text\": \"| `gold_arch_website/index.html` | 11 | <!-- TODO: Update og:title to match your application name --> |\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 281,
+      "text": "\"text\": \"| `index.html` | 6 | <!-- TODO: Set the document title to the name of your application --> |\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 286,
+      "text": "\"text\": \"| `index.html` | 11 | <!-- TODO: Update og:title to match your application name --> |\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 291,
+      "text": "\"text\": \"| `source_code/source_code.html` | 7 | <!-- TODO: Set the document title to the name of your application --> |\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 296,
+      "text": "\"text\": \"| `source_code/source_code.html` | 12 | <!-- TODO: Update og:title to match your application name --> |\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 301,
+      "text": "\"text\": \"| `source_code/source_code.html` | 36 | <!-- TODO: Set the document title to the name of your application --> |\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 306,
+      "text": "\"text\": \"| `source_code/source_code.html` | 41 | <!-- TODO: Update og:title to match your application name --> |\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 311,
+      "text": "\"text\": \"| `themes/cms-full-form-admin-dashboard-tailwind-templates/components/plugins/allsite-seo/settings/content.tsx` | 710 | <Input placeholder=\\\"GA-XXXXXXXXX-X\\\" className=\\\"h-8\\\" /> |\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 316,
+      "text": "\"text\": \"| `themes/cms-full-form-admin-dashboard-tailwind-templates/components/plugins/allsite-seo/settings/content.tsx` | 714 | <Input placeholder=\\\"GTM-XXXXXXX\\\" className=\\\"h-8\\\" /> |\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 321,
+      "text": "\"text\": \"This report provides a comprehensive analysis of the current state of an ongoing web application project. The repository is in development with plans to enhance user experience through interactive dashboards or architectural design showcases using React (with TypeScript), Tailwind CSS, and Bun as its runtime environment. Critical TODO items include authentication handling concerns highlighted by README documentation which could pose security risks if not addressed promptly. The project's architecture suggests a microservices approach for backend functionalities such as task management, API services, health monitoring, etc., with plans to implement RAG (React-Assistant Generator) pipeline and improve SEO through better Open Graph tags documentation in the future phases of development.\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 326,
+      "text": "\"text\": \"- The TODO items in the HTML files align well with future development plans as they are intended enhancements rather than current functionalities of the application. These include setting proper document titles and updating Open Graph tags for better SEO, which is a common requirement when making web applications publicly accessible or searchable on platforms like Facebook's News Feed (as indicated by `og:` prefixes).\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 331,
+      "text": "\"text\": \"TODO: Set document title and OG tags|       - Authentication handling concerns need to be addressed before deployment or release into production environments\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 336,
+      "text": "\"text\": \"- `deep_analysis_report.md` within README documentation highlighted authentication handling concerns and incomplete SEO enhancements as TODO items that need to be addressed before deployment or release into production environments, aligning with future development plans for improving user experience through interactive dashboards/architectural design showcases (Plan Documents Found).\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 341,
+      "text": "\"text\": \"- **Target Files/Modules**: HTML files within `app/` directory containing TODO items regarding Open Graph tags (`index.html`, etc.). Also, address potential conflicts with existing tools or libraries used by developers that might affect local testing workflow efficiency due to the use of Bun runtime environment.\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 346,
+      "text": "\"text\": \"// TODO: Implement actual RAG pipeline:\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 351,
+      "text": "\"text\": \"// TODO: Replace in validateSessionToken()\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 356,
+      "text": "\"text\": \"// TODO: Add after user validation\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 361,
+      "text": "\"text\": \"// TODO: Import and use actual useAuth\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 366,
+      "text": "\"text\": \"// TODO: Add this hook\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 371,
+      "text": "\"text\": \"// TODO: Implement actual authentication check\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 376,
+      "text": "\"text\": \"// TODO: Validate session token from request headers\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 381,
+      "text": "\"text\": \"// TODO: Implement role check\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 386,
+      "text": "\"text\": \"* TODO (Full Implementation):\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 391,
+      "text": "\"text\": \"// TODO: Implement actual authentication check\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 396,
+      "text": "\"text\": \"// TODO: Check if user is authenticated\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 401,
+      "text": "\"text\": \"// TODO: Check role requirements\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 406,
+      "text": "\"text\": \"const isAuthenticated = true; // TODO: Get from auth context\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 411,
+      "text": "\"text\": \"// TODO: Get user role from auth context or API\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 416,
+      "text": "\"text\": \"const userRole = 'Admin'; // TODO: Get from useAuth() or user_roles table\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 421,
+      "text": "\"text\": \"// TODO: Get auth state from context\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 426,
+      "text": "\"text\": \"return true; // TODO: Get from useAuth().user !== null\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 431,
+      "text": "\"text\": \"* TODO (Full Implementation):\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 436,
+      "text": "\"text\": \"// TODO: Implement actual token validation\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 441,
+      "text": "\"text\": \"// TODO: Create Supabase client with service role\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 446,
+      "text": "\"text\": \"// TODO: Validate token with Supabase\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 451,
+      "text": "\"text\": \"// TODO: Also check cookies for session token\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 456,
+      "text": "\"text\": \"// TODO: Implement actual session refresh\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 461,
+      "text": "\"text\": \"// TODO: Create Supabase client\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 466,
+      "text": "\"text\": \"// TODO: Refresh session\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 471,
+      "text": "\"text\": \"return null; // TODO: Return actual refreshed session\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 476,
+      "text": "\"text\": \"// TODO: Decode JWT to extract user ID\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 481,
+      "text": "\"text\": \"* TODO (Full Implementation):\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 486,
+      "text": "\"text\": \"TODO (Full Implementation):\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 491,
+      "text": "\"text\": \"TODO (Full Implementation):\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 496,
+      "text": "\"text\": \"TODO (Full Implementation):\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 501,
+      "text": "\"text\": \"* TODO (Full Implementation):\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 506,
+      "text": "\"text\": \"**TODO**: Replace mock data with real Supabase queries\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 511,
+      "text": "\"text\": \"* TODO (Full Implementation):\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 516,
+      "text": "\"text\": \"* TODO (Full Implementation):\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 521,
+      "text": "\"text\": \"* TODO (Full Implementation):\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 526,
+      "text": "\"text\": \"* TODO (Full Implementation):\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 531,
+      "text": "\"text\": \"* TODO (Full Implementation):\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 536,
+      "text": "\"text\": \"* TODO (Full Implementation):\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 541,
+      "text": "\"text\": \"* TODO (Full Implementation):\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 546,
+      "text": "\"text\": \"* TODO (Full Implementation):\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 551,
+      "text": "\"text\": \"* TODO (Full Implementation):\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 556,
+      "text": "\"text\": \"* TODO (Full Implementation):\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 561,
+      "text": "\"text\": \"* TODO (Full Implementation):\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 566,
+      "text": "\"text\": \"- `date-range`: (TODO) Date range picker\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 571,
+      "text": "\"text\": \"{/* TODO: Add date-range type implementation if needed */}\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 576,
+      "text": "\"text\": \"// TODO: Send email notification to managers/admins\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 581,
+      "text": "\"text\": \"// TODO: Send email notification to quote creator\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 586,
+      "text": "\"text\": \"* TODO (Full Implementation):\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 591,
+      "text": "\"text\": \"* TODO (Full Implementation):\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 596,
+      "text": "\"text\": \"* TODO (Full Implementation):\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 601,
+      "text": "\"text\": \"* TODO (Full Implementation):\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 606,
+      "text": "\"text\": \"- Inline comments mark TODO items\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 611,
+      "text": "\"text\": \"### TODO (Implementation):\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 616,
+      "text": "\"text\": \"- `date-range` - (TODO placeholder, not implemented)\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 621,
+      "text": "\"text\": \"### Integration Tests (TODO - needs real implementation)\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 626,
+      "text": "\"text\": \"1. **No Date Range Filter**: date-range field type is TODO placeholder\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 631,
+      "text": "\"text\": \"- TODO: Email notification to managers\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 636,
+      "text": "\"text\": \"- TODO: Email notification to creator\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 641,
+      "text": "\"text\": \"- TODO: Email notification to creator\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 646,
+      "text": "\"text\": \"1. **No Email Notifications**: TODO comments in API handlers\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 651,
+      "text": "\"text\": \"#### TC-1C-021: Notification - Submitted (TODO)\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 656,
+      "text": "\"text\": \"#### TC-1C-022: Notification - Approved (TODO)\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 661,
+      "text": "\"text\": \"#### TC-1C-023: Notification - Rejected (TODO)\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 666,
+      "text": "\"text\": \"<!-- TODO: Set the document title to the name of your application -->\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 671,
+      "text": "\"text\": \"<!-- TODO: Update og:title to match your application name -->\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 676,
+      "text": "\"text\": \"<!-- TODO: Set the document title to the name of your application -->\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 681,
+      "text": "\"text\": \"<!-- TODO: Update og:title to match your application name -->\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 686,
+      "text": "\"text\": \"* TODO (Full Implementation):\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 691,
+      "text": "\"text\": \"// TODO: Implement actual authentication check\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 696,
+      "text": "\"text\": \"// TODO: Check if user is authenticated\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 701,
+      "text": "\"text\": \"// TODO: Check role requirements\""
+    },
+    {
+      "file": "audit_context.json",
+      "line": 706,
+      "text": "\"text\": \"const isAuthenticated = true; // TODO: Get from auth context\""
+    }
+  ],
+  "settings": {
+    "include_plan_docs": true,
+    "include_manifests": false,
+    "include_todos": true,
+    "top_files": 30,
+    "todo_hits_cap": 200,
+    "max_file_bytes": 200000
+  }
+}

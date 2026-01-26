@@ -1,0 +1,24 @@
+# Construction Plan Intelligence - Python Worker Dependencies
+
+# PDF Processing
+PyMuPDF==1.23.8              # PDF rendering and text extraction
+pdf2image==1.16.3            # Convert PDF pages to images
+Pillow==10.1.0               # Image processing
+
+# OpenAI
+openai==1.6.1                # OpenAI API client
+
+# Supabase
+supabase==2.10.0             # Supabase Python client (updated for compatibility)
+python-dotenv==1.0.0         # Environment variables
+
+# Data Validation
+pydantic==2.5.3              # JSON schema validation
+
+# Image Processing (optional)
+opencv-python==4.8.1.78      # Image preprocessing (contrast, deskew)
+numpy==1.26.2                # Numerical operations
+
+# ColPali (local retrieval)
+# Note: ColPali installation instructions may vary
+# For now, we'll implement a simple keyword-based fallback

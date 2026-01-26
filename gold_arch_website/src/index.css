@@ -1,0 +1,216 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 43 55% 96%;
+    --foreground: 210 24% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 210 24% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 24% 12%;
+    --primary: 208 35% 13%;
+    --primary-foreground: 43 55% 96%;
+    --secondary: 44 40% 90%;
+    --secondary-foreground: 210 24% 12%;
+    --muted: 43 35% 92%;
+    --muted-foreground: 210 9% 40%;
+    --accent: 42 67% 55%;
+    --accent-foreground: 210 24% 12%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 42 24% 82%;
+    --input: 42 24% 82%;
+    --ring: 28 70% 55%;
+    --radius: 0.85rem;
+    
+    /* Custom Gold.Arch colors */
+    --gold: 42 67% 55%;
+    --gold-light: 45 69% 72%;
+    --gold-dark: 38 60% 45%;
+    --navy: 208 35% 13%;
+    --navy-light: 210 24% 25%;
+  }
+
+  .dark {
+    --background: 213 27% 10%;
+    --foreground: 43 55% 96%;
+    --card: 213 27% 14%;
+    --card-foreground: 43 55% 96%;
+    --popover: 213 27% 14%;
+    --popover-foreground: 43 55% 96%;
+    --primary: 43 55% 96%;
+    --primary-foreground: 213 27% 12%;
+    --secondary: 213 22% 18%;
+    --secondary-foreground: 43 55% 96%;
+    --muted: 213 22% 18%;
+    --muted-foreground: 42 15% 70%;
+    --accent: 42 67% 60%;
+    --accent-foreground: 213 27% 12%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 213 18% 26%;
+    --input: 213 18% 26%;
+    --ring: 42 67% 60%;
+    
+    --gold: 42 67% 60%;
+    --gold-light: 45 69% 72%;
+    --gold-dark: 38 55% 50%;
+    --navy: 213 27% 10%;
+    --navy-light: 213 22% 18%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  .font-display {
+    font-family: "Fraunces", Georgia, serif;
+  }
+
+  .font-mono {
+    font-family: "Space Mono", "SFMono-Regular", Menlo, monospace;
+  }
+
+  .bg-aurora {
+    background-image:
+      radial-gradient(circle at top right, hsl(var(--gold) / 0.35), transparent 45%),
+      radial-gradient(circle at 15% 20%, hsl(var(--navy-light) / 0.25), transparent 40%),
+      linear-gradient(135deg, hsl(var(--background)), hsl(var(--muted)));
+  }
+
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, hsl(var(--foreground) / 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--foreground) / 0.06) 1px, transparent 1px);
+    background-size: 36px 36px;
+  }
+
+  .card-surface {
+    background: hsl(var(--card) / 0.82);
+    backdrop-filter: blur(14px);
+    border: 1px solid hsl(var(--gold) / 0.18);
+    box-shadow: 0 20px 45px hsl(var(--foreground) / 0.08);
+  }
+
+  .card-surface-hover {
+    background: hsl(var(--card) / 0.82);
+    backdrop-filter: blur(14px);
+    border: 1px solid hsl(var(--gold) / 0.18);
+    box-shadow: 0 20px 45px hsl(var(--foreground) / 0.08);
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl;
+  }
+
+  .card-surface-hover:hover {
+    border-color: hsl(var(--gold) / 0.3);
+  }
+
+  .pill {
+    @apply rounded-full px-4 py-1.5 text-xs font-mono uppercase tracking-[0.3em];
+    border: 1px solid hsl(var(--foreground) / 0.2);
+    background: hsl(var(--card) / 0.65);
+  }
+
+  .shadow-soft {
+    box-shadow: 0 12px 30px hsl(var(--foreground) / 0.12);
+  }
+
+  .shadow-gold {
+    box-shadow: 0 0 0 1px hsl(var(--gold) / 0.3), 0 10px 25px hsl(var(--gold) / 0.2);
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-foreground via-gold to-foreground bg-clip-text text-transparent;
+    background-size: 200% auto;
+  }
+
+  .btn-primary {
+    @apply px-8 py-4 rounded-full bg-foreground text-background font-semibold transition-all duration-300 hover:scale-105 shadow-soft;
+  }
+
+  .btn-secondary {
+    @apply px-8 py-4 rounded-full bg-card/80 backdrop-blur-sm border border-border text-foreground font-semibold transition-all duration-300 hover:bg-card hover:border-gold/40;
+  }
+
+  .btn-gold {
+    @apply px-8 py-4 rounded-full bg-gradient-to-r from-gold to-gold-light text-primary font-semibold transition-all duration-300 hover:scale-105 shadow-gold;
+  }
+
+  .section-label {
+    @apply text-xs font-mono uppercase tracking-[0.35em] text-muted-foreground;
+  }
+
+  .section-title {
+    @apply text-4xl md:text-5xl font-display font-semibold text-foreground;
+  }
+}
+
+@layer utilities {
+  .animate-fade-up {
+    animation: fadeUp 0.8s ease forwards;
+  }
+
+  .animate-fade-up-delay {
+    animation: fadeUp 0.8s ease 0.15s forwards;
+    opacity: 0;
+  }
+
+  .animate-fade-up-late {
+    animation: fadeUp 0.8s ease 0.3s forwards;
+    opacity: 0;
+  }
+
+  .animate-float {
+    animation: floatSlow 6s ease-in-out infinite;
+  }
+
+  .animate-float-delayed {
+    animation: floatSlow 6s ease-in-out 2s infinite;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}
+
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}

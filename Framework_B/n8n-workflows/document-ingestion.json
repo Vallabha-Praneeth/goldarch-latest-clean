@@ -1,0 +1,142 @@
+{
+  "name": "Framework B - Document Ingestion Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "framework-b/ingest-document",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "your-webhook-id"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extract file URL or content from webhook\nconst fileUrl = items[0].json.fileUrl;\nconst filename = items[0].json.filename;\nconst metadata = items[0].json.metadata || {};\nconst namespace = items[0].json.namespace || 'general-docs';\n\nreturn {\n  fileUrl,\n  filename,\n  metadata,\n  namespace\n};"
+      },
+      "name": "Extract Request Data",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.fileUrl }}",
+        "options": {}
+      },
+      "name": "Download File",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extract text from file (simplified - would need actual PDF/DOCX parsing)\nconst fileContent = items[0].binary.data;\n// In real implementation, use appropriate parser for file type\nconst text = fileContent.toString('utf-8');\n\nreturn {\n  text,\n  filename: items[0].json.filename,\n  metadata: items[0].json.metadata,\n  namespace: items[0].json.namespace\n};"
+      },
+      "name": "Extract Text",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "chunkSize": 1000,
+        "chunkOverlap": 200
+      },
+      "name": "Split Text",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1050, 300],
+      "parameters": {
+        "functionCode": "// Split text into chunks\nconst text = items[0].json.text;\nconst chunkSize = 1000;\nconst chunkOverlap = 200;\n\nconst chunks = [];\nlet position = 0;\nlet chunkIndex = 0;\n\nwhile (position < text.length) {\n  const end = Math.min(position + chunkSize, text.length);\n  const chunk = text.substring(position, end);\n  \n  chunks.push({\n    id: `${items[0].json.filename}-chunk-${chunkIndex}`,\n    content: chunk,\n    metadata: {\n      ...items[0].json.metadata,\n      chunkIndex,\n      filename: items[0].json.filename,\n      namespace: items[0].json.namespace\n    }\n  });\n  \n  chunkIndex++;\n  position += chunkSize - chunkOverlap;\n}\n\nreturn chunks.map(chunk => ({ json: chunk }));"
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-small"
+      },
+      "name": "Generate Embeddings",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [1250, 300],
+      "credentials": {
+        "openAiApi": {
+          "id": "your-openai-credentials-id",
+          "name": "OpenAI API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": "={{ $env.PINECONE_INDEX_NAME }}",
+        "namespace": "={{ $json.metadata.namespace }}"
+      },
+      "name": "Upsert to Pinecone",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [1450, 300],
+      "credentials": {
+        "pineconeApi": {
+          "id": "your-pinecone-credentials-id",
+          "name": "Pinecone API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Build success response\nconst chunks = items;\n\nreturn {\n  success: true,\n  documentId: items[0].json.metadata.filename,\n  chunksCreated: chunks.length,\n  vectorsIndexed: chunks.length,\n  processingTime: Date.now() - items[0].json.startTime\n};"
+      },
+      "name": "Build Response",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1650, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}"
+      },
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1850, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Extract Request Data", "type": "main", "index": 0 }]]
+    },
+    "Extract Request Data": {
+      "main": [[{ "node": "Download File", "type": "main", "index": 0 }]]
+    },
+    "Download File": {
+      "main": [[{ "node": "Extract Text", "type": "main", "index": 0 }]]
+    },
+    "Extract Text": {
+      "main": [[{ "node": "Split Text", "type": "main", "index": 0 }]]
+    },
+    "Split Text": {
+      "main": [[{ "node": "Generate Embeddings", "type": "main", "index": 0 }]]
+    },
+    "Generate Embeddings": {
+      "main": [[{ "node": "Upsert to Pinecone", "type": "main", "index": 0 }]]
+    },
+    "Upsert to Pinecone": {
+      "main": [[{ "node": "Build Response", "type": "main", "index": 0 }]]
+    },
+    "Build Response": {
+      "main": [[{ "node": "Respond to Webhook", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {},
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2024-01-07T00:00:00.000Z",
+  "versionId": "1"
+}

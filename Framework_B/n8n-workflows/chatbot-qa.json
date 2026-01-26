@@ -1,0 +1,139 @@
+{
+  "name": "Framework B - Chatbot Q&A Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "framework-b/chat-qa",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "your-webhook-id"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extract question and context from webhook\nconst question = items[0].json.question;\nconst context = items[0].json.context || {};\nconst retrievalOptions = items[0].json.retrievalOptions || {};\n\nreturn {\n  question,\n  context,\n  topK: retrievalOptions.topK || 5,\n  namespace: retrievalOptions.namespace || 'general-docs',\n  startTime: Date.now()\n};"
+      },
+      "name": "Extract Query",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-small"
+      },
+      "name": "Generate Query Embedding",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [650, 300],
+      "credentials": {
+        "openAiApi": {
+          "id": "your-openai-credentials-id",
+          "name": "OpenAI API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve",
+        "pineconeIndex": "={{ $env.PINECONE_INDEX_NAME }}",
+        "namespace": "={{ $json.namespace }}",
+        "topK": "={{ $json.topK }}"
+      },
+      "name": "Search Pinecone",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [850, 300],
+      "credentials": {
+        "pineconeApi": {
+          "id": "your-pinecone-credentials-id",
+          "name": "Pinecone API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Build RAG prompt with retrieved context\nconst question = items[0].json.question;\nconst retrievedChunks = items.map(item => item.json);\n\n// Combine retrieved chunks into context\nconst context = retrievedChunks.map(chunk => chunk.content).join('\\n\\n');\n\nconst systemPrompt = `You are a helpful AI assistant for Gold.Arch Construction Supplier CRM.\nYou have access to a knowledge base of documents. Use the provided context to answer questions accurately.\n\nIf the context doesn't contain enough information, acknowledge this and provide what information is available.`;\n\nconst userPrompt = `Context from knowledge base:\n${context}\n\nUser Question: ${question}\n\nPlease provide a helpful answer based on the context above.`;\n\nreturn {\n  systemPrompt,\n  userPrompt,\n  question,\n  retrievedChunks,\n  startTime: items[0].json.startTime\n};"
+      },
+      "name": "Build RAG Prompt",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1050, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "options": {
+          "temperature": 0.3,
+          "maxTokens": 1000
+        }
+      },
+      "name": "Generate Answer (OpenAI)",
+      "type": "@n8n/n8n-nodes-langchain.lmOpenAi",
+      "typeVersion": 1,
+      "position": [1250, 300],
+      "credentials": {
+        "openAiApi": {
+          "id": "your-openai-credentials-id",
+          "name": "OpenAI API"
+        }
+      },
+      "parameters": {
+        "prompt": "={{ $json.systemPrompt }}\\n\\n{{ $json.userPrompt }}"
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Format response with citations\nconst answer = items[0].json.response;\nconst retrievedChunks = items[0].json.retrievedChunks;\nconst question = items[0].json.question;\nconst startTime = items[0].json.startTime;\n\n// Build citations from retrieved chunks\nconst citations = retrievedChunks.map(chunk => ({\n  source: chunk.metadata.filename || 'Unknown',\n  excerpt: chunk.content.substring(0, 200) + '...',\n  metadata: chunk.metadata,\n  score: chunk.score\n}));\n\nreturn {\n  answer,\n  retrievedContext: retrievedChunks,\n  citations,\n  confidence: retrievedChunks.length > 0 ? 0.8 : 0.3,\n  grounded: retrievedChunks.length > 0,\n  conversationId: items[0].json.conversationId || `conv-${Date.now()}`,\n  metadata: {\n    tokensUsed: 0, // Would be populated by actual LLM call\n    processingTime: Date.now() - startTime,\n    model: 'gpt-4',\n    retrievalTime: 0,\n    generationTime: 0\n  }\n};"
+      },
+      "name": "Format Response",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1450, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}"
+      },
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1650, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Extract Query", "type": "main", "index": 0 }]]
+    },
+    "Extract Query": {
+      "main": [[{ "node": "Generate Query Embedding", "type": "main", "index": 0 }]]
+    },
+    "Generate Query Embedding": {
+      "main": [[{ "node": "Search Pinecone", "type": "main", "index": 0 }]]
+    },
+    "Search Pinecone": {
+      "main": [[{ "node": "Build RAG Prompt", "type": "main", "index": 0 }]]
+    },
+    "Build RAG Prompt": {
+      "main": [[{ "node": "Generate Answer (OpenAI)", "type": "main", "index": 0 }]]
+    },
+    "Generate Answer (OpenAI)": {
+      "main": [[{ "node": "Format Response", "type": "main", "index": 0 }]]
+    },
+    "Format Response": {
+      "main": [[{ "node": "Respond to Webhook", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {},
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2024-01-07T00:00:00.000Z",
+  "versionId": "1"
+}

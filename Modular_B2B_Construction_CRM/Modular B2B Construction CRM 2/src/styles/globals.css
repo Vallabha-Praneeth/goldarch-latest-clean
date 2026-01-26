@@ -1,0 +1,291 @@
+@import "tailwindcss";
+
+/* ============================================
+   GOLD.ARCH DESIGN SYSTEM - DESIGN TOKENS
+   ============================================ */
+
+@layer base {
+  /* Typography - Inter/System Font Stack */
+  * {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Base Styles */
+  body {
+    @apply bg-neutral-50 text-neutral-900;
+  }
+
+  /* Headings */
+  h1 {
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  h3 {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  h4 {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+}
+
+@layer theme {
+  /* ============================================
+     COLOR PALETTE
+     ============================================ */
+  
+  /* Primary Blue */
+  --color-primary: #2563EB;
+  --color-primary-dark: #1E40AF;
+  --color-primary-light: #DBEAFE;
+  
+  /* Gold.Arch Brand Colors - Phase 2 */
+  --color-gold-brand: #D4A650;
+  --color-gold-light: #E8C17C;
+  --color-gold-dark: #B8922A;
+  --color-navy: #162535;
+  --color-navy-light: #2B3947;
+  --color-ring: #D4862A;
+  
+  /* Accents */
+  --color-gold: #F59E0B;
+  --color-orange: #EA580C;
+  
+  /* Status Colors */
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-info: #3B82F6;
+  
+  /* AI Colors */
+  --color-ai-purple: #8B5CF6;
+  --color-ai-pink: #EC4899;
+  --color-ai-highlight: #FEF3C7;
+  
+  /* Neutrals */
+  --color-neutral-900: #111827;
+  --color-neutral-800: #1F2937;
+  --color-neutral-700: #374151;
+  --color-neutral-600: #4B5563;
+  --color-neutral-500: #9CA3AF;
+  --color-neutral-400: #D1D5DB;
+  --color-neutral-300: #E5E7EB;
+  --color-neutral-200: #F3F4F6;
+  --color-neutral-100: #F9FAFB;
+  --color-neutral-50: #FFFFFF;
+  
+  /* ============================================
+     SPACING (8px grid)
+     ============================================ */
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-48: 48px;
+  --spacing-64: 64px;
+  
+  /* ============================================
+     BORDER RADIUS
+     ============================================ */
+  --radius-tag: 4px;
+  --radius-input: 6px;
+  --radius-card: 8px;
+  --radius-feature: 12px;
+  --radius-pill: 9999px;
+  
+  /* ============================================
+     SHADOWS
+     ============================================ */
+  --shadow-hover: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-modal: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-dropdown: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-ai-glow: 0 0 20px 0 rgba(139, 92, 246, 0.3), 0 0 40px 0 rgba(139, 92, 246, 0.15);
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+/* Typography Utilities */
+.text-display-48 {
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.text-display-36 {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.text-h1 {
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.text-h2 {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.text-h3 {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.text-h4 {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.text-body {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.text-body-sm {
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.text-small {
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.text-cap {
+  font-size: 12px;
+  line-height: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.text-tiny {
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 14px;
+}
+
+.text-code {
+  font-size: 14px;
+  font-family: 'Monaco', 'Courier New', monospace;
+}
+
+/* Custom Color Utilities */
+.bg-primary {
+  background-color: var(--color-primary);
+}
+
+.bg-primary-dark {
+  background-color: var(--color-primary-dark);
+}
+
+.bg-primary-light {
+  background-color: var(--color-primary-light);
+}
+
+.text-primary {
+  color: var(--color-primary);
+}
+
+.border-primary {
+  border-color: var(--color-primary);
+}
+
+/* AI Gradient */
+.bg-ai-gradient {
+  background: linear-gradient(135deg, var(--color-ai-purple) 0%, var(--color-ai-pink) 100%);
+}
+
+.shadow-ai-glow {
+  box-shadow: var(--shadow-ai-glow);
+}
+
+/* Gold Brand Utilities - Phase 2 */
+.bg-gold-brand {
+  background-color: var(--color-gold-brand);
+}
+
+.bg-gold-light {
+  background-color: var(--color-gold-light);
+}
+
+.bg-gold-dark {
+  background-color: var(--color-gold-dark);
+}
+
+.bg-navy {
+  background-color: var(--color-navy);
+}
+
+.bg-navy-light {
+  background-color: var(--color-navy-light);
+}
+
+.text-gold-brand {
+  color: var(--color-gold-brand);
+}
+
+.text-gold-light {
+  color: var(--color-gold-light);
+}
+
+.text-gold-dark {
+  color: var(--color-gold-dark);
+}
+
+.text-navy {
+  color: var(--color-navy);
+}
+
+.text-navy-light {
+  color: var(--color-navy-light);
+}
+
+.border-gold-brand {
+  border-color: var(--color-gold-brand);
+}
+
+.border-gold-light {
+  border-color: var(--color-gold-light);
+}
+
+.shadow-gold-glow {
+  box-shadow: 0 0 20px 0 rgba(212, 166, 80, 0.3), 0 4px 12px 0 rgba(212, 166, 80, 0.15);
+}
+
+.shadow-gold-subtle {
+  box-shadow: 0 2px 8px 0 rgba(212, 166, 80, 0.15);
+}
+
+.ring-gold {
+  --tw-ring-color: rgba(212, 134, 42, 0.5);
+}
+
+/* Focus Styles for Accessibility */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}

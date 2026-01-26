@@ -1,0 +1,53 @@
+{
+  "name": "@goldarch/framework-b",
+  "version": "1.0.0",
+  "description": "Framework B - AI-Powered Document Intelligence & RAG System for Gold.Arch",
+  "private": true,
+  "main": "index.ts",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:integration": "jest tests/integration",
+    "test:isolated": "jest --testPathPattern=tests/integration --coverage",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint . --ext .ts,.tsx"
+  },
+  "keywords": [
+    "ai",
+    "rag",
+    "embeddings",
+    "vector-search",
+    "pinecone",
+    "openai",
+    "document-processing",
+    "llm"
+  ],
+  "author": "Gold.Arch Team",
+  "license": "ISC",
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "next": "^16.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@pinecone-database/pinecone": "^2.0.0",
+    "openai": "^4.0.0",
+    "@anthropic-ai/sdk": "^0.17.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/goldarch/goldarch-web",
+    "directory": "Framework_B"
+  }
+}

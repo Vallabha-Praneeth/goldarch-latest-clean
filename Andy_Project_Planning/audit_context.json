@@ -1,0 +1,249 @@
+{
+  "generated_at": "2026-01-09 10:07:06",
+  "root": "/Users/anitavallabha/goldarch-web",
+  "stats": {
+    "total_files": 1159,
+    "total_size_bytes": 14879853,
+    "ignored_dirs": [
+      ".git",
+      ".hg",
+      ".idea",
+      ".mypy_cache",
+      ".next",
+      ".nuxt",
+      ".pytest_cache",
+      ".svn",
+      ".venv",
+      ".vscode",
+      "__pycache__",
+      "build",
+      "dist",
+      "node_modules",
+      "venv"
+    ]
+  },
+  "tree": "goldarch-web/\n\u251c\u2500\u2500 .claude/\n\u2502   \u2514\u2500\u2500 settings.local.json\n\u251c\u2500\u2500 .vercel/\n\u2502   \u251c\u2500\u2500 project.json\n\u2502   \u2514\u2500\u2500 README.txt\n\u251c\u2500\u2500 activity_page/\n\u2502   \u251c\u2500\u2500 Activities.tsx\n\u2502   \u251c\u2500\u2500 ActivityFormDialog.tsx\n\u2502   \u251c\u2500\u2500 App-2.tsx\n\u2502   \u251c\u2500\u2500 DashboardLayout-3.tsx\n\u2502   \u2514\u2500\u2500 DeleteConfirmDialog-3.tsx\n\u251c\u2500\u2500 add_pages/\n\u2502   \u251c\u2500\u2500 activity_page/\n\u2502   \u2502   \u251c\u2500\u2500 Activities.tsx\n\u2502   \u2502   \u251c\u2500\u2500 ActivityFormDialog.tsx\n\u2502   \u2502   \u251c\u2500\u2500 App-2.tsx\n\u2502   \u2502   \u251c\u2500\u2500 DashboardLayout-3.tsx\n\u2502   \u2502   \u2514\u2500\u2500 DeleteConfirmDialog-3.tsx\n\u2502   \u251c\u2500\u2500 auth_page/\n\u2502   \u2502   \u251c\u2500\u2500 DashboardLayout.tsx\n\u2502   \u2502   \u251c\u2500\u2500 DealFormDialog.tsx\n\u2502   \u2502   \u251c\u2500\u2500 Deals.tsx\n\u2502   \u2502   \u251c\u2500\u2500 DeleteConfirmDialog.tsx\n\u2502   \u2502   \u251c\u2500\u2500 ProjectFormDialog.tsx\n\u2502   \u2502   \u251c\u2500\u2500 Projects.tsx\n\u2502   \u2502   \u251c\u2500\u2500 SupplierFormDialog.tsx\n\u2502   \u2502   \u2514\u2500\u2500 Suppliers.tsx\n\u2502   \u251c\u2500\u2500 quote_page/\n\u2502   \u2502   \u251c\u2500\u2500 App.tsx\n\u2502   \u2502   \u251c\u2500\u2500 index.css\n\u2502   \u2502   \u251c\u2500\u2500 Index.tsx\n\u2502   \u2502   \u251c\u2500\u2500 main.tsx\n\u2502   \u2502   \u251c\u2500\u2500 NotFound.tsx\n\u2502   \u2502   \u251c\u2500\u2500 QuoteCard.tsx\n\u2502   \u2502   \u251c\u2500\u2500 QuoteDetail.tsx\n\u2502   \u2502   \u251c\u2500\u2500 Quotes.tsx\n\u2502   \u2502   \u251c\u2500\u2500 tailwind.config.ts\n\u2502   \u2502   \u251c\u2500\u2500 useQuotes.ts\n\u2502   \u2502   \u2514\u2500\u2500 utils.ts\n\u2502   \u251c\u2500\u2500 remix-of-stark-architect-showcase-main/\n\u2502   \u2502   \u251c\u2500\u2500 public/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 favicon.ico\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 placeholder.svg\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 robots.txt\n\u2502   \u2502   \u251c\u2500\u2500 src/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 assets/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 components/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 data/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 hooks/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 integrations/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 lib/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 pages/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 App.css\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 App.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 index.css\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 main.tsx\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 vite-env.d.ts\n\u2502   \u2502   \u251c\u2500\u2500 supabase/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 migrations/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 config.toml\n\u2502   \u2502   \u251c\u2500\u2500 .env\n\u2502   \u2502   \u251c\u2500\u2500 .gitignore\n\u2502   \u2502   \u251c\u2500\u2500 bun.lockb\n\u2502   \u2502   \u251c\u2500\u2500 components.json\n\u2502   \u2502   \u251c\u2500\u2500 eslint.config.js\n\u2502   \u2502   \u251c\u2500\u2500 index.html\n\u2502   \u2502   \u251c\u2500\u2500 package-lock.json\n\u2502   \u2502   \u251c\u2500\u2500 package.json\n\u2502   \u2502   \u251c\u2500\u2500 postcss.config.js\n\u2502   \u2502   \u251c\u2500\u2500 README.md\n\u2502   \u2502   \u251c\u2500\u2500 tailwind.config.ts\n\u2502   \u2502   \u251c\u2500\u2500 tsconfig.app.json\n\u2502   \u2502   \u251c\u2500\u2500 tsconfig.json\n\u2502   \u2502   \u251c\u2500\u2500 tsconfig.node.json\n\u2502   \u2502   \u2514\u2500\u2500 vite.config.ts\n\u2502   \u251c\u2500\u2500 task_managment_page/\n\u2502   \u2502   \u251c\u2500\u2500 App.tsx\n\u2502   \u2502   \u251c\u2500\u2500 DashboardLayout-2.tsx\n\u2502   \u2502   \u251c\u2500\u2500 DashboardLayout.tsx\n\u2502   \u2502   \u251c\u2500\u2500 DealFormDialog.tsx\n\u2502   \u2502   \u251c\u2500\u2500 Deals.tsx\n\u2502   \u2502   \u251c\u2500\u2500 DeleteConfirmDialog-2.tsx\n\u2502   \u2502   \u251c\u2500\u2500 DeleteConfirmDialog.tsx\n\u2502   \u2502   \u251c\u2500\u2500 ProjectFormDialog.tsx\n\u2502   \u2502   \u251c\u2500\u2500 Projects.tsx\n\u2502   \u2502   \u251c\u2500\u2500 SupplierFormDialog.tsx\n\u2502   \u2502   \u251c\u2500\u2500 Suppliers.tsx\n\u2502   \u2502   \u251c\u2500\u2500 TaskFormDialog.tsx\n\u2502   \u2502   \u2514\u2500\u2500 Tasks.tsx\n\u2502   \u2514\u2500\u2500 .DS_Store\n\u251c\u2500\u2500 app/\n\u2502   \u251c\u2500\u2500 api/\n\u2502   \u2502   \u251c\u2500\u2500 framework-b/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 chat/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 documents/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 health/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 README.md\n\u2502   \u2502   \u251c\u2500\u2500 send-invite/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 route.js\n\u2502   \u2502   \u251c\u2500\u2500 send-notification/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 route.js\n\u2502   \u2502   \u2514\u2500\u2500 send-quote/\n\u2502   \u2502       \u2514\u2500\u2500 route.js\n\u2502   \u251c\u2500\u2500 app-dashboard/\n\u2502   \u2502   \u251c\u2500\u2500 activities/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 page.tsx\n\u2502   \u2502   \u251c\u2500\u2500 deals/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 page.tsx\n\u2502   \u2502   \u251c\u2500\u2500 documents/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 page.tsx\n\u2502   \u2502   \u251c\u2500\u2500 projects/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 page.tsx\n\u2502   \u2502   \u251c\u2500\u2500 quotes/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 page.tsx\n\u2502   \u2502   \u251c\u2500\u2500 suppliers/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 page.tsx\n\u2502   \u2502   \u251c\u2500\u2500 tasks/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 page.tsx\n\u2502   \u2502   \u251c\u2500\u2500 layout.tsx\n\u2502   \u2502   \u2514\u2500\u2500 page.tsx\n\u2502   \u251c\u2500\u2500 auth/\n\u2502   \u2502   \u2514\u2500\u2500 page.tsx\n\u2502   \u251c\u2500\u2500 category/\n\u2502   \u2502   \u2514\u2500\u2500 [category]/\n\u2502   \u2502       \u2514\u2500\u2500 page.js\n\u2502   \u251c\u2500\u2500 dashboard/\n\u2502   \u2502   \u2514\u2500\u2500 page.js\n\u2502   \u251c\u2500\u2500 debug/\n\u2502   \u2502   \u2514\u2500\u2500 page.js\n\u2502   \u251c\u2500\u2500 supplier/\n\u2502   \u2502   \u2514\u2500\u2500 [id]/\n\u2502   \u2502       \u2514\u2500\u2500 page.js\n\u2502   \u251c\u2500\u2500 test/\n\u2502   \u2502   \u2514\u2500\u2500 page.js\n\u2502   \u251c\u2500\u2500 globals.css\n\u2502   \u251c\u2500\u2500 layout.js\n\u2502   \u2514\u2500\u2500 page.tsx\n\u251c\u2500\u2500 apply_theme/\n\u2502   \u251c\u2500\u2500 app/\n\u2502   \u2502   \u251c\u2500\u2500 category/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 [category]/\n\u2502   \u2502   \u251c\u2500\u2500 dashboard/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 page.js\n\u2502   \u2502   \u251c\u2500\u2500 debug/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 page.js\n\u2502   \u2502   \u251c\u2500\u2500 supplier/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 [id]/\n\u2502   \u2502   \u251c\u2500\u2500 test/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 page.js\n\u2502   \u2502   \u251c\u2500\u2500 globals.css\n\u2502   \u2502   \u251c\u2500\u2500 layout.js\n\u2502   \u2502   \u2514\u2500\u2500 page.js\n\u2502   \u251c\u2500\u2500 lib/\n\u2502   \u2502   \u251c\u2500\u2500 supabase.js\n\u2502   \u2502   \u251c\u2500\u2500 theme-context.js\n\u2502   \u2502   \u2514\u2500\u2500 use-suppliers.js\n\u2502   \u251c\u2500\u2500 public/\n\u2502   \u2502   \u251c\u2500\u2500 apple-icon.png\n\u2502   \u2502   \u251c\u2500\u2500 icon-dark-32x32.png\n\u2502   \u2502   \u251c\u2500\u2500 icon-light-32x32.png\n\u2502   \u2502   \u251c\u2500\u2500 icon.svg\n\u2502   \u2502   \u251c\u2500\u2500 placeholder-logo.png\n\u2502   \u2502   \u251c\u2500\u2500 placeholder-logo.svg\n\u2502   \u2502   \u251c\u2500\u2500 placeholder-user.jpg\n\u2502   \u2502   \u251c\u2500\u2500 placeholder.jpg\n\u2502   \u2502   \u2514\u2500\u2500 placeholder.svg\n\u2502   \u251c\u2500\u2500 package-lock.json\n\u2502   \u251c\u2500\u2500 package.json\n\u2502   \u251c\u2500\u2500 postcss.config.js\n\u2502   \u2514\u2500\u2500 tailwind.config.js\n\u251c\u2500\u2500 auth_page/\n\u2502   \u251c\u2500\u2500 DashboardLayout.tsx\n\u2502   \u251c\u2500\u2500 DealFormDialog.tsx\n\u2502   \u251c\u2500\u2500 Deals.tsx\n\u2502   \u251c\u2500\u2500 DeleteConfirmDialog.tsx\n\u2502   \u251c\u2500\u2500 ProjectFormDialog.tsx\n\u2502   \u251c\u2500\u2500 Projects.tsx\n\u2502   \u251c\u2500\u2500 SupplierFormDialog.tsx\n\u2502   \u2514\u2500\u2500 Suppliers.tsx\n\u251c\u2500\u2500 chat-bot_framework/\n\u2502   \u251c\u2500\u2500 Modular_Multi-AI_Project_Plan_Skeleton_Architecture.md\n\u2502   \u251c\u2500\u2500 Plan_for_Building_an_AI-Powered_Chatbot_Platform.md\n\u2502   \u251c\u2500\u2500 RAG Workflow For( Customer service chat-bot) copy.json\n\u2502   \u251c\u2500\u2500 RAG Workflow For( Customer service chat-bot).json\n\u2502   \u251c\u2500\u2500 RAG_Customer_Service_Chatbot_Business_Overview.docx\n\u2502   \u251c\u2500\u2500 RAG_Customer_Service_Chatbot_Business_Overview.pdf\n\u2502   \u251c\u2500\u2500 RAG_Customer_Service_Chatbot_Technical_Documentation.docx\n\u2502   \u2514\u2500\u2500 RAG_Customer_Service_Chatbot_Technical_Documentation.pdf\n\u251c\u2500\u2500 components/\n\u2502   \u251c\u2500\u2500 landing/\n\u2502   \u2502   \u251c\u2500\u2500 Categories.tsx\n\u2502   \u2502   \u251c\u2500\u2500 CTA.tsx\n\u2502   \u2502   \u251c\u2500\u2500 Dashboard.tsx\n\u2502   \u2502   \u251c\u2500\u2500 Features.tsx\n\u2502   \u2502   \u251c\u2500\u2500 Footer.tsx\n\u2502   \u2502   \u251c\u2500\u2500 Header.tsx\n\u2502   \u2502   \u2514\u2500\u2500 Hero.tsx\n\u2502   \u251c\u2500\u2500 ui/\n\u2502   \u2502   \u251c\u2500\u2500 accordion.tsx\n\u2502   \u2502   \u251c\u2500\u2500 alert-dialog.tsx\n\u2502   \u2502   \u251c\u2500\u2500 alert.tsx\n\u2502   \u2502   \u251c\u2500\u2500 aspect-ratio.tsx\n\u2502   \u2502   \u251c\u2500\u2500 avatar.tsx\n\u2502   \u2502   \u251c\u2500\u2500 badge.tsx\n\u2502   \u2502   \u251c\u2500\u2500 breadcrumb.tsx\n\u2502   \u2502   \u251c\u2500\u2500 button.tsx\n\u2502   \u2502   \u251c\u2500\u2500 calendar.tsx\n\u2502   \u2502   \u251c\u2500\u2500 card.tsx\n\u2502   \u2502   \u251c\u2500\u2500 checkbox.tsx\n\u2502   \u2502   \u251c\u2500\u2500 collapsible.tsx\n\u2502   \u2502   \u251c\u2500\u2500 context-menu.tsx\n\u2502   \u2502   \u251c\u2500\u2500 dialog.tsx\n\u2502   \u2502   \u251c\u2500\u2500 dropdown-menu.tsx\n\u2502   \u2502   \u251c\u2500\u2500 form.tsx\n\u2502   \u2502   \u251c\u2500\u2500 hover-card.tsx\n\u2502   \u2502   \u251c\u2500\u2500 input.tsx\n\u2502   \u2502   \u251c\u2500\u2500 label.tsx\n\u2502   \u2502   \u251c\u2500\u2500 menubar.tsx\n\u2502   \u2502   \u251c\u2500\u2500 navigation-menu.tsx\n\u2502   \u2502   \u251c\u2500\u2500 popover.tsx\n\u2502   \u2502   \u251c\u2500\u2500 progress.tsx\n\u2502   \u2502   \u251c\u2500\u2500 radio-group.tsx\n\u2502   \u2502   \u251c\u2500\u2500 scroll-area.tsx\n\u2502   \u2502   \u251c\u2500\u2500 select.tsx\n\u2502   \u2502   \u251c\u2500\u2500 separator.tsx\n\u2502   \u2502   \u251c\u2500\u2500 sheet.tsx\n\u2502   \u2502   \u251c\u2500\u2500 sidebar.tsx\n\u2502   \u2502   \u251c\u2500\u2500 skeleton.tsx\n\u2502   \u2502   \u251c\u2500\u2500 slider.tsx\n\u2502   \u2502   \u251c\u2500\u2500 sonner.tsx\n\u2502   \u2502   \u251c\u2500\u2500 switch.tsx\n\u2502   \u2502   \u251c\u2500\u2500 table.tsx\n\u2502   \u2502   \u251c\u2500\u2500 tabs.tsx\n\u2502   \u2502   \u251c\u2500\u2500 textarea.tsx\n\u2502   \u2502   \u251c\u2500\u2500 toast.tsx\n\u2502   \u2502   \u251c\u2500\u2500 toaster.tsx\n\u2502   \u2502   \u251c\u2500\u2500 toggle-group.tsx\n\u2502   \u2502   \u251c\u2500\u2500 toggle.tsx\n\u2502   \u2502   \u251c\u2500\u2500 tooltip.tsx\n\u2502   \u2502   \u2514\u2500\u2500 use-toast.ts\n\u2502   \u251c\u2500\u2500 ai-chat-widget.tsx\n\u2502   \u251c\u2500\u2500 document-filters.tsx\n\u2502   \u251c\u2500\u2500 document-summary-modal.tsx\n\u2502   \u2514\u2500\u2500 providers.tsx\n\u251c\u2500\u2500 docs/\n\u2502   \u251c\u2500\u2500 TECHNICAL_DOCUMENTATION.docx\n\u2502   \u251c\u2500\u2500 TECHNICAL_DOCUMENTATION.md\n\u2502   \u251c\u2500\u2500 USER_MANUAL.docx\n\u2502   \u2514\u2500\u2500 USER_MANUAL.md\n\u251c\u2500\u2500 Framework_B/\n\u2502   \u251c\u2500\u2500 api/\n\u2502   \u2502   \u251c\u2500\u2500 chat/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 route.example.ts\n\u2502   \u2502   \u251c\u2500\u2500 documents/\n\u2502   \u2502   \u2514\u2500\u2500 search/\n\u2502   \u251c\u2500\u2500 config/\n\u2502   \u2502   \u251c\u2500\u2500 ai-services.config.ts\n\u2502   \u2502   \u251c\u2500\u2500 n8n-workflows.config.ts\n\u2502   \u2502   \u2514\u2500\u2500 pinecone.config.ts\n\u2502   \u251c\u2500\u2500 hooks/\n\u2502   \u2502   \u251c\u2500\u2500 useAIChat.ts\n\u2502   \u2502   \u251c\u2500\u2500 useDocumentProcessor.ts\n\u2502   \u2502   \u2514\u2500\u2500 useVectorSearch.ts\n\u2502   \u251c\u2500\u2500 n8n-workflows/\n\u2502   \u2502   \u251c\u2500\u2500 chatbot-qa.json\n\u2502   \u2502   \u2514\u2500\u2500 document-ingestion.json\n\u2502   \u251c\u2500\u2500 services/\n\u2502   \u2502   \u251c\u2500\u2500 ai-chat/\n\u2502   \u2502   \u251c\u2500\u2500 document-processor/\n\u2502   \u2502   \u251c\u2500\u2500 embeddings/\n\u2502   \u2502   \u251c\u2500\u2500 rag/\n\u2502   \u2502   \u2514\u2500\u2500 vector-store/\n\u2502   \u251c\u2500\u2500 tests/\n\u2502   \u2502   \u2514\u2500\u2500 integration/\n\u2502   \u2502       \u2514\u2500\u2500 text-splitter.test.ts\n\u2502   \u251c\u2500\u2500 types/\n\u2502   \u2502   \u251c\u2500\u2500 document.types.ts\n\u2502   \u2502   \u251c\u2500\u2500 embeddings.types.ts\n\u2502   \u2502   \u2514\u2500\u2500 rag.types.ts\n\u2502   \u251c\u2500\u2500 utils/\n\u2502   \u2502   \u2514\u2500\u2500 text-splitter.ts\n\u2502   \u251c\u2500\u2500 .env.example\n\u2502   \u251c\u2500\u2500 ARCHITECTURE.md\n\u2502   \u251c\u2500\u2500 index.ts\n\u2502   \u251c\u2500\u2500 INTEGRATION_GUIDE.md\n\u2502   \u251c\u2500\u2500 package.json\n\u2502   \u251c\u2500\u2500 QUICKSTART.md\n\u2502   \u251c\u2500\u2500 README.md\n\u2502   \u2514\u2500\u2500 SUMMARY.md\n\u251c\u2500\u2500 Framework_B_Implementation/\n\u2502   \u251c\u2500\u2500 config/\n\u2502   \u2502   \u251c\u2500\u2500 ai-services.config.ts\n\u2502   \u2502   \u251c\u2500\u2500 n8n-workflows.config.ts\n\u2502   \u2502   \u2514\u2500\u2500 pinecone.config.ts\n\u2502   \u251c\u2500\u2500 lib/\n\u2502   \u2502   \u2514\u2500\u2500 services.ts\n\u2502   \u251c\u2500\u2500 services/\n\u2502   \u2502   \u251c\u2500\u2500 ai-chat/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 ChatService.ts\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 index.ts\n\u2502   \u2502   \u251c\u2500\u2500 document-processor/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 extractors/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 DocumentProcessor.ts\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 index.ts\n\u2502   \u2502   \u251c\u2500\u2500 document-summarizer/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 DocumentSummarizer.ts\n\u2502   \u2502   \u251c\u2500\u2500 embeddings/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 providers/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 batch.ts\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 cache.ts\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 EmbeddingsService.ts\n\u2502   \u2502   \u251c\u2500\u2500 rag/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 answer-generator.ts\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 citation-tracker.ts\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 context-retriever.ts\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 prompt-builder.ts\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 query-processor.ts\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 RAGEngine.ts\n\u2502   \u2502   \u2514\u2500\u2500 vector-store/\n\u2502   \u2502       \u251c\u2500\u2500 namespace-manager.ts\n\u2502   \u2502       \u251c\u2500\u2500 PineconeClient.ts\n\u2502   \u2502       \u251c\u2500\u2500 query-builder.ts\n\u2502   \u2502       \u2514\u2500\u2500 VectorStore.ts\n\u2502   \u251c\u2500\u2500 types/\n\u2502   \u2502   \u251c\u2500\u2500 document.types.ts\n\u2502   \u2502   \u251c\u2500\u2500 embeddings.types.ts\n\u2502   \u2502   \u2514\u2500\u2500 rag.types.ts\n\u2502   \u251c\u2500\u2500 utils/\n\u2502   \u2502   \u2514\u2500\u2500 text-splitter.ts\n\u2502   \u251c\u2500\u2500 IMPLEMENTATION_SUMMARY.md\n\u2502   \u251c\u2500\u2500 index.ts\n\u2502   \u251c\u2500\u2500 README.md\n\u2502   \u2514\u2500\u2500 SETUP.md\n\u251c\u2500\u2500 gold_arch_website/\n\u2502   \u251c\u2500\u2500 pics_of_the website/\n\u2502   \u2502   \u2514\u2500\u2500 .DS_Store\n\u2502   \u251c\u2500\u2500 public/\n\u2502   \u2502   \u251c\u2500\u2500 placeholder.svg\n\u2502   \u2502   \u2514\u2500\u2500 robots.txt\n\u2502   \u251c\u2500\u2500 src/\n\u2502   \u2502   \u251c\u2500\u2500 components/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 landing/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 ui/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 .DS_Store\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 NavLink.tsx\n\u2502   \u2502   \u251c\u2500\u2500 hooks/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 use-mobile.tsx\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 use-toast.ts\n\u2502   \u2502   \u251c\u2500\u2500 lib/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 utils.ts\n\u2502   \u2502   \u251c\u2500\u2500 pages/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 Index.tsx\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 NotFound.tsx\n\u2502   \u2502   \u251c\u2500\u2500 .DS_Store\n\u2502   \u2502   \u251c\u2500\u2500 App.css\n\u2502   \u2502   \u251c\u2500\u2500 App.tsx\n\u2502   \u2502   \u251c\u2500\u2500 index.css\n\u2502   \u2502   \u251c\u2500\u2500 main.tsx\n\u2502   \u2502   \u2514\u2500\u2500 vite-env.d.ts\n\u2502   \u251c\u2500\u2500 .DS_Store\n\u2502   \u251c\u2500\u2500 bun.lock\n\u2502   \u251c\u2500\u2500 components.json\n\u2502   \u251c\u2500\u2500 eslint.config.js\n\u2502   \u251c\u2500\u2500 gitignore.txt\n\u2502   \u251c\u2500\u2500 index.html\n\u2502   \u251c\u2500\u2500 package.json\n\u2502   \u251c\u2500\u2500 postcss.config.js\n\u2502   \u251c\u2500\u2500 README.md\n\u2502   \u251c\u2500\u2500 tailwind.config.ts\n\u2502   \u251c\u2500\u2500 tsconfig.app.json\n\u2502   \u251c\u2500\u2500 tsconfig.app.tsbuildinfo\n\u2502   \u251c\u2500\u2500 tsconfig.json\n\u2502   \u251c\u2500\u2500 tsconfig.node.json\n\u2502   \u251c\u2500\u2500 tsconfig.node.tsbuildinfo\n\u2502   \u2514\u2500\u2500 vite.config.ts\n\u251c\u2500\u2500 hooks/\n\u2502   \u251c\u2500\u2500 use-mobile.tsx\n\u2502   \u2514\u2500\u2500 use-toast.ts\n\u251c\u2500\u2500 lib/\n\u2502   \u251c\u2500\u2500 auth-provider.tsx\n\u2502   \u251c\u2500\u2500 document-indexer.ts\n\u2502   \u251c\u2500\u2500 query-provider.tsx\n\u2502   \u251c\u2500\u2500 supabase-client.ts\n\u2502   \u251c\u2500\u2500 supabase-types.ts\n\u2502   \u251c\u2500\u2500 supabase.js\n\u2502   \u251c\u2500\u2500 text-highlighter.tsx\n\u2502   \u251c\u2500\u2500 theme-context.js\n\u2502   \u251c\u2500\u2500 use-suppliers.js\n\u2502   \u2514\u2500\u2500 utils.ts\n\u251c\u2500\u2500 pages/\n\u251c\u2500\u2500 public/\n\u2502   \u251c\u2500\u2500 favicon.ico\n\u2502   \u251c\u2500\u2500 placeholder.svg\n\u2502   \u2514\u2500\u2500 robots.txt\n\u251c\u2500\u2500 quote_page/\n\u2502   \u251c\u2500\u2500 App.tsx\n\u2502   \u251c\u2500\u2500 index.css\n\u2502   \u251c\u2500\u2500 Index.tsx\n\u2502   \u251c\u2500\u2500 main.tsx\n\u2502   \u251c\u2500\u2500 NotFound.tsx\n\u2502   \u251c\u2500\u2500 QuoteCard.tsx\n\u2502   \u251c\u2500\u2500 QuoteDetail.tsx\n\u2502   \u251c\u2500\u2500 Quotes.tsx\n\u2502   \u251c\u2500\u2500 tailwind.config.ts\n\u2502   \u251c\u2500\u2500 useQuotes.ts\n\u2502   \u2514\u2500\u2500 utils.ts\n\u251c\u2500\u2500 scripts/\n\u2502   \u251c\u2500\u2500 setup-pinecone.js\n\u2502   \u251c\u2500\u2500 test-pinecone.js\n\u2502   \u2514\u2500\u2500 test-upsert.js\n\u251c\u2500\u2500 source_code/\n\u2502   \u251c\u2500\u2500 .DS_Store\n\u2502   \u251c\u2500\u2500 source_code.html\n\u2502   \u2514\u2500\u2500 source_code.md\n\u251c\u2500\u2500 src/\n\u2502   \u251c\u2500\u2500 components/\n\u2502   \u2502   \u251c\u2500\u2500 quotes/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 QuoteCard.tsx\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 QuoteComparison.tsx\n\u2502   \u2502   \u251c\u2500\u2500 ui/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 accordion.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 alert-dialog.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 alert.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 aspect-ratio.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 avatar.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 badge.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 breadcrumb.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 button.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 calendar.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 card.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 carousel.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 chart.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 checkbox.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 collapsible.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 command.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 context-menu.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 dialog.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 drawer.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 dropdown-menu.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 form.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 hover-card.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 input-otp.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 input.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 label.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 menubar.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 navigation-menu.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 pagination.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 popover.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 progress.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 radio-group.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 resizable.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 scroll-area.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 select.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 separator.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 sheet.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 sidebar.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 skeleton.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 slider.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 sonner.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 switch.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 table.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 tabs.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 textarea.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 toast.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 toaster.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 toggle-group.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 toggle.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 tooltip.tsx\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 use-toast.ts\n\u2502   \u2502   \u2514\u2500\u2500 NavLink.tsx\n\u2502   \u251c\u2500\u2500 hooks/\n\u2502   \u2502   \u251c\u2500\u2500 use-mobile.tsx\n\u2502   \u2502   \u251c\u2500\u2500 use-toast.ts\n\u2502   \u2502   \u2514\u2500\u2500 useQuotes.ts\n\u2502   \u251c\u2500\u2500 integrations/\n\u2502   \u2502   \u2514\u2500\u2500 supabase/\n\u2502   \u2502       \u251c\u2500\u2500 client.ts\n\u2502   \u2502       \u2514\u2500\u2500 types.ts\n\u2502   \u251c\u2500\u2500 lib/\n\u2502   \u2502   \u2514\u2500\u2500 utils.ts\n\u2502   \u251c\u2500\u2500 views/\n\u2502   \u2502   \u251c\u2500\u2500 Index.tsx\n\u2502   \u2502   \u251c\u2500\u2500 NotFound.tsx\n\u2502   \u2502   \u251c\u2500\u2500 QuoteDetail.tsx\n\u2502   \u2502   \u2514\u2500\u2500 Quotes.tsx\n\u2502   \u251c\u2500\u2500 App.css\n\u2502   \u251c\u2500\u2500 App.tsx\n\u2502   \u251c\u2500\u2500 index.css\n\u2502   \u251c\u2500\u2500 main.tsx\n\u2502   \u2514\u2500\u2500 vite-env.d.ts\n\u251c\u2500\u2500 supabase/\n\u2502   \u2514\u2500\u2500 config.toml\n\u251c\u2500\u2500 task_managment_page/\n\u2502   \u251c\u2500\u2500 App.tsx\n\u2502   \u251c\u2500\u2500 DashboardLayout-2.tsx\n\u2502   \u251c\u2500\u2500 DashboardLayout.tsx\n\u2502   \u251c\u2500\u2500 DealFormDialog.tsx\n\u2502   \u251c\u2500\u2500 Deals.tsx\n\u2502   \u251c\u2500\u2500 DeleteConfirmDialog-2.tsx\n\u2502   \u251c\u2500\u2500 DeleteConfirmDialog.tsx\n\u2502   \u251c\u2500\u2500 ProjectFormDialog.tsx\n\u2502   \u251c\u2500\u2500 Projects.tsx\n\u2502   \u251c\u2500\u2500 SupplierFormDialog.tsx\n\u2502   \u251c\u2500\u2500 Suppliers.tsx\n\u2502   \u251c\u2500\u2500 TaskFormDialog.tsx\n\u2502   \u2514\u2500\u2500 Tasks.tsx\n\u251c\u2500\u2500 themes/\n\u2502   \u251c\u2500\u2500 cms-full-form-admin-dashboard-tailwind-templates/\n\u2502   \u2502   \u251c\u2500\u2500 app/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 auth/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 blank/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 dashboard/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 dashboard-cms/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 dashboard-saas/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 plugins/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 settings/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 globals.css\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 layout.tsx\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 page.tsx\n\u2502   \u2502   \u251c\u2500\u2500 components/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 auth/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 blank/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 cmsfullform/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 dashboard/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 dashboard-cms/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 dashboard-saas/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 plugins/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 settings/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 ui/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 theme-customizer.tsx\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 theme-provider.tsx\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 theme-toggle.tsx\n\u2502   \u2502   \u251c\u2500\u2500 hooks/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 use-mobile.tsx\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 use-toast.ts\n\u2502   \u2502   \u251c\u2500\u2500 lib/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 utils.ts\n\u2502   \u2502   \u251c\u2500\u2500 public/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 apple-icon.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 icon-dark-32x32.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 icon-light-32x32.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 icon.svg\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 placeholder-logo.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 placeholder-logo.svg\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 placeholder-user.jpg\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 placeholder.jpg\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 placeholder.svg\n\u2502   \u2502   \u251c\u2500\u2500 styles/\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 globals.css\n\u2502   \u2502   \u251c\u2500\u2500 .gitignore\n\u2502   \u2502   \u251c\u2500\u2500 components.json\n\u2502   \u2502   \u251c\u2500\u2500 next.config.mjs\n\u2502   \u2502   \u251c\u2500\u2500 package.json\n\u2502   \u2502   \u251c\u2500\u2500 pnpm-lock.yaml\n\u2502   \u2502   \u251c\u2500\u2500 postcss.config.mjs\n\u2502   \u2502   \u251c\u2500\u2500 tailwind.config.js\n\u2502   \u2502   \u2514\u2500\u2500 tsconfig.json\n\u2502   \u251c\u2500\u2500 material-dashboard-react-main/\n\u2502   \u2502   \u251c\u2500\u2500 public/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 apple-icon.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 favicon.png\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 index.html\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 manifest.json\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 robots.txt\n\u2502   \u2502   \u251c\u2500\u2500 src/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 assets/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 components/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 context/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 examples/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 layouts/\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 App.js\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 index.js\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 routes.js\n\u2502   \u2502   \u251c\u2500\u2500 .eslintrc.json\n\u2502   \u2502   \u251c\u2500\u2500 .gitignore\n\u2502   \u2502   \u251c\u2500\u2500 .npmrc\n\u2502   \u2502   \u251c\u2500\u2500 .prettierrc.json\n\u2502   \u2502   \u251c\u2500\u2500 CHANGELOG.md\n\u2502   \u2502   \u251c\u2500\u2500 genezio.yaml\n\u2502   \u2502   \u251c\u2500\u2500 ISSUE_TEMPLATE.md\n\u2502   \u2502   \u251c\u2500\u2500 jsconfig.json\n\u2502   \u2502   \u251c\u2500\u2500 LICENSE.md\n\u2502   \u2502   \u251c\u2500\u2500 package.json\n\u2502   \u2502   \u2514\u2500\u2500 README.md\n\u2502   \u2514\u2500\u2500 skal-ventures-template/\n\u2502       \u251c\u2500\u2500 app/\n\u2502       \u2502   \u251c\u2500\u2500 favicon.ico\n\u2502       \u2502   \u251c\u2500\u2500 globals.css\n\u2502       \u2502   \u251c\u2500\u2500 layout.tsx\n\u2502       \u2502   \u2514\u2500\u2500 page.tsx\n\u2502       \u251c\u2500\u2500 components/\n\u2502       \u2502   \u251c\u2500\u2500 gl/\n\u2502       \u2502   \u251c\u2500\u2500 ui/\n\u2502       \u2502   \u251c\u2500\u2500 header.tsx\n\u2502       \u2502   \u251c\u2500\u2500 hero.tsx\n\u2502       \u2502   \u251c\u2500\u2500 logo.tsx\n\u2502       \u2502   \u251c\u2500\u2500 mobile-menu.tsx\n\u2502       \u2502   \u251c\u2500\u2500 pill.tsx\n\u2502       \u2502   \u251c\u2500\u2500 theme-provider.tsx\n\u2502       \u2502   \u2514\u2500\u2500 utils.ts\n\u2026 (tree truncated)",
+  "embedded_docs": [],
+  "top_files": [
+    {
+      "file": "HONSOAR FRAMELESS CABINET LIST -2024.pdf",
+      "size": 1768110,
+      "mtime": 1767768554.8321126
+    },
+    {
+      "file": "themes/material-dashboard-react-main/src/assets/images/illustrations/pattern-tree.svg",
+      "size": 1759656,
+      "mtime": 1766484658.012642
+    },
+    {
+      "file": "themes/material-dashboard-react-main/src/assets/images/home-decor-3.jpg",
+      "size": 1159457,
+      "mtime": 1766484657.9325936
+    },
+    {
+      "file": "themes/material-dashboard-react-main/src/assets/images/home-decor-2.jpg",
+      "size": 1088035,
+      "mtime": 1766484657.9020753
+    },
+    {
+      "file": "themes/material-dashboard-react-main/src/assets/images/home-decor-1.jpg",
+      "size": 937206,
+      "mtime": 1766484657.8634226
+    },
+    {
+      "file": "themes/material-dashboard-react-main/src/assets/images/bg-sign-in-basic.jpeg",
+      "size": 513703,
+      "mtime": 1766484657.83189
+    },
+    {
+      "file": "themes/material-dashboard-react-main/src/assets/images/bg-profile.jpeg",
+      "size": 317812,
+      "mtime": 1766484657.8228426
+    },
+    {
+      "file": "themes/material-dashboard-react-main/src/assets/images/bg-sign-up-cover.jpeg",
+      "size": 317278,
+      "mtime": 1766484657.8395193
+    },
+    {
+      "file": "add_pages/remix-of-stark-architect-showcase-main/package-lock.json",
+      "size": 247655,
+      "mtime": 1766484657.3696375
+    },
+    {
+      "file": "themes/material-dashboard-react-main/src/assets/images/bg-reset-cover.jpeg",
+      "size": 238520,
+      "mtime": 1766484657.8256056
+    },
+    {
+      "file": "bun.lockb",
+      "size": 198722,
+      "mtime": 1766484657.2365298
+    },
+    {
+      "file": "add_pages/remix-of-stark-architect-showcase-main/bun.lockb",
+      "size": 197327,
+      "mtime": 1766484657.3655849
+    },
+    {
+      "file": "package-lock.json",
+      "size": 173284,
+      "mtime": 1767846393.4168036
+    },
+    {
+      "file": "add_pages/remix-of-stark-architect-showcase-main/src/assets/hero-architecture.jpg",
+      "size": 164687,
+      "mtime": 1766484657.387768
+    },
+    {
+      "file": "gold_arch_website/tsconfig.app.tsbuildinfo",
+      "size": 141735,
+      "mtime": 1766401717.6288688
+    },
+    {
+      "file": "gold_arch_website/bun.lock",
+      "size": 119629,
+      "mtime": 1766484657.5047655
+    },
+    {
+      "file": "add_pages/remix-of-stark-architect-showcase-main/src/assets/blog-urban-planning.jpg",
+      "size": 113086,
+      "mtime": 1766484657.382666
+    },
+    {
+      "file": "add_pages/remix-of-stark-architect-showcase-main/src/assets/blog-sustainable-architecture.jpg",
+      "size": 108441,
+      "mtime": 1766484657.3786623
+    },
+    {
+      "file": "docs/TECHNICAL_DOCUMENTATION.md",
+      "size": 82852,
+      "mtime": 1767439527.7266269
+    },
+    {
+      "file": "docs/USER_MANUAL.md",
+      "size": 72622,
+      "mtime": 1767439781.0280545
+    },
+    {
+      "file": "Plan_for_Building_an_AI-Powered_Chatbot_Platform.md",
+      "size": 65171,
+      "mtime": 1767786018.4388561
+    },
+    {
+      "file": "chat-bot_framework/Plan_for_Building_an_AI-Powered_Chatbot_Platform.md",
+      "size": 65171,
+      "mtime": 1767849076.4795218
+    },
+    {
+      "file": "apply_theme/package-lock.json",
+      "size": 62823,
+      "mtime": 1766484657.4749992
+    },
+    {
+      "file": "add_pages/remix-of-stark-architect-showcase-main/src/assets/project-1.jpg",
+      "size": 60803,
+      "mtime": 1766484657.3900511
+    },
+    {
+      "file": "themes/material-dashboard-react-main/src/assets/images/home-decor-4.jpeg",
+      "size": 57641,
+      "mtime": 1766484657.9362195
+    },
+    {
+      "file": "chat-bot_framework/RAG_Customer_Service_Chatbot_Business_Overview.pdf",
+      "size": 56884,
+      "mtime": 1767849076.478451
+    },
+    {
+      "file": "add_pages/remix-of-stark-architect-showcase-main/src/assets/project-2.jpg",
+      "size": 52641,
+      "mtime": 1766484657.3924892
+    },
+    {
+      "file": "chat-bot_framework/RAG_Customer_Service_Chatbot_Technical_Documentation.pdf",
+      "size": 51144,
+      "mtime": 1767849076.4775672
+    },
+    {
+      "file": "add_pages/remix-of-stark-architect-showcase-main/src/assets/blog-minimalist-living.jpg",
+      "size": 51107,
+      "mtime": 1766484657.3751338
+    },
+    {
+      "file": "gold_arch_website/tsconfig.node.tsbuildinfo",
+      "size": 48202,
+      "mtime": 1766401805.733741
+    }
+  ],
+  "todo_hits": [
+    {
+      "file": "Framework_B/api/chat/route.example.ts",
+      "line": 29,
+      "text": "// TODO: Implement actual RAG pipeline:"
+    },
+    {
+      "file": "deep_analysis_report.md",
+      "line": 6,
+      "text": "- PDF/DOCX review adds evidence of authentication/secret handling concerns (mentions of auth, API keys, tokens) but no additional TODO/FIXME-style backlog items."
+    },
+    {
+      "file": "gold_arch_website/index.html",
+      "line": 6,
+      "text": "<!-- TODO: Set the document title to the name of your application -->"
+    },
+    {
+      "file": "gold_arch_website/index.html",
+      "line": 11,
+      "text": "<!-- TODO: Update og:title to match your application name -->"
+    },
+    {
+      "file": "index.html",
+      "line": 6,
+      "text": "<!-- TODO: Set the document title to the name of your application -->"
+    },
+    {
+      "file": "index.html",
+      "line": 11,
+      "text": "<!-- TODO: Update og:title to match your application name -->"
+    },
+    {
+      "file": "source_code/source_code.html",
+      "line": 7,
+      "text": "<!-- TODO: Set the document title to the name of your application -->"
+    },
+    {
+      "file": "source_code/source_code.html",
+      "line": 12,
+      "text": "<!-- TODO: Update og:title to match your application name -->"
+    },
+    {
+      "file": "source_code/source_code.html",
+      "line": 36,
+      "text": "<!-- TODO: Set the document title to the name of your application -->"
+    },
+    {
+      "file": "source_code/source_code.html",
+      "line": 41,
+      "text": "<!-- TODO: Update og:title to match your application name -->"
+    },
+    {
+      "file": "themes/cms-full-form-admin-dashboard-tailwind-templates/components/plugins/allsite-seo/settings/content.tsx",
+      "line": 710,
+      "text": "<Input placeholder=\"GA-XXXXXXXXX-X\" className=\"h-8\" />"
+    },
+    {
+      "file": "themes/cms-full-form-admin-dashboard-tailwind-templates/components/plugins/allsite-seo/settings/content.tsx",
+      "line": 714,
+      "text": "<Input placeholder=\"GTM-XXXXXXX\" className=\"h-8\" />"
+    }
+  ],
+  "settings": {
+    "include_plan_docs": true,
+    "include_manifests": false,
+    "include_todos": true,
+    "top_files": 30,
+    "todo_hits_cap": 200,
+    "max_file_bytes": 200000
+  }
+}

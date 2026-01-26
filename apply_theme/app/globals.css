@@ -1,0 +1,178 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400,600,700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 43 55% 96%;
+    --foreground: 210 24% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 210 24% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 24% 12%;
+    --primary: 208 35% 13%;
+    --primary-foreground: 43 55% 96%;
+    --secondary: 44 40% 90%;
+    --secondary-foreground: 210 24% 12%;
+    --muted: 43 35% 92%;
+    --muted-foreground: 210 9% 40%;
+    --accent: 42 67% 72%;
+    --accent-foreground: 210 24% 12%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 42 24% 82%;
+    --input: 42 24% 82%;
+    --ring: 28 70% 55%;
+    --radius: 0.85rem;
+    --chart-1: 25 70% 55%;
+    --chart-2: 187 52% 39%;
+    --chart-3: 209 39% 24%;
+    --chart-4: 45 69% 62%;
+    --chart-5: 18 83% 62%;
+  }
+
+  .dark {
+    --background: 213 27% 10%;
+    --foreground: 43 55% 96%;
+    --card: 213 27% 14%;
+    --card-foreground: 43 55% 96%;
+    --popover: 213 27% 14%;
+    --popover-foreground: 43 55% 96%;
+    --primary: 43 55% 96%;
+    --primary-foreground: 213 27% 12%;
+    --secondary: 213 22% 18%;
+    --secondary-foreground: 43 55% 96%;
+    --muted: 213 22% 18%;
+    --muted-foreground: 42 15% 70%;
+    --accent: 42 67% 60%;
+    --accent-foreground: 213 27% 12%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 213 18% 26%;
+    --input: 213 18% 26%;
+    --ring: 42 67% 60%;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer utilities {
+  .transition-all {
+    transition: all 0.3s ease;
+  }
+
+  .font-display {
+    font-family: "Fraunces", Georgia, serif;
+  }
+
+  .font-mono {
+    font-family: "Space Mono", "SFMono-Regular", Menlo, monospace;
+  }
+
+  .bg-aurora {
+    background-image:
+      radial-gradient(circle at top right, rgba(199, 160, 62, 0.35), transparent 45%),
+      radial-gradient(circle at 15% 20%, rgba(28, 78, 108, 0.25), transparent 40%),
+      linear-gradient(135deg, rgba(255, 248, 232, 0.9), rgba(244, 240, 230, 0.9));
+  }
+
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgba(15, 23, 42, 0.08) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(15, 23, 42, 0.08) 1px, transparent 1px);
+    background-size: 36px 36px;
+  }
+
+  .card-surface {
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(174, 150, 96, 0.18);
+    box-shadow: 0 20px 45px rgba(14, 31, 51, 0.08);
+  }
+
+  .dark .card-surface {
+    background: rgba(18, 27, 39, 0.8);
+    border: 1px solid rgba(244, 200, 90, 0.15);
+    box-shadow: 0 18px 40px rgba(6, 9, 14, 0.4);
+  }
+
+  .pill {
+    border-radius: 999px;
+    padding: 0.3rem 0.9rem;
+    border: 1px solid rgba(31, 41, 55, 0.2);
+    background: rgba(255, 255, 255, 0.65);
+  }
+
+  .dark .pill {
+    border-color: rgba(255, 236, 177, 0.2);
+    background: rgba(20, 30, 43, 0.65);
+  }
+
+  .shadow-soft {
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+  }
+
+  .ring-gold {
+    box-shadow: 0 0 0 1px rgba(199, 160, 62, 0.3), 0 10px 25px rgba(199, 160, 62, 0.2);
+  }
+}
+
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes floatSlow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.8s ease forwards;
+}
+
+.animate-fade-up-delay {
+  animation: fadeUp 0.8s ease 0.15s forwards;
+}
+
+.animate-fade-up-late {
+  animation: fadeUp 0.8s ease 0.3s forwards;
+}
+
+.animate-float {
+  animation: floatSlow 6s ease-in-out infinite;
+}
