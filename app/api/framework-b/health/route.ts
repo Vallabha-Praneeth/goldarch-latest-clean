@@ -4,7 +4,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { healthCheck } from '@/Framework_B_Implementation/lib/services';
+import { healthCheck } from '../../../../Framework_B_Implementation/lib/services';
 
 export async function GET() {
   try {
@@ -18,6 +18,9 @@ export async function GET() {
         services: health.services,
         errors: health.errors,
         timestamp: new Date().toISOString(),
+        node_env: process.env.NODE_ENV || null,
+        vercel_env: process.env.VERCEL_ENV || null,
+        git_commit_sha: process.env.VERCEL_GIT_COMMIT_SHA || null,
         endpoints: {
           documents: {
             upload: '/api/framework-b/documents/upload',
@@ -38,6 +41,9 @@ export async function GET() {
         status: 'unhealthy',
         error: error instanceof Error ? error.message : 'Health check failed',
         timestamp: new Date().toISOString(),
+        node_env: process.env.NODE_ENV || null,
+        vercel_env: process.env.VERCEL_ENV || null,
+        git_commit_sha: process.env.VERCEL_GIT_COMMIT_SHA || null,
       },
       { status: 503 }
     );

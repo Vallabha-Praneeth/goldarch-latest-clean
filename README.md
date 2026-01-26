@@ -71,4 +71,32 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+---
+
+## Auth & Debug Smoke Test
+
+Required environment variables:
+- NEXT_PUBLIC_SUPABASE_URL
+- NEXT_PUBLIC_SUPABASE_ANON_KEY
+- SUPABASE_SERVICE_ROLE_KEY (optional, server-only)
+
+How to test locally:
+1. Start your dev server: `npm run dev`
+2. Health endpoint:
+   - `curl http://localhost:3000/api/framework-b/health`
+3. Debug env endpoint:
+   - `curl http://localhost:3000/api/_debug/env`
+4. Login flow:
+   - Complete login and ensure callback passes through `/auth/callback` (see `app/auth/callback/route.js`).
+
+How to test in production:
+- Replace `localhost:3000` with your deployed URL.
+- Endpoints:
+   - `/api/framework-b/health`
+   - `/api/_debug/env`
+   - `/auth/callback` (login flow)
+
+All endpoints should return expected JSON and never expose secrets.
+
 # Trigger deploy
