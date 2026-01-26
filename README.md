@@ -76,17 +76,19 @@ Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/c
 
 ## Auth & Debug Smoke Test
 
+* No middleware/route guards in CANONICAL; auth callback is handled in `app/auth/callback/route.js`.
+* Debug endpoint kill-switch: set `DISABLE_DEBUG_ENDPOINTS=true` to make `/api/debug/env` return 404.
+
+* Prod should set DISABLE_DEBUG_ENDPOINTS=true so /api/debug/env returns 404.
+
 Required environment variables:
-- NEXT_PUBLIC_SUPABASE_URL
-- NEXT_PUBLIC_SUPABASE_ANON_KEY
-- SUPABASE_SERVICE_ROLE_KEY (optional, server-only)
 
 How to test locally:
 1. Start your dev server: `npm run dev`
 2. Health endpoint:
    - `curl http://localhost:3000/api/framework-b/health`
 3. Debug env endpoint:
-   - `curl http://localhost:3000/api/_debug/env`
+   - `curl http://localhost:3000/api/debug/env`
 4. Login flow:
    - Complete login and ensure callback passes through `/auth/callback` (see `app/auth/callback/route.js`).
 
@@ -94,7 +96,7 @@ How to test in production:
 - Replace `localhost:3000` with your deployed URL.
 - Endpoints:
    - `/api/framework-b/health`
-   - `/api/_debug/env`
+   - `/api/debug/env`
    - `/auth/callback` (login flow)
 
 All endpoints should return expected JSON and never expose secrets.

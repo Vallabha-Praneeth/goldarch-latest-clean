@@ -2,6 +2,9 @@
 // Returns booleans for required env vars and current node/vercel envs
 
 export async function GET() {
+  if (process.env.DISABLE_DEBUG_ENDPOINTS === 'true') {
+    return Response.json({ error: 'not_found' }, { status: 404 });
+  }
   const env = process.env;
   return Response.json({
     has_NEXT_PUBLIC_SUPABASE_URL: !!env.NEXT_PUBLIC_SUPABASE_URL,
