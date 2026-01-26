@@ -117,7 +117,7 @@ export class PDFExtractor extends BaseExtractor {
    */
   private async extractWithPdfJs(buffer: Buffer): Promise<{ text: string; pageCount: number }> {
     try {
-      const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.js');
+      const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.mjs');
 
       // Load PDF document
       const loadingTask = pdfjsLib.getDocument({
