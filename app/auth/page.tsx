@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth-provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,9 +13,19 @@ import Link from 'next/link';
 
 export default function AuthPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { signIn, signUp } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const getSafeNext = () => {
+    const raw = searchParams.get('next') || '/app-dashboard';
+    // Allow only internal paths: must start with / and must NOT start with //
+    if (raw.startsWith('/') && !raw.startsWith('//')) {
+      return raw;
+    }
+    return '/app-dashboard';
+  };
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -32,7 +42,7 @@ export default function AuthPage() {
       setError(error.message);
       setLoading(false);
     } else {
-      router.push('/app-dashboard');
+      router.push(getSafeNext());
     }
   };
 
@@ -52,7 +62,7 @@ export default function AuthPage() {
       setError(error.message);
       setLoading(false);
     } else {
-      router.push('/app-dashboard');
+      router.push(getSafeNext());
     }
   };
 

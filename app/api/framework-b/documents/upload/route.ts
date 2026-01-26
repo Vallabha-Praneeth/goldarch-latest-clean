@@ -223,10 +223,14 @@ function getFormatFromMimeType(mimeType: string): 'pdf' | 'docx' | 'txt' | 'md' 
 
 /**
  * GET endpoint to check supported file types
- * Public endpoint - no authentication required
+ * SECURED: Requires authentication
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const auth = await requireAuth(request);
+    if (auth.response) return auth.response;
+    const { user } = auth;
+
     const processor = getDocumentProcessor();
     const supportedFormats = processor.getSupportedFormats();
 

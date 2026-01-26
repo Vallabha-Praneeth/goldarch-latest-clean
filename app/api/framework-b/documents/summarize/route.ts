@@ -167,10 +167,14 @@ export async function POST(request: NextRequest) {
 
 /**
  * GET endpoint to check summarization service status
- * Public endpoint - no authentication required
+ * SECURED: Requires authentication
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const auth = await requireAuth(request);
+    if (auth.response) return auth.response;
+    const { user } = auth;
+
     return NextResponse.json(
       {
         status: 'ready',
