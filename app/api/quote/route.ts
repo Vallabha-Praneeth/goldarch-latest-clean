@@ -2,10 +2,18 @@
  * /api/quote
  * GET - List all quotes (AUTHENTICATED)
  * POST - Create new quote (AUTHENTICATED)
+ *
+ * NOTE:
+ * Avoid PostgREST embedded relationship selects (e.g. lead:quote_leads(...))
+ * because production schema cache may not have the relationship configured.
+ * We fetch quotes first, then fetch leads separately and stitch in-memory.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, createAuthenticatedSupabaseClient } from '@/lib/auth-helpers';
+
+type QuoteRow = Record<string, any>;
+type LeadRow = { id: string; name?: string | null; email?: string | null; company?: string | null };
 
 /**
  * GET /api/quote
@@ -14,19 +22,14 @@ import { requireAuth, createAuthenticatedSupabaseClient } from '@/lib/auth-helpe
 export async function GET(request: NextRequest) {
   try {
     const auth = await requireAuth(request);
-    if (auth.response) {
-      return auth.response;
-    }
+    if (auth.response) return auth.response;
 
     const supabase = await createAuthenticatedSupabaseClient();
 
     // Fetch quotes (RLS enforced - user can only see their own)
     const { data: quotes, error } = await supabase
       .from('quotations')
-      .select(`
-        *,
-        lead:quote_leads(id, name, email, company)
-      `)
+      .select('*')
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -37,13 +40,44 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ quotes: quotes || [] });
+    const safeQuotes: QuoteRow[] = quotes || [];
+
+    // Collect unique lead_ids
+    const leadIds = Array.from(
+      new Set(
+        safeQuotes
+          .map((q) => q.lead_id)
+          .filter((v): v is string => typeof v === 'string' && v.length > 0)
+      )
+    );
+
+    // Fetch leads separately (no relationship required)
+    let leadsById: Record<string, LeadRow> = {};
+    if (leadIds.length > 0) {
+      const { data: leads, error: leadsError } = await supabase
+        .from('quote_leads')
+        .select('id, name, email, company')
+        .in('id', leadIds);
+
+      if (leadsError) {
+        // Fail-soft: still return quotes list without embedded lead data
+        console.warn('Warning fetching quote leads:', leadsError);
+      } else {
+        (leads || []).forEach((l: any) => {
+          if (l?.id) leadsById[String(l.id)] = l as LeadRow;
+        });
+      }
+    }
+
+    const hydrated = safeQuotes.map((q) => ({
+      ...q,
+      lead: q.lead_id ? leadsById[String(q.lead_id)] ?? null : null,
+    }));
+
+    return NextResponse.json({ quotes: hydrated });
   } catch (error) {
     console.error('GET quotes error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -54,9 +88,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const auth = await requireAuth(request);
-    if (auth.response) {
-      return auth.response;
-    }
+    if (auth.response) return auth.response;
     const { user } = auth;
 
     const supabase = await createAuthenticatedSupabaseClient();
@@ -79,10 +111,7 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!lead_id) {
-      return NextResponse.json(
-        { error: 'lead_id is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'lead_id is required' }, { status: 400 });
     }
 
     // Create quote (RLS enforced)
@@ -118,9 +147,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ quote }, { status: 201 });
   } catch (error) {
     console.error('POST quote error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
