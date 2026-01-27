@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint \"app/**/*.{js,jsx,ts,tsx}\" \"components/**/*.{js,jsx,ts,tsx}\" \"lib/**/*.{js,jsx,ts,tsx}\" --max-warnings=9999",
     "smoke": "node scripts/smoke-auth-endpoints.mjs"
   },
   "keywords": [],
@@ -74,6 +74,10 @@
   },
   "devDependencies": {
     "@types/react": "19.2.7",
+    "@typescript-eslint/eslint-plugin": "^8.54.0",
+    "@typescript-eslint/parser": "^8.54.0",
+    "eslint-plugin-react": "7.37.5",
+    "eslint-plugin-react-hooks": "4.6.2",
     "tailwindcss": "^3.4.19",
     "typescript": "5.9.3"
   }
