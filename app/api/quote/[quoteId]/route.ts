@@ -83,11 +83,35 @@ export async function PATCH(
     const body = await request.json();
     const supabase = await createAuthenticatedSupabaseClient();
 
+    // Whitelist allowed update fields
+    const allowedFields = [
+      'lead_id',
+      'extraction_job_id',
+      'status',
+      'subtotal',
+      'tax_placeholder',
+      'discount_amount',
+      'total',
+      'currency',
+      'valid_until',
+      'internal_notes',
+      'customer_notes',
+      'terms_and_conditions',
+      'sent_at',
+      'sent_to_email',
+    ];
+    const updateData: Record<string, unknown> = {};
+    for (const field of allowedFields) {
+      if (field in body) {
+        updateData[field] = body[field];
+      }
+    }
+
     // Update quote (RLS enforced)
     const { data: quote, error } = await supabase
       .from('quotations')
       .update({
-        ...body,
+        ...updateData,
         updated_at: new Date().toISOString(),
       })
       .eq('id', quoteId)
@@ -130,16 +154,24 @@ export async function DELETE(
     const supabase = await createAuthenticatedSupabaseClient();
 
     // Delete quote (RLS enforced, cascade deletes quotation_lines)
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('quotations')
       .delete()
-      .eq('id', quoteId);
+      .eq('id', quoteId)
+      .select();
 
     if (error) {
       console.error('Quote delete error:', error);
       return NextResponse.json(
         { error: 'Failed to delete quote', details: error.message },
         { status: 500 }
+      );
+    }
+
+    if (!data || data.length === 0) {
+      return NextResponse.json(
+        { error: 'Quote not found' },
+        { status: 404 }
       );
     }
 

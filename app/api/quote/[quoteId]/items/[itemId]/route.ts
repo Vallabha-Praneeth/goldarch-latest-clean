@@ -43,10 +43,30 @@ export async function PATCH(
       );
     }
 
+    // Whitelist allowed update fields
+    const allowedFields = [
+      'line_number',
+      'category',
+      'subcategory',
+      'product_id',
+      'description',
+      'quantity',
+      'unit_of_measure',
+      'unit_price',
+      'extraction_evidence',
+      'notes',
+    ];
+    const updateData: Record<string, unknown> = {};
+    for (const field of allowedFields) {
+      if (field in body) {
+        updateData[field] = body[field];
+      }
+    }
+
     // Update line item
     const { data: item, error } = await supabase
       .from('quotation_lines')
-      .update(body)
+      .update(updateData)
       .eq('id', itemId)
       .eq('quotation_id', quoteId)
       .select()
@@ -102,17 +122,25 @@ export async function DELETE(
     }
 
     // Delete line item
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('quotation_lines')
       .delete()
       .eq('id', itemId)
-      .eq('quotation_id', quoteId);
+      .eq('quotation_id', quoteId)
+      .select();
 
     if (error) {
       console.error('Error deleting line item:', error);
       return NextResponse.json(
         { error: 'Failed to delete line item', details: error.message },
         { status: 500 }
+      );
+    }
+
+    if (!data || data.length === 0) {
+      return NextResponse.json(
+        { error: 'Line item not found' },
+        { status: 404 }
       );
     }
 
