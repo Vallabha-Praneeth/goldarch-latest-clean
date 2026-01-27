@@ -1,24 +1,36 @@
 /**
- * GET /api/quote/[quoteId]
- * Fetch full quote details including line items
+ * /api/quote/[quoteId]
+ * GET - Fetch full quote details including line items (AUTHENTICATED)
+ * PATCH - Update quote (AUTHENTICATED)
+ * DELETE - Delete quote (AUTHENTICATED)
  */
 
-import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth, createAuthenticatedSupabaseClient } from '@/lib/auth-helpers';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+interface RouteContext {
+  params: Promise<{ quoteId: string }>;
+}
 
+/**
+ * GET /api/quote/[quoteId]
+ * Fetch quote with line items (requires auth)
+ */
 export async function GET(
-  request: Request,
-  context: { params: Promise<{ quoteId: string }> }
+  request: NextRequest,
+  context: RouteContext
 ) {
   try {
-    const { quoteId } = await context.params;
+    // Require authentication
+    const auth = await requireAuth(request);
+    if (auth.response) {
+      return auth.response;
+    }
 
-    // Fetch quote with line items
+    const { quoteId } = await context.params;
+    const supabase = await createAuthenticatedSupabaseClient();
+
+    // Fetch quote with line items (RLS enforced)
     const { data: quote, error: quoteError } = await supabase
       .from('quotations')
       .select(`
@@ -48,6 +60,94 @@ export async function GET(
     console.error('Error fetching quote:', error);
     return NextResponse.json(
       { error: 'Failed to fetch quote' },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * PATCH /api/quote/[quoteId]
+ * Update quote fields (requires auth)
+ */
+export async function PATCH(
+  request: NextRequest,
+  context: RouteContext
+) {
+  try {
+    const auth = await requireAuth(request);
+    if (auth.response) {
+      return auth.response;
+    }
+
+    const { quoteId } = await context.params;
+    const body = await request.json();
+    const supabase = await createAuthenticatedSupabaseClient();
+
+    // Update quote (RLS enforced)
+    const { data: quote, error } = await supabase
+      .from('quotations')
+      .update({
+        ...body,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', quoteId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Quote update error:', error);
+      return NextResponse.json(
+        { error: 'Failed to update quote', details: error.message },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ quote });
+  } catch (error) {
+    console.error('Error updating quote:', error);
+    return NextResponse.json(
+      { error: 'Failed to update quote' },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * DELETE /api/quote/[quoteId]
+ * Delete quote (requires auth, cascade deletes line items)
+ */
+export async function DELETE(
+  request: NextRequest,
+  context: RouteContext
+) {
+  try {
+    const auth = await requireAuth(request);
+    if (auth.response) {
+      return auth.response;
+    }
+
+    const { quoteId } = await context.params;
+    const supabase = await createAuthenticatedSupabaseClient();
+
+    // Delete quote (RLS enforced, cascade deletes quotation_lines)
+    const { error } = await supabase
+      .from('quotations')
+      .delete()
+      .eq('id', quoteId);
+
+    if (error) {
+      console.error('Quote delete error:', error);
+      return NextResponse.json(
+        { error: 'Failed to delete quote', details: error.message },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting quote:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete quote' },
       { status: 500 }
     );
   }
