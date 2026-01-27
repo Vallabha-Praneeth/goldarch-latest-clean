@@ -99,15 +99,12 @@ export default function QuotesPage() {
   const { data: quotes, isLoading } = useQuery({
     queryKey: ['quotes'],
     queryFn: async () => {
-      const { data } = await supabase
-        .from('quotes')
-        .select(`
-          *,
-          supplier:suppliers(name, city),
-          deal:deals(title)
-        `)
-        .order('created_at', { ascending: false });
-      return data || [];
+      const response = await fetch('/api/quote');
+      if (!response.ok) {
+        throw new Error('Failed to fetch quotes');
+      }
+      const data = await response.json();
+      return data.quotes || [];
     },
   });
 
@@ -157,20 +154,31 @@ export default function QuotesPage() {
       const tax = formData.tax ? parseFloat(formData.tax) : 0;
       const total = formData.total ? parseFloat(formData.total) : subtotal + tax;
 
-      const { error } = await supabase.from('quotes').insert({
-        quote_number: formData.quote_number.trim(),
-        supplier_id: formData.supplier_id || null,
-        deal_id: formData.deal_id || null,
-        quote_date: formData.quote_date || new Date().toISOString().split('T')[0],
-        valid_until: formData.valid_until || null,
-        subtotal,
-        tax,
-        total,
-        status: formData.status,
-        notes: formData.notes.trim() || null,
+      // Create a minimal lead first (required for quotations table)
+      const { data: lead, error: leadError } = await supabase.from('quote_leads').insert({
+        name: 'Draft Lead',
+        email: 'draft@example.com',
+      }).select().single();
+
+      if (leadError) throw leadError;
+
+      const response = await fetch('/api/quote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lead_id: lead.id,
+          status: formData.status,
+          subtotal,
+          tax_placeholder: tax,
+          total,
+          internal_notes: formData.notes.trim() || null,
+        }),
       });
 
-      if (error) throw error;
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create quote');
+      }
 
       toast.success('Quote created successfully');
       queryClient.invalidateQueries({ queryKey: ['quotes'] });
