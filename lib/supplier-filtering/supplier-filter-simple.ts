@@ -211,8 +211,8 @@ export async function canUserViewSupplier(
     }
     // Check legacy fields
     else {
-      let categoryMatch = !rule.category_id || rule.category_id === supplier.category_id;
-      let regionMatch = !rule.region || rule.region === supplier.region;
+      const categoryMatch = !rule.category_id || rule.category_id === supplier.category_id;
+      const regionMatch = !rule.region || rule.region === supplier.region;
 
       if (categoryMatch && regionMatch) {
         return true;

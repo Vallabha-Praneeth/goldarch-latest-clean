@@ -1,3 +1,4 @@
+// FILE: components/quote/ResponsesList.tsx
 /**
  * Customer Responses List Component
  * Path: components/quote/ResponsesList.tsx
@@ -19,28 +20,37 @@ export default function ResponsesList({ quoteId }: ResponsesListProps) {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetchResponses();
-  }, [quoteId]);
+    let cancelled = false;
 
-  const fetchResponses = async () => {
-    try {
-      const response = await fetch(`/api/quote/${quoteId}/responses`);
+    const fetchResponses = async () => {
+      try {
+        const response = await fetch(`/api/quote/${quoteId}/responses`);
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `API error: ${response.status}`);
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || `API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Responses data:', data);
+        if (cancelled) return;
+        setResponses(data.responses || []);
+      } catch (err: any) {
+        console.error('Failed to fetch responses:', err);
+        if (cancelled) return;
+        setError(err.message || 'Failed to load responses');
+      } finally {
+        if (cancelled) return;
+        setLoading(false);
       }
+    };
 
-      const data = await response.json();
-      console.log('Responses data:', data);
-      setResponses(data.responses || []);
-    } catch (err: any) {
-      console.error('Failed to fetch responses:', err);
-      setError(err.message || 'Failed to load responses');
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetchResponses();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [quoteId]);
 
   const getResponseBadge = (type: string) => {
     switch (type) {

@@ -1,3 +1,4 @@
+// FILE: app/app-dashboard/products/[productId]/edit/page.tsx
 'use client';
 
 import { use, useState, useEffect } from 'react';
@@ -28,38 +29,47 @@ export default function ProductEditPage({ params }: PageProps) {
   const [images, setImages] = useState<ProductImage[]>([]);
 
   useEffect(() => {
+    let cancelled = false;
+
+    const fetchProduct = async () => {
+      try {
+        // TODO: Replace with actual API call
+        // For now, using mock data
+        const mockProduct = {
+          id: productId,
+          name: 'Interior 6-Panel Door',
+          category: 'doors',
+          description: 'Standard 6-panel interior door, primed and ready for paint',
+          price: 129.99,
+          images: [
+            {
+              url: 'https://example.com/door-1.jpg',
+              alt: 'Interior door front view',
+              isPrimary: true,
+              order: 0,
+              uploadedAt: new Date().toISOString(),
+            },
+          ],
+        };
+
+        if (cancelled) return;
+        setProduct(mockProduct);
+        if (cancelled) return;
+        setImages(mockProduct.images);
+      } catch (error) {
+        console.error('Failed to fetch product:', error);
+      } finally {
+        if (cancelled) return;
+        setLoading(false);
+      }
+    };
+
     fetchProduct();
+
+    return () => {
+      cancelled = true;
+    };
   }, [productId]);
-
-  const fetchProduct = async () => {
-    try {
-      // TODO: Replace with actual API call
-      // For now, using mock data
-      const mockProduct = {
-        id: productId,
-        name: 'Interior 6-Panel Door',
-        category: 'doors',
-        description: 'Standard 6-panel interior door, primed and ready for paint',
-        price: 129.99,
-        images: [
-          {
-            url: 'https://example.com/door-1.jpg',
-            alt: 'Interior door front view',
-            isPrimary: true,
-            order: 0,
-            uploadedAt: new Date().toISOString(),
-          },
-        ],
-      };
-
-      setProduct(mockProduct);
-      setImages(mockProduct.images);
-    } catch (error) {
-      console.error('Failed to fetch product:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleImageUpload = async (file: File) => {
     try {

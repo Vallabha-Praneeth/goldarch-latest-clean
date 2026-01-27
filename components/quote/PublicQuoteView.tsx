@@ -1,3 +1,4 @@
+// FILE: components/quote/PublicQuoteView.tsx
 /**
  * Public Quote View Component
  * Path: app/quote/[token]/page.tsx
@@ -21,26 +22,35 @@ export default function PublicQuoteView({ params }: PublicQuoteViewProps) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchQuote();
-  }, [token]);
+    let cancelled = false;
 
-  const fetchQuote = async () => {
-    try {
-      const response = await fetch(`/api/quote/public/${token}`);
+    const fetchQuote = async () => {
+      try {
+        const response = await fetch(`/api/quote/public/${token}`);
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to load quote');
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to load quote');
+        }
+
+        const data = await response.json();
+        if (cancelled) return;
+        setQuote(data);
+      } catch (err: any) {
+        if (cancelled) return;
+        setError(err.message);
+      } finally {
+        if (cancelled) return;
+        setLoading(false);
       }
+    };
 
-      const data = await response.json();
-      setQuote(data);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetchQuote();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [token]);
 
   const downloadPDF = async () => {
     // This would integrate with your PDF generation

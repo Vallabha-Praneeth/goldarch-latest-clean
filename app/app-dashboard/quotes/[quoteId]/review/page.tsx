@@ -1,3 +1,4 @@
+// FILE: app/app-dashboard/quotes/[quoteId]/review/page.tsx
 'use client';
 
 import { use, useState, useEffect } from 'react';
@@ -27,72 +28,83 @@ export default function QuoteReviewPage({ params }: PageProps) {
   const [activeTab, setActiveTab] = useState<'details' | 'status' | 'responses' | 'versions'>('details');
 
   useEffect(() => {
+    let cancelled = false;
+
+    const fetchQuote = async () => {
+      try {
+        const response = await fetch(`/api/quote/${quoteId}`);
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch quote: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        // Transform the data to match the expected format
+        const quoteData = {
+          id: data.id,
+          quote_number: data.quote_number,
+          created_at: data.created_at,
+          valid_until: data.valid_until,
+          status: data.status,
+          lead: {
+            name: data.lead_name || 'Unknown Client',
+            email: data.lead_email || '',
+          },
+          lineItems: (data.quotation_lines || []).map((line: any) => ({
+            id: line.id,
+            category: line.category || '',
+            description: line.item_description,
+            quantity: line.quantity,
+            unit: line.unit,
+            unit_price: line.unit_price,
+            line_total: line.line_total,
+          })),
+          subtotal: data.subtotal || 0,
+          tax_placeholder: data.tax || 0,
+          total: data.total || 0,
+          currency: data.currency || 'USD',
+        };
+
+        if (cancelled) return;
+        setQuote(quoteData);
+        if (cancelled) return;
+        setQuoteStatus(data.status || 'draft');
+      } catch (error) {
+        console.error('Failed to fetch quote:', error);
+        alert('Failed to load quote. Please check the quote ID and try again.');
+      } finally {
+        if (cancelled) return;
+        setLoading(false);
+      }
+    };
+
+    const fetchEmailHistory = async () => {
+      try {
+        const response = await fetch(`/api/quote/email/${quoteId}`);
+        const data = await response.json();
+        if (cancelled) return;
+        setEmailHistory(data.history || []);
+        if (data.history && data.history.length > 0) {
+          if (cancelled) return;
+          setQuoteStatus('sent');
+        }
+      } catch (error) {
+        console.error('Failed to fetch email history:', error);
+      }
+    };
+
     fetchQuote();
     fetchEmailHistory();
+
+    return () => {
+      cancelled = true;
+    };
   }, [quoteId]);
-
-  const fetchQuote = async () => {
-    try {
-      const response = await fetch(`/api/quote/${quoteId}`);
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch quote: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.error) {
-        throw new Error(data.error);
-      }
-
-      // Transform the data to match the expected format
-      const quoteData = {
-        id: data.id,
-        quote_number: data.quote_number,
-        created_at: data.created_at,
-        valid_until: data.valid_until,
-        status: data.status,
-        lead: {
-          name: data.lead_name || 'Unknown Client',
-          email: data.lead_email || '',
-        },
-        lineItems: (data.quotation_lines || []).map((line: any) => ({
-          id: line.id,
-          category: line.category || '',
-          description: line.item_description,
-          quantity: line.quantity,
-          unit: line.unit,
-          unit_price: line.unit_price,
-          line_total: line.line_total,
-        })),
-        subtotal: data.subtotal || 0,
-        tax_placeholder: data.tax || 0,
-        total: data.total || 0,
-        currency: data.currency || 'USD',
-      };
-
-      setQuote(quoteData);
-      setQuoteStatus(data.status || 'draft');
-    } catch (error) {
-      console.error('Failed to fetch quote:', error);
-      alert('Failed to load quote. Please check the quote ID and try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchEmailHistory = async () => {
-    try {
-      const response = await fetch(`/api/quote/email/${quoteId}`);
-      const data = await response.json();
-      setEmailHistory(data.history || []);
-      if (data.history && data.history.length > 0) {
-        setQuoteStatus('sent');
-      }
-    } catch (error) {
-      console.error('Failed to fetch email history:', error);
-    }
-  };
 
   const handleDownload = async () => {
     try {

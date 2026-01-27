@@ -44,33 +44,49 @@ export default function PlansPage() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 
-  // Fetch user's jobs
-  const fetchJobs = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from('plan_jobs')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setJobs(data || []);
-    } catch (err) {
-      console.error('Failed to fetch jobs:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    let cancelled = false;
+    let inFlight = false;
+
+    // Fetch user's jobs
+    const fetchJobs = async () => {
+      if (inFlight) return;
+      inFlight = true;
+
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (cancelled) return;
+        if (!user) return;
+
+        const { data, error } = await supabase
+          .from('plan_jobs')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+
+        if (cancelled) return;
+        if (error) throw error;
+        setJobs(data || []);
+      } catch (err) {
+        if (cancelled) return;
+        console.error('Failed to fetch jobs:', err);
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+        inFlight = false;
+      }
+    };
+
     fetchJobs();
     // Refresh every 5 seconds to show progress
     const interval = setInterval(fetchJobs, 5000);
-    return () => clearInterval(interval);
-  }, []);
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [supabase]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];

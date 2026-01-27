@@ -118,7 +118,7 @@ export function getHighlightedExcerpt(
   const start = Math.max(0, firstMatchIndex - contextBefore);
   const end = Math.min(text.length, start + maxLength);
 
-  let excerpt = text.substring(start, end);
+  const excerpt = text.substring(start, end);
   const prefix = start > 0 ? '...' : '';
   const suffix = end < text.length ? '...' : '';
 

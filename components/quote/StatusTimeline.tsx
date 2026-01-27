@@ -1,3 +1,4 @@
+// FILE: components/quote/StatusTimeline.tsx
 /**
  * Status Timeline Component
  * Shows quote status history
@@ -37,27 +38,36 @@ export function StatusTimeline({ quoteId }: StatusTimelineProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchStatus();
-  }, [quoteId]);
+    let cancelled = false;
 
-  const fetchStatus = async () => {
-    try {
-      const response = await fetch(`/api/quote/${quoteId}/status`);
+    const fetchStatus = async () => {
+      try {
+        const response = await fetch(`/api/quote/${quoteId}/status`);
 
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Status data:', data);
+        if (cancelled) return;
+        setStatusData(data);
+      } catch (error) {
+        console.error('Failed to fetch status:', error);
+        if (cancelled) return;
+        setStatusData({ error: 'Failed to load status timeline' });
+      } finally {
+        if (cancelled) return;
+        setLoading(false);
       }
+    };
 
-      const data = await response.json();
-      console.log('Status data:', data);
-      setStatusData(data);
-    } catch (error) {
-      console.error('Failed to fetch status:', error);
-      setStatusData({ error: 'Failed to load status timeline' });
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetchStatus();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [quoteId]);
 
   const updateStatus = async (newStatus: string) => {
     if (!confirm(`Change status to "${newStatus}"?`)) return;
