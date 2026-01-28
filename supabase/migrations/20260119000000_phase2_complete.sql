@@ -1,6 +1,11 @@
 /**
- * Phase 2 Migration - Step 1: Create Tables Only
- * Run this first, then run step 2 for policies
+ * Phase 2 Complete Migration
+ * Date: 2026-01-19
+ *
+ * This migration includes all Phase 2 database changes:
+ * 1. Email tracking table
+ * 2. Product images column and storage policies
+ * 3. Quantity adjustment tracking table
  */
 
 -- =====================================================
@@ -9,7 +14,7 @@
 
 CREATE TABLE IF NOT EXISTS quote_email_tracking (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  quotation_id UUID NOT NULL,
+  quotation_id UUID NOT NULL REFERENCES quotations(id) ON DELETE CASCADE,
   recipient_email TEXT NOT NULL,
   subject TEXT NOT NULL,
   sent_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -23,7 +28,6 @@ CREATE TABLE IF NOT EXISTS quote_email_tracking (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Add indexes
 CREATE INDEX IF NOT EXISTS idx_email_tracking_quotation_id
   ON quote_email_tracking(quotation_id);
 
@@ -36,7 +40,6 @@ CREATE INDEX IF NOT EXISTS idx_email_tracking_recipient
 CREATE INDEX IF NOT EXISTS idx_email_tracking_status
   ON quote_email_tracking(status);
 
--- Add trigger function
 CREATE OR REPLACE FUNCTION update_email_tracking_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -45,35 +48,113 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Add trigger
-DROP TRIGGER IF EXISTS email_tracking_updated_at ON quote_email_tracking;
 CREATE TRIGGER email_tracking_updated_at
   BEFORE UPDATE ON quote_email_tracking
   FOR EACH ROW
   EXECUTE FUNCTION update_email_tracking_updated_at();
 
--- Add comment
+ALTER TABLE quote_email_tracking ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their quote email tracking"
+  ON quote_email_tracking FOR SELECT
+  TO authenticated
+  USING (
+    quotation_id IN (
+      SELECT q.id FROM quotations q
+      JOIN quote_leads ql ON q.lead_id = ql.id
+      WHERE ql.user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "System can insert email tracking"
+  ON quote_email_tracking FOR INSERT
+  TO authenticated
+  WITH CHECK (true);
+
+CREATE POLICY "System can update email tracking"
+  ON quote_email_tracking FOR UPDATE
+  TO authenticated
+  USING (true);
+
 COMMENT ON TABLE quote_email_tracking IS 'Tracks all quote emails sent to customers with delivery status';
 
 -- =====================================================
--- 2. PRODUCT IMAGES COLUMN
+-- 2. PRODUCT IMAGES
 -- =====================================================
 
--- Add images column to products table
-ALTER TABLE products
-ADD COLUMN IF NOT EXISTS images JSONB DEFAULT '[]'::jsonb;
+-- Guard product table mutations so local/shadow resets don't fail
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+      AND table_name = 'products'
+  ) THEN
+    ALTER TABLE public.products
+      ADD COLUMN IF NOT EXISTS images JSONB DEFAULT '[]'::jsonb;
 
--- Add index
-CREATE INDEX IF NOT EXISTS idx_products_images
-  ON products USING GIN (images);
+    CREATE INDEX IF NOT EXISTS idx_products_images
+      ON public.products USING GIN (images);
 
--- Add comment
-COMMENT ON COLUMN products.images IS 'Array of product images: [{"url": "...", "alt": "...", "isPrimary": true, "order": 0, "uploadedAt": "..."}]';
+    COMMENT ON COLUMN public.products.images IS
+      'Array of product images: [{"url": "...", "alt": "...", "isPrimary": true, "order": 0, "uploadedAt": "..."}]';
 
--- Update existing products
-UPDATE products
-SET images = '[]'::jsonb
-WHERE images IS NULL;
+    UPDATE public.products
+    SET images = '[]'::jsonb
+    WHERE images IS NULL;
+  END IF;
+END $$;
+
+-- Ensure user_roles exists before any policies reference it
+CREATE TABLE IF NOT EXISTS public.user_roles (
+  user_id UUID NOT NULL,
+  role TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (user_id, role)
+);
+
+-- Storage policies for 'products' bucket
+CREATE POLICY "Public can view product images"
+  ON storage.objects FOR SELECT
+  TO public
+  USING (bucket_id = 'products');
+
+CREATE POLICY "Admins can upload product images"
+  ON storage.objects FOR INSERT
+  TO authenticated
+  WITH CHECK (
+    bucket_id = 'products' AND
+    EXISTS (
+      SELECT 1 FROM user_roles
+      WHERE user_id = auth.uid()
+      AND role IN ('admin', 'super_admin')
+    )
+  );
+
+CREATE POLICY "Admins can update product images"
+  ON storage.objects FOR UPDATE
+  TO authenticated
+  USING (
+    bucket_id = 'products' AND
+    EXISTS (
+      SELECT 1 FROM user_roles
+      WHERE user_id = auth.uid()
+      AND role IN ('admin', 'super_admin')
+    )
+  );
+
+CREATE POLICY "Admins can delete product images"
+  ON storage.objects FOR DELETE
+  TO authenticated
+  USING (
+    bucket_id = 'products' AND
+    EXISTS (
+      SELECT 1 FROM user_roles
+      WHERE user_id = auth.uid()
+      AND role IN ('admin', 'super_admin')
+    )
+  );
 
 -- Helper functions
 CREATE OR REPLACE FUNCTION get_product_primary_image(product_images JSONB)
@@ -95,24 +176,31 @@ COMMENT ON FUNCTION get_product_primary_image IS 'Returns the URL of the primary
 COMMENT ON FUNCTION count_product_images IS 'Returns the number of images for a product';
 
 -- =====================================================
--- 3. QUANTITY ADJUSTMENT TRACKING TABLE
+-- 3. QUANTITY ADJUSTMENT TRACKING
 -- =====================================================
+
+-- Dependency stub: plan_jobs (referenced by FK and policies below)
+CREATE TABLE IF NOT EXISTS public.plan_jobs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
 
 CREATE TABLE IF NOT EXISTS quote_extraction_adjustments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  job_id UUID NOT NULL,
+  job_id UUID NOT NULL REFERENCES plan_jobs(id) ON DELETE CASCADE,
   category TEXT NOT NULL,
   item_type TEXT NOT NULL,
   original_quantity INTEGER NOT NULL,
   adjusted_quantity INTEGER NOT NULL,
   reason TEXT,
-  adjusted_by UUID,
+  adjusted_by UUID REFERENCES auth.users(id),
   adjusted_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Add indexes
 CREATE INDEX IF NOT EXISTS idx_extraction_adjustments_job_id
   ON quote_extraction_adjustments(job_id);
 
@@ -122,11 +210,9 @@ CREATE INDEX IF NOT EXISTS idx_extraction_adjustments_category_item
 CREATE INDEX IF NOT EXISTS idx_extraction_adjustments_adjusted_at
   ON quote_extraction_adjustments(adjusted_at DESC);
 
--- Unique constraint
 CREATE UNIQUE INDEX IF NOT EXISTS idx_extraction_adjustments_unique_item
   ON quote_extraction_adjustments(job_id, category, item_type);
 
--- Add trigger function
 CREATE OR REPLACE FUNCTION update_extraction_adjustments_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -135,14 +221,49 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Add trigger
-DROP TRIGGER IF EXISTS extraction_adjustments_updated_at ON quote_extraction_adjustments;
 CREATE TRIGGER extraction_adjustments_updated_at
   BEFORE UPDATE ON quote_extraction_adjustments
   FOR EACH ROW
   EXECUTE FUNCTION update_extraction_adjustments_updated_at();
 
--- Add comments
+ALTER TABLE quote_extraction_adjustments ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their job adjustments"
+  ON quote_extraction_adjustments FOR SELECT
+  TO authenticated
+  USING (
+    job_id IN (
+      SELECT id FROM plan_jobs WHERE user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Users can create adjustments for their jobs"
+  ON quote_extraction_adjustments FOR INSERT
+  TO authenticated
+  WITH CHECK (
+    job_id IN (
+      SELECT id FROM plan_jobs WHERE user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Users can update their adjustments"
+  ON quote_extraction_adjustments FOR UPDATE
+  TO authenticated
+  USING (
+    job_id IN (
+      SELECT id FROM plan_jobs WHERE user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Users can delete their adjustments"
+  ON quote_extraction_adjustments FOR DELETE
+  TO authenticated
+  USING (
+    job_id IN (
+      SELECT id FROM plan_jobs WHERE user_id = auth.uid()
+    )
+  );
+
 COMMENT ON TABLE quote_extraction_adjustments IS 'Tracks manual adjustments to AI-extracted quantities from construction plans';
 COMMENT ON COLUMN quote_extraction_adjustments.job_id IS 'Reference to the plan extraction job';
 COMMENT ON COLUMN quote_extraction_adjustments.category IS 'Product category (doors, windows, etc.)';
@@ -151,7 +272,7 @@ COMMENT ON COLUMN quote_extraction_adjustments.original_quantity IS 'Quantity or
 COMMENT ON COLUMN quote_extraction_adjustments.adjusted_quantity IS 'Manually adjusted quantity';
 COMMENT ON COLUMN quote_extraction_adjustments.reason IS 'Reason for the adjustment';
 
--- Helper functions for adjustments
+-- Helper functions
 CREATE OR REPLACE FUNCTION get_adjustment_for_item(
   p_job_id UUID,
   p_category TEXT,
