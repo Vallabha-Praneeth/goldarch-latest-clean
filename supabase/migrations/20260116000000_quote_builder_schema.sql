@@ -174,11 +174,21 @@ BEGIN
     FROM information_schema.tables
     WHERE table_schema = 'public'
       AND table_name = 'products'
-  ) THEN
-    ALTER TABLE quote_pricing_rules
+  )
+  AND NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint c
+    JOIN pg_class t ON t.oid = c.conrelid
+    JOIN pg_namespace n ON n.oid = t.relnamespace
+    WHERE n.nspname = 'public'
+      AND t.relname = 'quote_pricing_rules'
+      AND c.conname = 'quote_pricing_rules_product_id_fkey'
+  )
+  THEN
+    ALTER TABLE public.quote_pricing_rules
       ADD CONSTRAINT quote_pricing_rules_product_id_fkey
       FOREIGN KEY (product_id)
-      REFERENCES products(id)
+      REFERENCES public.products(id)
       ON DELETE CASCADE;
   END IF;
 END $$;
@@ -315,11 +325,21 @@ BEGIN
     FROM information_schema.tables
     WHERE table_schema = 'public'
       AND table_name = 'products'
-  ) THEN
-    ALTER TABLE quotation_lines
+  )
+  AND NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint c
+    JOIN pg_class t ON t.oid = c.conrelid
+    JOIN pg_namespace n ON n.oid = t.relnamespace
+    WHERE n.nspname = 'public'
+      AND t.relname = 'quotation_lines'
+      AND c.conname = 'quotation_lines_product_id_fkey'
+  )
+  THEN
+    ALTER TABLE public.quotation_lines
       ADD CONSTRAINT quotation_lines_product_id_fkey
       FOREIGN KEY (product_id)
-      REFERENCES products(id)
+      REFERENCES public.products(id)
       ON DELETE SET NULL;
   END IF;
 END $$;
@@ -383,11 +403,21 @@ BEGIN
     FROM information_schema.tables
     WHERE table_schema = 'public'
       AND table_name = 'products'
-  ) THEN
-    ALTER TABLE quote_product_visibility
+  )
+  AND NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint c
+    JOIN pg_class t ON t.oid = c.conrelid
+    JOIN pg_namespace n ON n.oid = t.relnamespace
+    WHERE n.nspname = 'public'
+      AND t.relname = 'quote_product_visibility'
+      AND c.conname = 'quote_product_visibility_product_id_fkey'
+  )
+  THEN
+    ALTER TABLE public.quote_product_visibility
       ADD CONSTRAINT quote_product_visibility_product_id_fkey
       FOREIGN KEY (product_id)
-      REFERENCES products(id)
+      REFERENCES public.products(id)
       ON DELETE CASCADE;
   END IF;
 END $$;
