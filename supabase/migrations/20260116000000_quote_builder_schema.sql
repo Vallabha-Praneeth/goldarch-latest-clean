@@ -169,27 +169,20 @@ CREATE TABLE IF NOT EXISTS quote_pricing_rules (
 -- Add products FK only if products table exists (tooling-safe)
 DO $$
 BEGIN
-  IF EXISTS (
-    SELECT 1
-    FROM information_schema.tables
-    WHERE table_schema = 'public'
-      AND table_name = 'products'
-  )
-  AND NOT EXISTS (
-    SELECT 1
-    FROM pg_constraint c
-    JOIN pg_class t ON t.oid = c.conrelid
-    JOIN pg_namespace n ON n.oid = t.relnamespace
-    WHERE n.nspname = 'public'
-      AND t.relname = 'quote_pricing_rules'
-      AND c.conname = 'quote_pricing_rules_product_id_fkey'
-  )
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='products')
+     AND NOT EXISTS (
+       SELECT 1
+       FROM pg_constraint c
+       JOIN pg_class t ON t.oid = c.conrelid
+       JOIN pg_namespace n ON n.oid = t.relnamespace
+       WHERE n.nspname='public'
+         AND t.relname='quote_pricing_rules'
+         AND c.conname='quote_pricing_rules_product_id_fkey'
+     )
   THEN
     ALTER TABLE public.quote_pricing_rules
       ADD CONSTRAINT quote_pricing_rules_product_id_fkey
-      FOREIGN KEY (product_id)
-      REFERENCES public.products(id)
-      ON DELETE CASCADE;
+      FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE CASCADE;
   END IF;
 END $$;
 
@@ -444,6 +437,16 @@ CREATE INDEX IF NOT EXISTS idx_email_tracking_quotation ON quote_email_tracking(
 CREATE INDEX IF NOT EXISTS idx_email_tracking_status ON quote_email_tracking(status);
 CREATE INDEX IF NOT EXISTS idx_email_tracking_sent ON quote_email_tracking(sent_at DESC);
 CREATE INDEX IF NOT EXISTS idx_email_tracking_recipient ON quote_email_tracking(recipient_email);
+
+-- ============================================================================
+-- USER ROLES (Infrastructure table for RLS policies)
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS public.user_roles (
+  user_id UUID NOT NULL,
+  role TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (user_id, role)
+);
 
 -- ============================================================================
 -- RLS ENABLEMENT
