@@ -31,3 +31,8 @@ dist-ssr
 
 # local backups
 .bak_*/
+_import/
+supabase/.temp/
+supabase/.branches/
+supabase/legacy_sql/
+supabase/migrations/*.bak
