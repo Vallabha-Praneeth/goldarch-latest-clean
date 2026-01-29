@@ -117,8 +117,8 @@ CREATE POLICY "Users can view their own roles"
 CREATE POLICY "Service role can manage user roles"
   ON public.user_roles FOR ALL
   TO authenticated
-  USING (current_setting('request.jwt.claim.role', true) = 'service_role')
-  WITH CHECK (current_setting('request.jwt.claim.role', true) = 'service_role');
+  USING (COALESCE(current_setting('request.jwt.claims', true), '') <> '' AND (current_setting('request.jwt.claims', true)::json->>'role') = 'service_role')
+  WITH CHECK (COALESCE(current_setting('request.jwt.claims', true), '') <> '' AND (current_setting('request.jwt.claims', true)::json->>'role') = 'service_role');
 
 -- Storage policies for 'products' bucket
 CREATE POLICY "Public can view product images"
