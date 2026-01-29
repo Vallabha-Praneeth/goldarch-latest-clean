@@ -39,3 +39,6 @@ supabase/migrations/*.bak
 
 # Supabase db pull schema snapshots (do not treat as migrations)
 supabase/migrations/*_remote_schema.sql
+
+# Supabase remote schema snapshots (generated)
+supabase/schema_snapshots/remote/*_remote_schema.sql
