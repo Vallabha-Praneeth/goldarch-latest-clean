@@ -40,18 +40,8 @@ CREATE INDEX IF NOT EXISTS idx_email_tracking_recipient
 CREATE INDEX IF NOT EXISTS idx_email_tracking_status
   ON quote_email_tracking(status);
 
-CREATE OR REPLACE FUNCTION update_email_tracking_updated_at()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at = NOW();
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER email_tracking_updated_at
-  BEFORE UPDATE ON quote_email_tracking
-  FOR EACH ROW
-  EXECUTE FUNCTION update_email_tracking_updated_at();
+-- Note: updated_at trigger already exists in Phase 1 (trg_quote_email_tracking_touch)
+-- using the consistent quote_touch_updated_at() function pattern
 
 ALTER TABLE quote_email_tracking ENABLE ROW LEVEL SECURITY;
 
@@ -82,17 +72,53 @@ COMMENT ON TABLE quote_email_tracking IS 'Tracks all quote emails sent to custom
 -- 2. PRODUCT IMAGES
 -- =====================================================
 
-ALTER TABLE products
-ADD COLUMN IF NOT EXISTS images JSONB DEFAULT '[]'::jsonb;
+-- Guard product table mutations so local/shadow resets don't fail
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+      AND table_name = 'products'
+  ) THEN
+    ALTER TABLE public.products
+      ADD COLUMN IF NOT EXISTS images JSONB DEFAULT '[]'::jsonb;
 
-CREATE INDEX IF NOT EXISTS idx_products_images
-  ON products USING GIN (images);
+    CREATE INDEX IF NOT EXISTS idx_products_images
+      ON public.products USING GIN (images);
 
-COMMENT ON COLUMN products.images IS 'Array of product images: [{"url": "...", "alt": "...", "isPrimary": true, "order": 0, "uploadedAt": "..."}]';
+    COMMENT ON COLUMN public.products.images IS
+      'Array of product images: [{"url": "...", "alt": "...", "isPrimary": true, "order": 0, "uploadedAt": "..."}]';
 
-UPDATE products
-SET images = '[]'::jsonb
-WHERE images IS NULL;
+    UPDATE public.products
+    SET images = '[]'::jsonb
+    WHERE images IS NULL;
+  END IF;
+END $$;
+
+-- Ensure user_roles exists before any policies reference it
+CREATE TABLE IF NOT EXISTS public.user_roles (
+  user_id UUID NOT NULL,
+  role TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (user_id, role)
+);
+
+-- Enable RLS and add policies for user_roles
+ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
+
+-- Users can read only their own roles
+CREATE POLICY "Users can view their own roles"
+  ON public.user_roles FOR SELECT
+  TO authenticated
+  USING (user_id = auth.uid());
+
+-- Only service_role can write (INSERT/UPDATE/DELETE) to user_roles
+CREATE POLICY "Service role can manage user roles"
+  ON public.user_roles FOR ALL
+  TO authenticated
+  USING (COALESCE(current_setting('request.jwt.claims', true), '') <> '' AND (current_setting('request.jwt.claims', true)::json->>'role') = 'service_role')
+  WITH CHECK (COALESCE(current_setting('request.jwt.claims', true), '') <> '' AND (current_setting('request.jwt.claims', true)::json->>'role') = 'service_role');
 
 -- Storage policies for 'products' bucket
 CREATE POLICY "Public can view product images"
@@ -158,6 +184,14 @@ COMMENT ON FUNCTION count_product_images IS 'Returns the number of images for a 
 -- =====================================================
 -- 3. QUANTITY ADJUSTMENT TRACKING
 -- =====================================================
+
+-- Dependency stub: plan_jobs (referenced by FK and policies below)
+CREATE TABLE IF NOT EXISTS public.plan_jobs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
 
 CREATE TABLE IF NOT EXISTS quote_extraction_adjustments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

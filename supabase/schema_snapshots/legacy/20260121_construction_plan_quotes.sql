@@ -8,6 +8,12 @@
 DROP TABLE IF EXISTS quote_lines CASCADE;
 DROP TABLE IF EXISTS quotes CASCADE;
 
+-- Dependency stub: price_books (referenced by FK)
+CREATE TABLE IF NOT EXISTS price_books (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 -- ============================================================================
 -- Quotes Table (Construction Plan System)
 -- ============================================================================
