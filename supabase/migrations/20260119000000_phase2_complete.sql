@@ -114,6 +114,22 @@ CREATE TABLE IF NOT EXISTS public.user_roles (
   PRIMARY KEY (user_id, role)
 );
 
+-- Enable RLS and add policies for user_roles
+ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
+
+-- Users can read only their own roles
+CREATE POLICY "Users can view their own roles"
+  ON public.user_roles FOR SELECT
+  TO authenticated
+  USING (user_id = auth.uid());
+
+-- Only service_role can write (INSERT/UPDATE/DELETE) to user_roles
+CREATE POLICY "Service role can manage user roles"
+  ON public.user_roles FOR ALL
+  TO authenticated
+  USING (current_setting('request.jwt.claim.role', true) = 'service_role')
+  WITH CHECK (current_setting('request.jwt.claim.role', true) = 'service_role');
+
 -- Storage policies for 'products' bucket
 CREATE POLICY "Public can view product images"
   ON storage.objects FOR SELECT

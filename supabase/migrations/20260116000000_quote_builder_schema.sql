@@ -147,7 +147,7 @@ CREATE TABLE IF NOT EXISTS quote_pricing_rules (
 
   -- Pricing
   base_price DECIMAL(10,2) NOT NULL,
-  markup_pct DECIMAL(5,2) DEFAULT 0, -- Additional markup for this region/tier
+  markup_pct DECIMAL(5,2) NOT NULL DEFAULT 0, -- Additional markup for this region/tier
   final_price DECIMAL(10,2) GENERATED ALWAYS AS (
     base_price * (1 + markup_pct / 100)
   ) STORED,
@@ -433,10 +433,22 @@ CREATE TABLE IF NOT EXISTS quote_email_tracking (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Add Phase 2 columns for forward compatibility (idempotent)
+ALTER TABLE quote_email_tracking ADD COLUMN IF NOT EXISTS provider_message_id TEXT;
+ALTER TABLE quote_email_tracking ADD COLUMN IF NOT EXISTS error_message TEXT;
+ALTER TABLE quote_email_tracking ADD COLUMN IF NOT EXISTS opened_at TIMESTAMPTZ;
+ALTER TABLE quote_email_tracking ADD COLUMN IF NOT EXISTS clicked_at TIMESTAMPTZ;
+
 CREATE INDEX IF NOT EXISTS idx_email_tracking_quotation ON quote_email_tracking(quotation_id);
 CREATE INDEX IF NOT EXISTS idx_email_tracking_status ON quote_email_tracking(status);
 CREATE INDEX IF NOT EXISTS idx_email_tracking_sent ON quote_email_tracking(sent_at DESC);
 CREATE INDEX IF NOT EXISTS idx_email_tracking_recipient ON quote_email_tracking(recipient_email);
+
+DROP TRIGGER IF EXISTS trg_quote_email_tracking_touch ON quote_email_tracking;
+CREATE TRIGGER trg_quote_email_tracking_touch
+  BEFORE UPDATE ON quote_email_tracking
+  FOR EACH ROW
+  EXECUTE FUNCTION quote_touch_updated_at();
 
 -- ============================================================================
 -- USER ROLES (Infrastructure table for RLS policies)
