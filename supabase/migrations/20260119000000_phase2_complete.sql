@@ -40,18 +40,8 @@ CREATE INDEX IF NOT EXISTS idx_email_tracking_recipient
 CREATE INDEX IF NOT EXISTS idx_email_tracking_status
   ON quote_email_tracking(status);
 
-CREATE OR REPLACE FUNCTION update_email_tracking_updated_at()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at = NOW();
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER email_tracking_updated_at
-  BEFORE UPDATE ON quote_email_tracking
-  FOR EACH ROW
-  EXECUTE FUNCTION update_email_tracking_updated_at();
+-- Note: updated_at trigger already exists in Phase 1 (trg_quote_email_tracking_touch)
+-- using the consistent quote_touch_updated_at() function pattern
 
 ALTER TABLE quote_email_tracking ENABLE ROW LEVEL SECURITY;
 
