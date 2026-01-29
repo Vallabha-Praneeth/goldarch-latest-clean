@@ -36,3 +36,6 @@ supabase/.temp/
 supabase/.branches/
 supabase/legacy_sql/
 supabase/migrations/*.bak
+
+# Supabase db pull schema snapshots (do not treat as migrations)
+supabase/migrations/*_remote_schema.sql
