@@ -19,7 +19,7 @@ import type {
   RejectQuoteRequest,
   SubmitQuoteRequest,
   AcceptQuoteRequest,
-} from '@/lib/types/quote-approval.types';
+} from '../types/quote-approval.types';
 
 // ============================================================================
 // QUERY KEYS
@@ -190,62 +190,33 @@ const mockApiClient = {
   },
 
   submitQuote: async (data: SubmitQuoteRequest): Promise<void> => {
-    const response = await fetch(`/api/quotes/${data.quote_id}/submit`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ notes: data.notes }),
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to submit quote');
-    }
+    // REAL: await fetch(`/api/quotes/${data.quote_id}/submit`, { method: 'POST', ... });
+    await new Promise(resolve => setTimeout(resolve, 800));
+    console.log('[SKELETON] Submit quote:', data);
   },
 
   approveQuote: async (data: ApproveQuoteRequest): Promise<void> => {
-    const response = await fetch(`/api/quotes/${data.quote_id}/approve`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ notes: data.notes }),
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to approve quote');
-    }
+    // REAL: await fetch(`/api/quotes/${data.quote_id}/approve`, { method: 'POST', ... });
+    await new Promise(resolve => setTimeout(resolve, 800));
+    console.log('[SKELETON] Approve quote:', data);
   },
 
   rejectQuote: async (data: RejectQuoteRequest): Promise<void> => {
-    const response = await fetch(`/api/quotes/${data.quote_id}/reject`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ reason: data.reason }),
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to reject quote');
-    }
+    // REAL: await fetch(`/api/quotes/${data.quote_id}/reject`, { method: 'POST', ... });
+    await new Promise(resolve => setTimeout(resolve, 800));
+    console.log('[SKELETON] Reject quote:', data);
   },
 
   acceptQuote: async (data: AcceptQuoteRequest): Promise<void> => {
-    const response = await fetch(`/api/quotes/${data.quote_id}/accept`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ notes: data.notes }),
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to accept quote');
-    }
+    // REAL: await fetch(`/api/quotes/${data.quote_id}/accept`, { method: 'POST', ... });
+    await new Promise(resolve => setTimeout(resolve, 800));
+    console.log('[SKELETON] Accept quote:', data);
   },
 
   declineQuote: async (quoteId: string): Promise<void> => {
-    const response = await fetch(`/api/quotes/${quoteId}/decline`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to decline quote');
-    }
+    // REAL: await fetch(`/api/quotes/${quoteId}/decline`, { method: 'POST' });
+    await new Promise(resolve => setTimeout(resolve, 800));
+    console.log('[SKELETON] Decline quote:', quoteId);
   },
 };
 
