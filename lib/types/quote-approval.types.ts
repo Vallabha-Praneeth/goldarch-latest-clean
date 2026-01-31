@@ -8,7 +8,7 @@
  * Defines quote statuses, approval workflows, and related types.
  */
 
-import type { UserRole } from '../../MODULE-0B/types/rbac.types';
+import type { UserRole } from './rbac.types';
 
 // ============================================================================
 // QUOTE STATUS

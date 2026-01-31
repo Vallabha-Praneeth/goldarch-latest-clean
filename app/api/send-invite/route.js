@@ -19,14 +19,30 @@ const roleDisplayName = {
 
 const allowedRoles = new Set(Object.keys(roleDisplayName));
 
+/**
+ * Computes SHA-256 hash of input string.
+ * @param {string} input - The string to hash.
+ * @returns {string} Hex-encoded SHA-256 hash.
+ */
 function sha256Hex(input) {
   return crypto.createHash("sha256").update(input, "utf8").digest("hex");
 }
 
+/**
+ * Creates a JSON response with the given status code.
+ * @param {number} status - HTTP status code.
+ * @param {object} body - Response body object.
+ * @returns {NextResponse} JSON response.
+ */
 function json(status, body) {
   return NextResponse.json(body, { status });
 }
 
+/**
+ * Derives the base URL from environment variables or request headers.
+ * @param {Request} request - The incoming HTTP request.
+ * @returns {string} Base URL without trailing slash.
+ */
 function getBaseUrl(request) {
   // Prefer explicit env if set, else derive from request headers.
   const envUrl =
@@ -41,6 +57,11 @@ function getBaseUrl(request) {
   return `${proto}://${host}`.replace(/\/+$/, "");
 }
 
+/**
+ * Validates email address format and checks for header injection.
+ * @param {string} email - Email address to validate.
+ * @returns {boolean} True if email is safe, false otherwise.
+ */
 function isSafeEmail(email) {
   if (!email) return false;
   if (email.includes("\n") || email.includes("\r")) return false;
@@ -49,19 +70,31 @@ function isSafeEmail(email) {
 }
 
 /**
- * POST body:
- * {
- *   orgId: string (uuid),
- *   to: string (email),
- *   role: 'owner'|'admin'|'manager'|'procurement'|'viewer',
- *   inviterName?: string
- * }
+ * Escapes HTML special characters to prevent XSS.
+ * @param {string} str - String to escape.
+ * @returns {string} HTML-escaped string.
+ */
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+/**
+ * Sends an organization invite email.
  *
- * Behavior:
- * - Requires auth
- * - Requires inviter is org owner/admin
- * - Creates organization_invites row with token_hash
- * - Sends email containing accept link with {inviteId, token}
+ * Requires authentication and org owner/admin role.
+ * Creates an invite record with a cryptographic token and sends email.
+ *
+ * @param {Request} request - HTTP request with JSON body containing:
+ *   - orgId: string (uuid) - Organization ID
+ *   - to: string - Recipient email address
+ *   - role: string - One of: owner, admin, manager, procurement, viewer
+ *   - inviterName?: string - Optional name of person sending invite
+ * @returns {Promise<NextResponse>} JSON response with invite details or error.
  */
 export async function POST(request) {
   try {
@@ -157,7 +190,7 @@ export async function POST(request) {
             </div>
             <div class="content">
               <p>Hello,</p>
-              <p><strong>${inviterName}</strong> has invited you to join their organization on Gold.Arch.</p>
+              <p><strong>${escapeHtml(inviterName)}</strong> has invited you to join their organization on Gold.Arch.</p>
               <p>Your assigned role: <span class="role-badge">${roleDisplayName[role] || "Team Member"}</span></p>
               <p style="text-align: center;">
                 <a href="${acceptUrl}" class="button">Accept Invitation</a>

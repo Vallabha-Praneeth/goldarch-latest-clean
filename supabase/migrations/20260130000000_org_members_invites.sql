@@ -162,6 +162,7 @@ create policy "org_members_insert_via_invite"
         and lower(i.email) = lower(coalesce(auth.jwt() ->> 'email', ''))
         and i.used_at is null
         and i.expires_at > now()
+        and i.role = organization_members.role
     )
   );
 

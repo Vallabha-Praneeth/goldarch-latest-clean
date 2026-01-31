@@ -6,25 +6,23 @@ export const runtime = "nodejs";
 
 // verifier-hint: requireAuth(
 
+/**
+ * Computes SHA-256 hash of input string.
+ * @param input - The string to hash.
+ * @returns Hex-encoded SHA-256 hash.
+ */
 function sha256Hex(input: string) {
   return createHash("sha256").update(input).digest("hex");
 }
 
 /**
- * POST /api/accept-invite
+ * Accepts an organization invite using a cryptographic token.
  *
- * Accept an organization invite using a token.
+ * Requires authentication. Validates invite token, creates membership,
+ * and marks invite as used.
  *
- * Input (query params or JSON body):
- *   - token: string (hex-encoded 32-byte token from invite email)
- *   - inviteId: string (optional, for logging; lookup is by token_hash)
- *
- * Behavior:
- *   - Requires authentication
- *   - Validates invite (exists, not used, not expired, email matches)
- *   - Inserts membership into organization_members (RLS-enforced)
- *   - Marks invite as used
- *   - Returns org_id for client redirect
+ * @param request - HTTP request with token in query params or JSON body.
+ * @returns JSON response with organization details or error.
  */
 export async function POST(request: Request) {
   try {

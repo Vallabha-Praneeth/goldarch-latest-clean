@@ -193,7 +193,7 @@ export async function POST(request) {
 ## File Changes Summary
 
 **Modified:**
-- `app/api/send-invite/route.js` → `app/api/send-invite/route.ts` (full rewrite)
+- `app/api/send-invite/route.js` (full rewrite)
 
 **Created:**
 - `app/api/accept-invite/route.ts` (new endpoint)

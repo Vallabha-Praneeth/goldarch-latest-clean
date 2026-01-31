@@ -27,11 +27,11 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 
 // Types
-import type { QuoteWithRelations, ApprovalAction } from '../types/quote-approval.types';
+import type { QuoteWithRelations, ApprovalAction } from '@/lib/types/quote-approval.types';
 import { QuoteStatusBadge } from './quote-status-badge';
 
 // Hooks
-import { useApproveQuote, useRejectQuote } from '../hooks/use-quote-approval';
+import { useApproveQuote, useRejectQuote } from '@/lib/hooks/use-quote-approval';
 
 interface QuoteApprovalDialogProps {
   open: boolean;
