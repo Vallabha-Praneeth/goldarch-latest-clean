@@ -21,11 +21,11 @@ import {
 } from 'lucide-react';
 
 // Types
-import type { QuoteStatus } from '@/lib/types/quote-approval.types';
+import type { QuoteStatus } from '../types/quote-approval.types';
 import {
   QUOTE_STATUS_LABELS,
   getStatusBadgeVariant,
-} from '@/lib/types/quote-approval.types';
+} from '../types/quote-approval.types';
 
 interface QuoteStatusBadgeProps {
   status: QuoteStatus;
