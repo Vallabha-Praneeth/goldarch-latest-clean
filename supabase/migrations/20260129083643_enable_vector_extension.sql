@@ -1,3 +1,10 @@
 -- Ensure pgvector exists for embeddings / similarity search.
--- Scratch-safe / idempotent.
-create extension if not exists "vector" with schema "extensions";
+-- Idempotent, and places extension in the "extensions" schema (Supabase convention).
+
+do $$
+begin
+  create extension "vector" with schema "extensions";
+exception
+  when duplicate_object then null;
+end
+$$;
