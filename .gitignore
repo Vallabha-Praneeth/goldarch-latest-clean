@@ -51,3 +51,6 @@ test-results/
 playwright-report/
 **/verify_alignment.report.json
 *.report.json
+
+# Test scripts with hardcoded secrets
+scripts/test-quote-flow.mjs
