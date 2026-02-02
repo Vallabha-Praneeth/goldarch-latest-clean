@@ -78,9 +78,10 @@ test.describe('Organization Invite Flow', () => {
       },
     });
 
+    // Let created_by default to auth.uid() (table has default auth.uid())
     const { data: org, error: orgError } = await ownerClient
       .from('organizations')
-      .insert({ name: orgName, created_by: ownerUser.userId })
+      .insert({ name: orgName })
       .select()
       .single();
 
