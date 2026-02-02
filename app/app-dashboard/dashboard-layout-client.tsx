@@ -18,7 +18,8 @@ import {
   Menu,
   Files,
   UserCog,
-  Layout
+  Layout,
+  Shield
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -32,6 +33,8 @@ const navigation = [
   { name: 'Plans', href: '/app-dashboard/plans', icon: Layout },
   { name: 'Tasks', href: '/app-dashboard/tasks', icon: CheckSquare },
   { name: 'Activities', href: '/app-dashboard/activities', icon: Activity },
+  { name: 'Templates', href: '/app-dashboard/templates', icon: FileText },
+  { name: 'Access Control', href: '/app-dashboard/admin/access-control', icon: Shield },
   { name: 'Team', href: '/app-dashboard/team', icon: UserCog },
 ];
 

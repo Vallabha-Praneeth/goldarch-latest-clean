@@ -152,13 +152,26 @@ export async function checkRateLimit(
 
 /**
  * CORS headers for API routes
+ * In production, restrict to allowed origins via ALLOWED_ORIGINS env var
+ * In development, allows all origins for local testing
  */
 export function getCORSHeaders(origin?: string) {
+  const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+    : [];
+
+  // In production with ALLOWED_ORIGINS set, validate origin
+  const allowedOrigin =
+    process.env.NODE_ENV === 'production' && allowedOrigins.length > 0
+      ? (origin && allowedOrigins.includes(origin) ? origin : allowedOrigins[0])
+      : (origin || '*'); // Development: allow all
+
   return {
-    'Access-Control-Allow-Origin': origin || '*',
+    'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Access-Control-Max-Age': '86400', // 24 hours
+    'Access-Control-Allow-Credentials': 'true',
   };
 }
 

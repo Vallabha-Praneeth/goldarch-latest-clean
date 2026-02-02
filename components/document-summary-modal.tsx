@@ -205,25 +205,46 @@ export function DocumentSummaryModal({
                   <div className="bg-muted rounded-lg p-6">
                     <div className="prose prose-sm max-w-none dark:prose-invert">
                       {value === 'bullet-points' ? (
-                        <div
-                          dangerouslySetInnerHTML={{
-                            __html: currentSummary.content
-                              .split('\n')
-                              .map((line) => line.trim())
-                              .filter((line) => line)
-                              .map((line) => {
-                                // Convert markdown bullets to HTML
-                                if (line.startsWith('- ') || line.startsWith('* ')) {
-                                  return `<li>${line.substring(2)}</li>`;
+                        <div>
+                          {currentSummary.content
+                            .split('\n')
+                            .map((line) => line.trim())
+                            .filter((line) => line)
+                            .reduce((acc: Array<{ type: 'list' | 'paragraph', items: string[] }>, line) => {
+                              const isBullet = line.startsWith('- ') || line.startsWith('* ');
+                              const content = isBullet ? line.substring(2) : line;
+
+                              if (isBullet) {
+                                // Add to existing list or create new list
+                                if (acc.length > 0 && acc[acc.length - 1].type === 'list') {
+                                  acc[acc.length - 1].items.push(content);
+                                } else {
+                                  acc.push({ type: 'list', items: [content] });
                                 }
-                                return `<p>${line}</p>`;
-                              })
-                              .join('')
-                              .replace(/<li>/g, '<ul><li>')
-                              .replace(/<\/li>(?!<li>)/g, '</li></ul>')
-                              .replace(/<\/ul><ul>/g, ''),
-                          }}
-                        />
+                              } else {
+                                // Add as paragraph
+                                acc.push({ type: 'paragraph', items: [content] });
+                              }
+                              return acc;
+                            }, [])
+                            .map((block, blockIdx) => {
+                              if (block.type === 'list') {
+                                return (
+                                  <ul key={blockIdx} className="list-disc pl-5 my-2">
+                                    {block.items.map((item, itemIdx) => (
+                                      <li key={itemIdx}>{item}</li>
+                                    ))}
+                                  </ul>
+                                );
+                              } else {
+                                return (
+                                  <p key={blockIdx} className="my-2">
+                                    {block.items[0]}
+                                  </p>
+                                );
+                              }
+                            })}
+                        </div>
                       ) : (
                         <p className="whitespace-pre-wrap">{currentSummary.content}</p>
                       )}
