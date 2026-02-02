@@ -41,9 +41,11 @@ export async function GET(request: Request) {
     const isAdmin = await isUserAdmin(user.id, supabase);
 
     // Build query based on admin status
+    // Note: We can't expand auth.users relationships via PostgREST
+    // Just return the IDs and let the client fetch user details if needed
     let query = supabase
       .from('supplier_access_rules')
-      .select('*, created_by_user:created_by(id, email), assigned_user:user_id(id, email)')
+      .select('*')
       .order('created_at', { ascending: false });
 
     // Non-admins can only see their own rules
@@ -123,19 +125,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // Verify target user exists
-    const { data: targetUser, error: userError } = await supabase
-      .from('users')
-      .select('id')
-      .eq('id', targetUserId)
-      .maybeSingle();
-
-    if (userError || !targetUser) {
-      return NextResponse.json(
-        { error: 'Target user not found' },
-        { status: 404 }
-      );
-    }
+    // Note: We skip user existence validation since auth.users is not directly queryable
+    // The database foreign key constraint will handle invalid user_ids
 
     // Build insert data
     const insertData: any = {

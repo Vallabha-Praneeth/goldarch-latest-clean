@@ -3,14 +3,25 @@
 -- Purpose: Fix supplier_access_rules table schema to match code expectations
 -- Replaces generic rule_key/rule_value with proper rule_data jsonb structure
 --
--- This migration supports both new format (rule_data jsonb) and legacy fields (category_id, region)
+-- IMPORTANT: This migration preserves existing data by renaming the old table
+-- and backfilling data into the new schema format.
 
 begin;
 
--- Drop existing table if it has wrong structure (from previous migration)
-drop table if exists public.supplier_access_rules cascade;
+-- Step 1: Rename existing table to preserve data
+-- If table doesn't exist, this will silently succeed with a notice
+do $$
+begin
+  if exists (
+    select 1 from information_schema.tables
+    where table_schema = 'public'
+    and table_name = 'supplier_access_rules'
+  ) then
+    alter table public.supplier_access_rules rename to supplier_access_rules_old;
+  end if;
+end $$;
 
--- Create table with correct schema
+-- Step 2: Create table with correct schema
 create table public.supplier_access_rules (
   id uuid primary key default gen_random_uuid(),
 
@@ -45,6 +56,89 @@ create table public.supplier_access_rules (
     region is not null
   )
 );
+
+-- Step 3: Backfill data from old table if it exists
+-- This preserves existing access rules by transforming them to new format
+do $$
+declare
+  old_table_exists boolean;
+begin
+  -- Check if old table exists
+  select exists (
+    select 1 from information_schema.tables
+    where table_schema = 'public'
+    and table_name = 'supplier_access_rules_old'
+  ) into old_table_exists;
+
+  if old_table_exists then
+    -- Attempt to backfill data
+    -- Handle different possible old schema formats
+
+    -- Format 1: Old schema with rule_key/rule_value
+    if exists (
+      select 1 from information_schema.columns
+      where table_schema = 'public'
+      and table_name = 'supplier_access_rules_old'
+      and column_name = 'rule_key'
+    ) then
+      insert into public.supplier_access_rules (
+        id, user_id, category_id, region, created_by, created_at, notes
+      )
+      select
+        id,
+        user_id,
+        case when rule_key = 'category' then rule_value else null end as category_id,
+        case when rule_key = 'region' then rule_value else null end as region,
+        user_id as created_by,  -- Use user_id as created_by since old table may not have this column
+        created_at,
+        notes
+      from supplier_access_rules_old
+      where rule_key in ('category', 'region');
+
+    -- Format 2: Old schema with category_id/region columns
+    elsif exists (
+      select 1 from information_schema.columns
+      where table_schema = 'public'
+      and table_name = 'supplier_access_rules_old'
+      and column_name = 'category_id'
+    ) then
+      insert into public.supplier_access_rules (
+        id, user_id, rule_data, category_id, region, created_by, created_at, notes
+      )
+      select
+        id,
+        user_id,
+        -- Transform to new format: create jsonb with arrays
+        jsonb_build_object(
+          'categories',
+          case
+            when category_id is not null then jsonb_build_array(category_id)
+            else '[]'::jsonb
+          end,
+          'regions',
+          case
+            when region is not null then jsonb_build_array(region)
+            else '[]'::jsonb
+          end
+        ) as rule_data,
+        category_id,  -- Keep legacy fields for compatibility
+        region,
+        coalesce(created_by, user_id) as created_by,
+        created_at,
+        coalesce(notes, '') as notes
+      from supplier_access_rules_old;
+    end if;
+
+    -- Log successful migration
+    raise notice 'Migrated % rows from supplier_access_rules_old',
+      (select count(*) from supplier_access_rules);
+
+    -- Step 4: Drop old table after successful backfill
+    drop table if exists public.supplier_access_rules_old cascade;
+  else
+    raise notice 'No existing supplier_access_rules table found - creating fresh';
+  end if;
+end $$;
 
 -- Indexes for performance
 create index supplier_access_rules_user_id_idx on public.supplier_access_rules (user_id);

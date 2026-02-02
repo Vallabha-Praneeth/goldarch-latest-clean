@@ -96,7 +96,7 @@ export async function GET(
  */
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const auth = await requireUser();
@@ -105,7 +105,7 @@ export async function DELETE(
     }
 
     const { user, supabase } = auth;
-    const ruleId = params.id;
+    const { id: ruleId } = await params;
 
     if (!ruleId) {
       return NextResponse.json({ error: 'Rule ID is required' }, { status: 400 });
@@ -243,6 +243,14 @@ export async function PATCH(
 
     if (typeof body.notes === 'string') {
       updateData.notes = body.notes.trim() || null;
+    }
+
+    // Validate that at least one field is being updated
+    if (Object.keys(updateData).length === 0) {
+      return NextResponse.json(
+        { error: 'No valid fields to update' },
+        { status: 400 }
+      );
     }
 
     // Update the rule

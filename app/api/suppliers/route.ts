@@ -7,9 +7,45 @@ import { requireUser } from "@/lib/server/require-user";
 export const runtime = "nodejs";
 
 /**
- * Minimal secure suppliers endpoint.
- * NOTE: We keep this minimal to satisfy alignment + build.
- * If you want the full legacy behavior (filters/search/pagination), we can port it next.
+ * Check if user is admin (owner/admin role in any organization)
+ */
+async function isUserAdmin(userId: string, supabase: any): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('organization_members')
+    .select('role')
+    .eq('user_id', userId)
+    .in('role', ['owner', 'admin'])
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Error checking admin status:', error);
+    return false;
+  }
+
+  return !!data;
+}
+
+/**
+ * Get user's supplier access rules
+ */
+async function getUserAccessRules(userId: string, supabase: any): Promise<any[]> {
+  const { data, error } = await supabase
+    .from('supplier_access_rules')
+    .select('*')
+    .eq('user_id', userId);
+
+  if (error) {
+    console.error('Error fetching access rules:', error);
+    return [];
+  }
+
+  return data || [];
+}
+
+/**
+ * GET /api/suppliers
+ * Returns filtered suppliers based on user's access rules
  */
 export async function GET(request: Request) {
   try {
@@ -18,29 +54,77 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
     }
 
-    const url = new URL(request.url);
-    const limitRaw = url.searchParams.get("limit");
-    const limit = Math.min(Math.max(Number(limitRaw || "50") || 50, 1), 200);
+    const { user, supabase } = auth;
 
-    // Try common table names; if the project uses a different one, we’ll adjust after build passes.
-    // Keep fail-soft to avoid 500s during migration/port work.
-    const candidates = ["suppliers", "supplier_profiles"];
+    // Check if user is admin
+    const isAdmin = await isUserAdmin(user.id, supabase);
 
-    for (const table of candidates) {
-      const { data, error } = await auth.supabase
-        .from(table)
-        .select("*")
-        .limit(limit);
+    // Get access rules for non-admin users
+    const accessRules = isAdmin ? [] : await getUserAccessRules(user.id, supabase);
 
-      if (!error) {
-        return NextResponse.json({ success: true, table, data: data ?? [] }, { status: 200 });
+    // Start building query
+    let query = supabase
+      .from('suppliers')
+      .select('*');
+
+    // If not admin and has no access rules, return empty
+    if (!isAdmin && accessRules.length === 0) {
+      return NextResponse.json({ success: true, data: [], filtered: true }, { status: 200 });
+    }
+
+    // If not admin and has access rules, apply filtering
+    if (!isAdmin && accessRules.length > 0) {
+      const conditions: string[] = [];
+
+      for (const rule of accessRules) {
+        // Check rule_data (new format) first
+        if (rule.rule_data) {
+          const { categories, regions } = rule.rule_data;
+
+          if (categories && categories.length > 0 && regions && regions.length > 0) {
+            // Both category and region specified - AND condition
+            // Use 'and' to combine conditions for this rule
+            conditions.push(`and(category_id.in.(${categories.join(',')}),region.in.(${regions.join(',')}))`);
+          } else if (categories && categories.length > 0) {
+            // Only categories
+            conditions.push(`category_id.in.(${categories.join(',')})`);
+          } else if (regions && regions.length > 0) {
+            // Only regions
+            conditions.push(`region.in.(${regions.join(',')})`);
+          }
+        }
+        // Fall back to legacy fields
+        else if (rule.category_id && rule.region) {
+          conditions.push(`and(category_id.eq.${rule.category_id},region.eq.${rule.region})`);
+        } else if (rule.category_id) {
+          conditions.push(`category_id.eq.${rule.category_id}`);
+        } else if (rule.region) {
+          conditions.push(`region.eq.${rule.region}`);
+        }
+      }
+
+      // Apply OR conditions if we have any
+      if (conditions.length > 0) {
+        query = query.or(conditions.join(','));
       }
     }
 
-    return NextResponse.json(
-      { success: true, data: [], note: "No suppliers table available yet." },
-      { status: 200 }
-    );
+    // Execute query
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Error fetching suppliers:', error);
+      return NextResponse.json(
+        { error: 'Failed to fetch suppliers', message: error.message },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: data || [],
+      filtered: !isAdmin,
+    }, { status: 200 });
   } catch (err) {
     console.error("api/suppliers GET error:", err);
     return NextResponse.json({ error: "Failed to fetch suppliers" }, { status: 500 });

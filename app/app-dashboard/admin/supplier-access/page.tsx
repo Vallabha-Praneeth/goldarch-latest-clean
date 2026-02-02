@@ -73,7 +73,13 @@ export default function SupplierAccessPage() {
   });
 
   // Fetch access rules
-  const { data: rulesData, isLoading: rulesLoading } = useQuery({
+  const {
+    data: rulesData,
+    isLoading: rulesLoading,
+    isError: rulesError,
+    error: rulesErrorObj,
+    refetch: refetchRules,
+  } = useQuery({
     queryKey: ['supplier-access-rules'],
     queryFn: async () => {
       const response = await fetch('/api/suppliers/access-rules');
@@ -223,6 +229,32 @@ export default function SupplierAccessPage() {
 
   const rules: AccessRule[] = rulesData?.data || [];
   const isAdmin = rulesData?.isAdmin || false;
+
+  // Handle error state
+  if (rulesError) {
+    return (
+      <div className="space-y-6">
+        <Breadcrumbs />
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2 text-destructive">
+              <AlertTriangle className="h-5 w-5" />
+              <CardTitle>Error Loading Access Rules</CardTitle>
+            </div>
+            <CardDescription>
+              Failed to load access rules: {(rulesErrorObj as Error)?.message || 'Unknown error'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => refetchRules()} variant="outline">
+              <Loader2 className="mr-2 h-4 w-4" />
+              Retry
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (!isAdmin && !rulesLoading) {
     return (
