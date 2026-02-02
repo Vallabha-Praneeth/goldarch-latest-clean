@@ -7,7 +7,8 @@ export const runtime = "nodejs";
 
 // verifier-hint: requireAuth(
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize Resend only if API key is configured (optional for testing)
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 const roleDisplayName = {
   owner: "Owner",
@@ -161,56 +162,75 @@ export async function POST(request) {
 
     const inviterName = inviterNameRaw || user.email || "A team member";
 
-    // Send email (Resend).
-    const data = await resend.emails.send({
-      from: "Gold.Arch <onboarding@resend.dev>",
-      to: [to],
-      replyTo: "goldarch.notifications@gmail.com",
-      subject: "You're invited to join Gold.Arch",
-      html: `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .header { background: #007AFF; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-            .content { padding: 20px; background: #f9f9f9; }
-            .footer { padding: 20px; text-align: center; font-size: 12px; color: #666; background: #f0f0f0; border-radius: 0 0 8px 8px; }
-            .button { display: inline-block; background: #007AFF; color: white !important; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 20px 0; font-weight: bold; }
-            .role-badge { display: inline-block; background: #E3F2FD; color: #1976D2; padding: 4px 12px; border-radius: 16px; font-weight: bold; }
-            code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <h1 style="margin: 0;">You're Invited!</h1>
-              <p style="margin: 5px 0 0 0; opacity: 0.9;">Join Gold.Arch Team</p>
-            </div>
-            <div class="content">
-              <p>Hello,</p>
-              <p><strong>${escapeHtml(inviterName)}</strong> has invited you to join their organization on Gold.Arch.</p>
-              <p>Your assigned role: <span class="role-badge">${roleDisplayName[role] || "Team Member"}</span></p>
-              <p style="text-align: center;">
-                <a href="${acceptUrl}" class="button">Accept Invitation</a>
-              </p>
-              <p style="font-size: 12px; color: #666;">
-                If the button doesn’t work, copy/paste this link:<br/>
-                <code>${acceptUrl}</code>
-              </p>
-              <p>If you didn’t expect this invitation, you can safely ignore this email.</p>
-            </div>
-            <div class="footer">
-              <p>Gold.Arch Supplier Management System</p>
-            </div>
-          </div>
-        </body>
-        </html>
-      `,
-    });
+    // Send email (Resend) - only if API key is configured.
+    let emailData = null;
+    let emailSent = false;
 
-    return json(200, { success: true, inviteId: invite.id, acceptUrl, data });
+    if (resend) {
+      try {
+        emailData = await resend.emails.send({
+          from: "Gold.Arch <onboarding@resend.dev>",
+          to: [to],
+          replyTo: "goldarch.notifications@gmail.com",
+          subject: "You're invited to join Gold.Arch",
+          html: `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background: #007AFF; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+                .content { padding: 20px; background: #f9f9f9; }
+                .footer { padding: 20px; text-align: center; font-size: 12px; color: #666; background: #f0f0f0; border-radius: 0 0 8px 8px; }
+                .button { display: inline-block; background: #007AFF; color: white !important; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 20px 0; font-weight: bold; }
+                .role-badge { display: inline-block; background: #E3F2FD; color: #1976D2; padding: 4px 12px; border-radius: 16px; font-weight: bold; }
+                code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <div class="header">
+                  <h1 style="margin: 0;">You're Invited!</h1>
+                  <p style="margin: 5px 0 0 0; opacity: 0.9;">Join Gold.Arch Team</p>
+                </div>
+                <div class="content">
+                  <p>Hello,</p>
+                  <p><strong>${escapeHtml(inviterName)}</strong> has invited you to join their organization on Gold.Arch.</p>
+                  <p>Your assigned role: <span class="role-badge">${roleDisplayName[role] || "Team Member"}</span></p>
+                  <p style="text-align: center;">
+                    <a href="${acceptUrl}" class="button">Accept Invitation</a>
+                  </p>
+                  <p style="font-size: 12px; color: #666;">
+                    If the button doesn't work, copy/paste this link:<br/>
+                    <code>${acceptUrl}</code>
+                  </p>
+                  <p>If you didn't expect this invitation, you can safely ignore this email.</p>
+                </div>
+                <div class="footer">
+                  <p>Gold.Arch Supplier Management System</p>
+                </div>
+              </div>
+            </body>
+            </html>
+          `,
+        });
+        emailSent = true;
+      } catch (emailError) {
+        console.error("Failed to send invite email:", emailError);
+        // Continue without failing - invite record is already created
+      }
+    } else {
+      console.warn("RESEND_API_KEY not configured - skipping email send (test mode)");
+    }
+
+    return json(200, {
+      success: true,
+      inviteId: invite.id,
+      acceptUrl,
+      emailSent,
+      data: emailData
+    });
   } catch (err) {
     console.error("send-invite error:", err);
     return json(500, { error: "Failed to send invite" });

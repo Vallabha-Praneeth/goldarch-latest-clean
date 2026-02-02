@@ -45,3 +45,12 @@ supabase/schema_snapshots/remote/*_remote_schema.sql
 
 supabase/migrations/_archive/
 **/.backups/
+
+# Test outputs and reports
+test-results/
+playwright-report/
+**/verify_alignment.report.json
+*.report.json
+
+# Test scripts with hardcoded secrets
+scripts/test-quote-flow.mjs
