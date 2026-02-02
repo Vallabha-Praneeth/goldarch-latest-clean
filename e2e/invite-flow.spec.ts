@@ -103,26 +103,12 @@ test.describe('Organization Invite Flow', () => {
     console.log(`Test setup complete: owner=${ownerEmail}, invitee=${inviteeEmail}, org=${testOrg.id}`);
   });
 
-  test('should send invite as owner with cookie auth', async ({ page, context }) => {
-    // Set auth cookies for owner
-    const cookieName = SUPABASE_URL.includes('127.0.0.1')
-      ? 'sb-127-auth-token'
-      : `sb-${SUPABASE_URL.match(/https:\/\/([^.]+)/)?.[1]}-auth-token`;
-
-    const cookieValue = JSON.stringify({
-      access_token: ownerUser.accessToken,
-      refresh_token: ownerUser.refreshToken,
-    });
-
-    await context.addCookies([{
-      name: cookieName,
-      value: `base64-${Buffer.from(cookieValue).toString('base64')}`,
-      domain: 'localhost',
-      path: '/',
-    }]);
-
-    // Send invite via API request
+  test('should send invite as owner with Authorization header', async ({ page, context }) => {
+    // Send invite via API request with Authorization header
     const response = await page.request.post(`${BASE_URL}/api/send-invite`, {
+      headers: {
+        'Authorization': `Bearer ${ownerUser.accessToken}`,
+      },
       data: {
         orgId: testOrg.id,
         to: inviteeUser.email,
@@ -145,26 +131,12 @@ test.describe('Organization Invite Flow', () => {
     console.log(`Invite sent successfully, token: ${inviteToken.substring(0, 40)}...`);
   });
 
-  test('should accept invite as invitee with cookie auth', async ({ page, context }) => {
-    // Set auth cookies for invitee
-    const cookieName = SUPABASE_URL.includes('127.0.0.1')
-      ? 'sb-127-auth-token'
-      : `sb-${SUPABASE_URL.match(/https:\/\/([^.]+)/)?.[1]}-auth-token`;
-
-    const cookieValue = JSON.stringify({
-      access_token: inviteeUser.accessToken,
-      refresh_token: inviteeUser.refreshToken,
-    });
-
-    await context.addCookies([{
-      name: cookieName,
-      value: `base64-${Buffer.from(cookieValue).toString('base64')}`,
-      domain: 'localhost',
-      path: '/',
-    }]);
-
-    // Accept invite via API request
+  test('should accept invite as invitee with Authorization header', async ({ page, context }) => {
+    // Accept invite via API request with Authorization header
     const response = await page.request.post(`${BASE_URL}/api/accept-invite`, {
+      headers: {
+        'Authorization': `Bearer ${inviteeUser.accessToken}`,
+      },
       data: {
         token: inviteToken,
       },
@@ -228,25 +200,11 @@ test.describe('Organization Invite Flow', () => {
   });
 
   test('should reject duplicate accept with 409', async ({ page, context }) => {
-    // Set auth cookies for invitee
-    const cookieName = SUPABASE_URL.includes('127.0.0.1')
-      ? 'sb-127-auth-token'
-      : `sb-${SUPABASE_URL.match(/https:\/\/([^.]+)/)?.[1]}-auth-token`;
-
-    const cookieValue = JSON.stringify({
-      access_token: inviteeUser.accessToken,
-      refresh_token: inviteeUser.refreshToken,
-    });
-
-    await context.addCookies([{
-      name: cookieName,
-      value: `base64-${Buffer.from(cookieValue).toString('base64')}`,
-      domain: 'localhost',
-      path: '/',
-    }]);
-
-    // Try to accept same invite again
+    // Try to accept same invite again with Authorization header
     const response = await page.request.post(`${BASE_URL}/api/accept-invite`, {
+      headers: {
+        'Authorization': `Bearer ${inviteeUser.accessToken}`,
+      },
       data: {
         token: inviteToken,
       },
