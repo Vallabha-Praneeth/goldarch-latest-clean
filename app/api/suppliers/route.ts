@@ -130,3 +130,95 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Failed to fetch suppliers" }, { status: 500 });
   }
 }
+
+/**
+ * POST /api/suppliers
+ * Create a new supplier
+ */
+export async function POST(request: Request) {
+  try {
+    const auth = await requireUser();
+    if (!auth?.ok || !auth.user || !auth.supabase) {
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
+
+    const { user, supabase } = auth;
+    const body = await request.json();
+
+    const {
+      name,
+      category_id,
+      region,
+      city,
+      address,
+      email,
+      phone,
+      website,
+      notes,
+      status = 'active',
+      rating,
+      contact_person,
+      tax_id,
+      payment_terms,
+      lead_time_days,
+      minimum_order,
+      discount_tier,
+    } = body;
+
+    // Validate required fields
+    if (!name) {
+      return NextResponse.json(
+        { error: 'Supplier name is required' },
+        { status: 400 }
+      );
+    }
+
+    if (!category_id) {
+      return NextResponse.json(
+        { error: 'Category is required' },
+        { status: 400 }
+      );
+    }
+
+    // Create supplier
+    const { data: supplier, error } = await supabase
+      .from('suppliers')
+      .insert({
+        name,
+        category_id,
+        region,
+        city,
+        address,
+        email,
+        phone,
+        website,
+        notes,
+        status,
+        rating,
+        contact_person,
+        tax_id,
+        payment_terms,
+        lead_time_days,
+        minimum_order,
+        discount_tier,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error creating supplier:', error);
+      return NextResponse.json(
+        { error: 'Failed to create supplier', details: error.message },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: supplier,
+    }, { status: 201 });
+  } catch (err) {
+    console.error("api/suppliers POST error:", err);
+    return NextResponse.json({ error: "Failed to create supplier" }, { status: 500 });
+  }
+}

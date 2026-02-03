@@ -27,7 +27,7 @@ export async function GET(
     }
 
     const { id } = await context.params;
-    const supabase = await createAuthenticatedSupabaseClient();
+    const { supabase } = auth;
 
     // Fetch project (RLS enforced)
     const { data: project, error } = await supabase
@@ -69,7 +69,7 @@ export async function PUT(
 
     const { id } = await context.params;
     const body = await request.json();
-    const supabase = await createAuthenticatedSupabaseClient();
+    const { supabase } = auth;
 
     // Whitelist allowed update fields
     const allowedFields = [
@@ -155,7 +155,7 @@ export async function DELETE(
     }
 
     const { id } = await context.params;
-    const supabase = await createAuthenticatedSupabaseClient();
+    const { supabase } = auth;
 
     // Soft delete: Set status to archived
     const { data: project, error } = await supabase

@@ -223,12 +223,6 @@ test.describe('Suppliers CRUD Operations', () => {
       },
     });
 
-    // Some APIs may not have PUT implemented, check if it returns 404/405
-    if (response.status() === 404 || response.status() === 405) {
-      console.log('PUT /api/suppliers/:id not implemented yet (expected for MVP)');
-      return;
-    }
-
     expect(response.ok()).toBeTruthy();
     const data = await response.json();
     expect(data.success).toBe(true);
@@ -287,7 +281,7 @@ test.describe('Suppliers CRUD Operations', () => {
     console.log('Invalid category_id correctly rejected');
   });
 
-  test('should delete supplier via API', async ({ page }) => {
+  test('should delete supplier via API (soft delete)', async ({ page }) => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const { data: signInData } = await supabase.auth.signInWithPassword({
       email: testUser.email,
@@ -300,26 +294,12 @@ test.describe('Suppliers CRUD Operations', () => {
       },
     });
 
-    // Some APIs may not have DELETE implemented, check if it returns 404/405
-    if (response.status() === 404 || response.status() === 405) {
-      console.log('DELETE /api/suppliers/:id not implemented yet (expected for MVP)');
-      return;
-    }
-
     expect(response.ok()).toBeTruthy();
+    const data = await response.json();
+    expect(data.success).toBe(true);
+    expect(data.data.status).toBe('inactive');
 
-    // Verify supplier no longer exists
-    const listResponse = await page.request.get(`${BASE_URL}/api/suppliers`, {
-      headers: {
-        'Authorization': `Bearer ${signInData.session!.access_token}`,
-      },
-    });
-
-    const listData = await listResponse.json();
-    const deletedSupplier = listData.data.find((s: any) => s.id === createdSupplier.id);
-    expect(deletedSupplier).toBeUndefined();
-
-    console.log('Supplier deleted successfully');
+    console.log('Supplier soft deleted (status=inactive)');
   });
 });
 

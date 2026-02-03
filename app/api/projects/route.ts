@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
       return auth.response;
     }
 
-    const supabase = await createAuthenticatedSupabaseClient();
+    const { supabase } = auth;
     const { searchParams } = new URL(request.url);
 
     // Build query
@@ -73,9 +73,8 @@ export async function POST(request: NextRequest) {
     if (auth.response) {
       return auth.response;
     }
-    const { user } = auth;
+    const { user, supabase } = auth;
 
-    const supabase = await createAuthenticatedSupabaseClient();
     const body = await request.json();
 
     const {

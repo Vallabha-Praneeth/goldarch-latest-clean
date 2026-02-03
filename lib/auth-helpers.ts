@@ -11,14 +11,58 @@ import { Ratelimit } from '@upstash/ratelimit';
 
 /**
  * Get authenticated user from request
- * Returns user object or null if not authenticated
+ * Returns user object, supabase client, or null if not authenticated
+ * Supports both cookies and Authorization header for e2e testing
  */
 export async function getAuthenticatedUser(
   request: NextRequest
-): Promise<{ user: User | null; error: Error | null }> {
+): Promise<{ user: User | null; supabase: any; error: Error | null }> {
   try {
     const cookieStore = await cookies();
 
+    // Check for Authorization header (for e2e testing)
+    const authHeader = request.headers.get('authorization');
+    const accessToken = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
+
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll: () => cookieStore.getAll(),
+          setAll: (cookiesToSet: { name: string; value: string; options: CookieOptions }[]) => {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          },
+        },
+        // If Authorization header is present, use it instead of cookies
+        ...(accessToken ? {
+          global: {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          },
+        } : {}),
+      }
+    );
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser(accessToken || undefined);
+
+    if (authError) {
+      return { user: null, supabase, error: authError };
+    }
+
+    if (!user) {
+      return { user: null, supabase, error: new Error('User not authenticated') };
+    }
+
+    return { user, supabase, error: null };
+  } catch (error) {
+    const cookieStore = await cookies();
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -33,24 +77,9 @@ export async function getAuthenticatedUser(
         },
       }
     );
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError) {
-      return { user: null, error: authError };
-    }
-
-    if (!user) {
-      return { user: null, error: new Error('User not authenticated') };
-    }
-
-    return { user, error: null };
-  } catch (error) {
     return {
       user: null,
+      supabase,
       error: error instanceof Error ? error : new Error('Authentication failed'),
     };
   }
@@ -59,16 +88,17 @@ export async function getAuthenticatedUser(
 /**
  * Require authentication middleware
  * Returns 401 response if user is not authenticated
- * Returns user object if authenticated
+ * Returns user object and authenticated supabase client if authenticated
  */
 export async function requireAuth(
   request: NextRequest
-): Promise<{ user: User; response: null } | { user: null; response: NextResponse }> {
-  const { user, error } = await getAuthenticatedUser(request);
+): Promise<{ user: User; supabase: any; response: null } | { user: null; supabase: null; response: NextResponse }> {
+  const { user, supabase, error } = await getAuthenticatedUser(request);
 
   if (error || !user) {
     return {
       user: null,
+      supabase: null,
       response: NextResponse.json(
         {
           error: 'Unauthorized',
@@ -79,7 +109,7 @@ export async function requireAuth(
     };
   }
 
-  return { user, response: null };
+  return { user, supabase, response: null };
 }
 
 /**
