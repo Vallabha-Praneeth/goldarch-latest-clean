@@ -171,17 +171,19 @@ create trigger suppliers_updated_at
   execute function public.handle_updated_at();
 
 -- Seed some default categories for testing
-insert into public.categories (name, description) values
-  ('Kitchen', 'Kitchen fixtures and appliances'),
-  ('Bathroom', 'Bathroom fixtures and fittings'),
-  ('Electrical', 'Electrical supplies and contractors'),
-  ('Plumbing', 'Plumbing supplies and contractors'),
-  ('Flooring', 'Flooring materials and installation'),
-  ('Painting', 'Paint and painting contractors'),
-  ('HVAC', 'Heating, ventilation, and air conditioning'),
-  ('Roofing', 'Roofing materials and contractors'),
-  ('Windows', 'Windows and door suppliers'),
-  ('General', 'General construction supplies')
-on conflict (name) do nothing;
+-- COMMENTED OUT: Production has different schema with slug NOT NULL constraint
+-- Categories already exist in production, no need to seed
+-- insert into public.categories (name, description) values
+--   ('Kitchen', 'Kitchen fixtures and appliances'),
+--   ('Bathroom', 'Bathroom fixtures and fittings'),
+--   ('Electrical', 'Electrical supplies and contractors'),
+--   ('Plumbing', 'Plumbing supplies and contractors'),
+--   ('Flooring', 'Flooring materials and installation'),
+--   ('Painting', 'Paint and painting contractors'),
+--   ('HVAC', 'Heating, ventilation, and air conditioning'),
+--   ('Roofing', 'Roofing materials and contractors'),
+--   ('Windows', 'Windows and door suppliers'),
+--   ('General', 'General construction supplies')
+-- on conflict (name) do nothing;
 
 commit;
