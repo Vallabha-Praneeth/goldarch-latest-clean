@@ -220,13 +220,11 @@ export async function POST(request: NextRequest) {
 
       quoteLines.push({
         category: rule.category,
-        title: rule.description,
         description: rule.description,
         quantity: qty,
-        unit: unit,
+        unit_of_measure: unit,
         unit_price: parseFloat(priceItem.unit_price.toString()),
-        line_total: lineTotal,
-        extraction_meta: { sku: priceItem.sku, selections: {} },
+        extraction_evidence: { sku: priceItem.sku, line_total: lineTotal },
       });
     }
 
@@ -238,7 +236,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 8. Calculate totals
-    const subtotal = quoteLines.reduce((sum, line) => sum + (line.line_total || 0), 0);
+    const subtotal = quoteLines.reduce((sum, line) => sum + (line.extraction_evidence?.line_total || 0), 0);
     const taxRate = 0.18; // 18% GST (configurable)
     const tax = subtotal * taxRate;
     const total = subtotal + tax;
