@@ -12,11 +12,14 @@ function formatCurrency(amount: number, currency: string = 'USD'): string {
 }
 
 function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('en-US', {
+  const date = new Date(dateStr);
+  if (Number.isNaN(date.getTime())) return dateStr;
+  return new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-  });
+    timeZone: 'UTC',
+  }).format(date);
 }
 
 interface QuoteBOMPreviewProps {
@@ -140,7 +143,7 @@ const QuoteBOMPreview = forwardRef<HTMLDivElement, QuoteBOMPreviewProps>(
           <tbody>
             {data.lineItems.map((item, index) => (
               <tr
-                key={index}
+                key={item.lineNumber}
                 style={{
                   background: index % 2 === 0 ? '#ffffff' : '#f8fafc',
                   borderBottom: '1px solid #e2e8f0',
