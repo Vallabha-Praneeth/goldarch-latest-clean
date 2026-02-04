@@ -54,3 +54,5 @@ playwright-report/
 
 # Test scripts with hardcoded secrets
 scripts/test-quote-flow.mjs
+.vercel
+.env*.local
