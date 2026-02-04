@@ -118,8 +118,7 @@ export async function PATCH(
       })
       .eq('id', quoteId)
       .eq('user_id', user.id)
-      .select()
-      .single();
+      .select();
 
     if (error) {
       console.error('Quote update error:', error);
@@ -129,7 +128,14 @@ export async function PATCH(
       );
     }
 
-    return NextResponse.json({ quote });
+    if (!quote || quote.length === 0) {
+      return NextResponse.json(
+        { error: 'Quote not found or access denied' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ quote: quote[0] });
   } catch (error) {
     console.error('Error updating quote:', error);
     return NextResponse.json(
