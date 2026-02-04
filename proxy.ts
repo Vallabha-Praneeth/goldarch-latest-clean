@@ -2,7 +2,7 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function proxy(request: NextRequest) {
-  let response = NextResponse.next();
+  let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -13,15 +13,23 @@ export async function proxy(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            response.cookies.set(name, value, options);
-          });
+          // Update request cookies so downstream server components see fresh tokens
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          );
+          // Recreate response with updated request
+          response = NextResponse.next({ request });
+          // Set cookies on response so browser receives the refreshed tokens
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          );
         },
       },
     }
   );
 
-  const pathWithQuery = request.nextUrl.pathname + request.nextUrl.search;
+  const pathname = request.nextUrl.pathname;
+  const pathWithQuery = pathname + request.nextUrl.search;
 
   const {
     data: { user },
@@ -34,30 +42,33 @@ export async function proxy(request: NextRequest) {
     (error.message.includes('Invalid Refresh Token') ||
       error.message.includes('Refresh Token Not Found'))
   ) {
+    // Clear all Supabase cookies
+    const clearCookies = (res: NextResponse) => {
+      request.cookies.getAll().forEach((cookie) => {
+        if (cookie.name.startsWith('sb-')) {
+          res.cookies.set(cookie.name, '', { maxAge: 0, path: '/' });
+        }
+      });
+    };
+
+    // If already on /auth, just clear cookies and continue (no redirect loop)
+    if (pathname.startsWith('/auth')) {
+      clearCookies(response);
+      return response;
+    }
+
+    // Otherwise redirect to /auth with clean cookies
     const redirectUrl = new URL('/auth', request.url);
     redirectUrl.searchParams.set('next', pathWithQuery);
-
     const redirectResponse = NextResponse.redirect(redirectUrl);
-
-    // Clear all Supabase cookies
-    const allCookies = request.cookies.getAll();
-    allCookies.forEach((cookie) => {
-      if (cookie.name.startsWith('sb-')) {
-        redirectResponse.cookies.set(cookie.name, '', { maxAge: 0, path: '/' });
-      }
-    });
-
+    clearCookies(redirectResponse);
     return redirectResponse;
   }
-
-  const pathname = request.nextUrl.pathname;
 
   // If not authenticated and trying to access protected areas
   const isDashboard = pathname.startsWith('/app-dashboard');
   const isFrameworkBApi = pathname.startsWith('/api/framework-b');
   const isFrameworkBHealth = pathname === '/api/framework-b/health';
-
-  // Allow health endpoint to remain public
   const isProtectedFrameworkB = isFrameworkBApi && !isFrameworkBHealth;
 
   if (!user && (isDashboard || isProtectedFrameworkB)) {
@@ -70,5 +81,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/app-dashboard/:path*', '/api/framework-b/:path*'],
+  matcher: ['/auth', '/app-dashboard/:path*', '/api/framework-b/:path*'],
 };
