@@ -7,7 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { PlanExtractionResult, QuoteLine } from '@/lib/types/extraction-schema';
+import { PlanExtractionResult } from '@/lib/types/extraction-schema';
 
 // Mapping rules: extraction path → price book lookup
 const MAPPING_RULES = [
@@ -176,7 +176,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 7. Generate quote lines using deterministic mapping
-    const quoteLines: Partial<QuoteLine>[] = [];
+    const quoteLines: Record<string, any>[] = [];
     let hasLowConfidence = false;
 
     for (const rule of MAPPING_RULES) {
@@ -218,13 +218,14 @@ export async function POST(request: NextRequest) {
       }
 
       quoteLines.push({
-        sku: priceItem.sku,
+        category: rule.category,
+        title: rule.description,
         description: rule.description,
-        qty: qty,
+        quantity: qty,
         unit: unit,
         unit_price: parseFloat(priceItem.unit_price.toString()),
         line_total: lineTotal,
-        selections: {},
+        extraction_meta: { sku: priceItem.sku, selections: {} },
       });
     }
 
@@ -247,14 +248,14 @@ export async function POST(request: NextRequest) {
       : 'Auto-generated quote from construction plan analysis.';
 
     const { data: quote, error: quoteError } = await supabase
-      .from('quotes')
+      .from('quotations')
       .insert({
         user_id: user.id,
-        job_id: jobId,
-        price_book_id: activePriceBook.id,
+        extraction_job_id: jobId,
         status: 'draft',
         subtotal: subtotal,
-        tax: tax,
+        tax_total: tax,
+        discount_total: 0,
         total: total,
         currency: activePriceBook.currency,
         notes: notes,
@@ -270,21 +271,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 10. Create quote line items
-    const linesWithQuoteId = quoteLines.map((line) => ({
+    // 10. Create quotation line items
+    const linesWithQuoteId = quoteLines.map((line, index) => ({
       ...line,
-      quote_id: quote.id,
+      quotation_id: quote.id,
+      line_number: index + 1,
     }));
 
     const { data: createdLines, error: linesError } = await supabase
-      .from('quote_lines')
+      .from('quotation_lines')
       .insert(linesWithQuoteId)
       .select();
 
     if (linesError) {
       console.error('Quote lines creation error:', linesError);
       // Rollback: delete the quote
-      await supabase.from('quotes').delete().eq('id', quote.id);
+      await supabase.from('quotations').delete().eq('id', quote.id);
       return NextResponse.json(
         { error: 'Failed to create quote lines', details: linesError.message },
         { status: 500 }
