@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/select';
 import { FileText, DollarSign, Send, ThumbsUp, ThumbsDown, Plus, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Breadcrumbs } from '@/components/cross-section/Breadcrumbs';
 
@@ -46,6 +47,7 @@ import {
 type FilterStatus = 'all' | 'draft' | 'pending' | 'approved' | 'rejected' | 'accepted' | 'declined';
 
 export default function QuotesPage() {
+  const router = useRouter();
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -514,7 +516,19 @@ export default function QuotesPage() {
             const canDecline = canPerformAction(userRole, 'decline', quote.status, isOwner);
 
             return (
-              <Card key={quote.id} className="hover:shadow-lg transition-shadow">
+              <Card
+                key={quote.id}
+                role="link"
+                tabIndex={0}
+                onClick={() => router.push(`/app-dashboard/quotes/${quote.id}`)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    router.push(`/app-dashboard/quotes/${quote.id}`);
+                  }
+                }}
+                className="hover:shadow-lg transition-shadow cursor-pointer"
+              >
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div>
@@ -556,7 +570,8 @@ export default function QuotesPage() {
                   )}
 
                   {/* MODULE-1C: Action Buttons */}
-                  <div className="flex gap-2 mt-4 pt-4 border-t flex-wrap">
+                  {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+                  <div className="flex gap-2 mt-4 pt-4 border-t flex-wrap" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
                     {canSubmit && (
                       <Button
                         size="sm"

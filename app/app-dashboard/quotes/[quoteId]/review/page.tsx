@@ -58,14 +58,14 @@ export default function QuoteReviewPage({ params }: PageProps) {
           lineItems: (data.quotation_lines || []).map((line: any) => ({
             id: line.id,
             category: line.category || '',
-            description: line.item_description,
+            description: line.description || line.title || '',
             quantity: line.quantity,
             unit: line.unit,
             unit_price: line.unit_price,
             line_total: line.line_total,
           })),
           subtotal: data.subtotal || 0,
-          tax_placeholder: data.tax || 0,
+          tax_placeholder: data.tax_placeholder || 0,
           total: data.total || 0,
           currency: data.currency || 'USD',
         };
