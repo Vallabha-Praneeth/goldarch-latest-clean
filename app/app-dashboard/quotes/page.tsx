@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/select';
 import { FileText, DollarSign, Send, ThumbsUp, ThumbsDown, Plus, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { toast } from 'sonner';
 import { Breadcrumbs } from '@/components/cross-section/Breadcrumbs';
 
@@ -514,7 +515,8 @@ export default function QuotesPage() {
             const canDecline = canPerformAction(userRole, 'decline', quote.status, isOwner);
 
             return (
-              <Card key={quote.id} className="hover:shadow-lg transition-shadow">
+              <Link key={quote.id} href={`/app-dashboard/quotes/${quote.id}`} className="block">
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div>
@@ -556,7 +558,8 @@ export default function QuotesPage() {
                   )}
 
                   {/* MODULE-1C: Action Buttons */}
-                  <div className="flex gap-2 mt-4 pt-4 border-t flex-wrap">
+                  {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+                  <div className="flex gap-2 mt-4 pt-4 border-t flex-wrap" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
                     {canSubmit && (
                       <Button
                         size="sm"
@@ -622,6 +625,7 @@ export default function QuotesPage() {
                   </div>
                 </CardContent>
               </Card>
+              </Link>
             );
           })}
         </div>

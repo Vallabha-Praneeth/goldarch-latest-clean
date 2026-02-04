@@ -217,3 +217,32 @@
     opacity: 0.7;
   }
 }
+
+/* Print styles for BOM/Quote preview */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Hide sidebar, nav, and screen-only elements */
+  nav,
+  aside,
+  [data-print-hide] {
+    display: none !important;
+  }
+
+  /* Remove card chrome in print */
+  .bom-print-card {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+
+  /* Ensure BOM preview renders cleanly */
+  .bom-preview {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 10mm !important;
+  }
+}
