@@ -254,11 +254,12 @@ export async function POST(request: NextRequest) {
         extraction_job_id: jobId,
         status: 'draft',
         subtotal: subtotal,
-        tax_total: tax,
-        discount_total: 0,
+        tax_placeholder: tax,
+        discount_amount: 0,
         total: total,
         currency: activePriceBook.currency,
-        notes: notes,
+        internal_notes: notes,
+        created_by: user.id,
       })
       .select()
       .single();

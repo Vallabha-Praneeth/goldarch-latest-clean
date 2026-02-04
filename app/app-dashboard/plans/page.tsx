@@ -17,7 +17,8 @@ import {
   XCircle,
   AlertTriangle,
   DollarSign,
-  Eye
+  Eye,
+  Trash2
 } from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
 
@@ -140,6 +141,20 @@ export default function PlansPage() {
       setError(err instanceof Error ? err.message : 'Upload failed');
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleDeleteJob = async (jobId: string) => {
+    try {
+      const { error } = await supabase
+        .from('plan_jobs')
+        .delete()
+        .eq('id', jobId);
+
+      if (error) throw error;
+      setJobs((prev) => prev.filter((j) => j.id !== jobId));
+    } catch (err) {
+      console.error('Failed to delete job:', err);
     }
   };
 
@@ -299,7 +314,19 @@ export default function PlansPage() {
                           Uploaded {formatDate(job.created_at)}
                         </CardDescription>
                       </div>
-                      {getStatusBadge(job.status)}
+                      <div className="flex items-center gap-2">
+                        {getStatusBadge(job.status)}
+                        {job.status === 'failed' && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
+                            onClick={() => handleDeleteJob(job.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </CardHeader>
                   <CardContent>
