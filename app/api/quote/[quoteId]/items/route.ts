@@ -5,7 +5,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth, createAuthenticatedSupabaseClient } from '@/lib/auth-helpers';
+import { requireAuth } from '@/lib/auth-helpers';
+import { supabaseAdmin } from '@/lib/supabase-service';
 
 interface RouteContext {
   params: Promise<{ quoteId: string }>;
@@ -26,13 +27,14 @@ export async function GET(
     }
 
     const { quoteId } = await context.params;
-    const supabase = await createAuthenticatedSupabaseClient();
+    const { user } = auth;
 
-    // Verify quote access (RLS enforced)
-    const { data: quote, error: quoteError } = await supabase
+    // Verify quote belongs to user (service role, filtered by user_id)
+    const { data: quote, error: quoteError } = await supabaseAdmin
       .from('quotations')
       .select('id')
       .eq('id', quoteId)
+      .eq('user_id', user.id)
       .single();
 
     if (quoteError || !quote) {
@@ -43,7 +45,7 @@ export async function GET(
     }
 
     // Fetch line items
-    const { data: items, error } = await supabase
+    const { data: items, error } = await supabaseAdmin
       .from('quotation_lines')
       .select('*')
       .eq('quotation_id', quoteId)
@@ -82,14 +84,15 @@ export async function POST(
     }
 
     const { quoteId } = await context.params;
+    const { user } = auth;
     const body = await request.json();
-    const supabase = await createAuthenticatedSupabaseClient();
 
-    // Verify quote access
-    const { data: quote, error: quoteError } = await supabase
+    // Verify quote belongs to user (service role, filtered by user_id)
+    const { data: quote, error: quoteError } = await supabaseAdmin
       .from('quotations')
       .select('id')
       .eq('id', quoteId)
+      .eq('user_id', user.id)
       .single();
 
     if (quoteError || !quote) {
@@ -123,7 +126,7 @@ export async function POST(
     // If line_number not provided, get next number
     let lineNumber = line_number;
     if (!lineNumber) {
-      const { data: maxLine } = await supabase
+      const { data: maxLine } = await supabaseAdmin
         .from('quotation_lines')
         .select('line_number')
         .eq('quotation_id', quoteId)
@@ -135,7 +138,7 @@ export async function POST(
     }
 
     // Create line item
-    const { data: item, error } = await supabase
+    const { data: item, error } = await supabaseAdmin
       .from('quotation_lines')
       .insert({
         quotation_id: quoteId,

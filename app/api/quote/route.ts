@@ -10,7 +10,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth, createAuthenticatedSupabaseClient } from '@/lib/auth-helpers';
+import { requireAuth } from '@/lib/auth-helpers';
+import { supabaseAdmin } from '@/lib/supabase-service';
 
 type QuoteRow = Record<string, any>;
 type LeadRow = { id: string; name?: string | null; email?: string | null; company?: string | null };
@@ -24,12 +25,13 @@ export async function GET(request: NextRequest) {
     const auth = await requireAuth(request);
     if (auth.response) return auth.response;
 
-    const supabase = await createAuthenticatedSupabaseClient();
+    const { user } = auth;
 
-    // Fetch quotes (RLS enforced - user can only see their own)
-    const { data: quotes, error } = await supabase
+    // Fetch quotes (filtered by user_id — bypasses RLS via service role)
+    const { data: quotes, error } = await supabaseAdmin
       .from('quotations')
       .select('*')
+      .eq('user_id', user.id)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -54,7 +56,7 @@ export async function GET(request: NextRequest) {
     // Fetch leads separately (no relationship required)
     let leadsById: Record<string, LeadRow> = {};
     if (leadIds.length > 0) {
-      const { data: leads, error: leadsError } = await supabase
+      const { data: leads, error: leadsError } = await supabaseAdmin
         .from('quote_leads')
         .select('id, name, email, company')
         .in('id', leadIds);
@@ -91,7 +93,6 @@ export async function POST(request: NextRequest) {
     if (auth.response) return auth.response;
     const { user } = auth;
 
-    const supabase = await createAuthenticatedSupabaseClient();
     const body = await request.json();
 
     const {
@@ -114,8 +115,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'lead_id is required' }, { status: 400 });
     }
 
-    // Create quote (RLS enforced)
-    const { data: quote, error } = await supabase
+    // Create quote (service role — bypasses RLS)
+    const { data: quote, error } = await supabaseAdmin
       .from('quotations')
       .insert({
         lead_id,

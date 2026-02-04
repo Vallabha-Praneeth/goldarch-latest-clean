@@ -6,7 +6,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth, createAuthenticatedSupabaseClient } from '@/lib/auth-helpers';
+import { requireAuth } from '@/lib/auth-helpers';
+import { supabaseAdmin } from '@/lib/supabase-service';
 
 interface RouteContext {
   params: Promise<{ quoteId: string }>;
@@ -28,16 +29,17 @@ export async function GET(
     }
 
     const { quoteId } = await context.params;
-    const supabase = await createAuthenticatedSupabaseClient();
+    const { user } = auth;
 
-    // Fetch quote with line items (RLS enforced)
-    const { data: quote, error: quoteError } = await supabase
+    // Fetch quote with line items (service role, filtered by user_id)
+    const { data: quote, error: quoteError } = await supabaseAdmin
       .from('quotations')
       .select(`
         *,
         quotation_lines (*)
       `)
       .eq('id', quoteId)
+      .eq('user_id', user.id)
       .single();
 
     if (quoteError) {
@@ -80,8 +82,8 @@ export async function PATCH(
     }
 
     const { quoteId } = await context.params;
+    const { user } = auth;
     const body = await request.json();
-    const supabase = await createAuthenticatedSupabaseClient();
 
     // Whitelist allowed update fields
     const allowedFields = [
@@ -107,16 +109,16 @@ export async function PATCH(
       }
     }
 
-    // Update quote (RLS enforced)
-    const { data: quote, error } = await supabase
+    // Update quote (service role, filtered by user_id)
+    const { data: quote, error } = await supabaseAdmin
       .from('quotations')
       .update({
         ...updateData,
         updated_at: new Date().toISOString(),
       })
       .eq('id', quoteId)
-      .select()
-      .single();
+      .eq('user_id', user.id)
+      .select();
 
     if (error) {
       console.error('Quote update error:', error);
@@ -126,7 +128,14 @@ export async function PATCH(
       );
     }
 
-    return NextResponse.json({ quote });
+    if (!quote || quote.length === 0) {
+      return NextResponse.json(
+        { error: 'Quote not found or access denied' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ quote: quote[0] });
   } catch (error) {
     console.error('Error updating quote:', error);
     return NextResponse.json(
@@ -151,13 +160,14 @@ export async function DELETE(
     }
 
     const { quoteId } = await context.params;
-    const supabase = await createAuthenticatedSupabaseClient();
+    const { user } = auth;
 
-    // Delete quote (RLS enforced, cascade deletes quotation_lines)
-    const { data, error } = await supabase
+    // Delete quote (service role, filtered by user_id, cascade deletes quotation_lines)
+    const { data, error } = await supabaseAdmin
       .from('quotations')
       .delete()
       .eq('id', quoteId)
+      .eq('user_id', user.id)
       .select();
 
     if (error) {

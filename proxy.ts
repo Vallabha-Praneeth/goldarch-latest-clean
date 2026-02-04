@@ -36,32 +36,31 @@ export async function proxy(request: NextRequest) {
     error,
   } = await supabase.auth.getUser();
 
-  // Handle invalid refresh token by clearing stale cookies
+  // Helper: clear all Supabase cookies
+  const clearSupabaseCookies = (res: NextResponse) => {
+    request.cookies.getAll().forEach((cookie) => {
+      if (cookie.name.startsWith('sb-')) {
+        res.cookies.set(cookie.name, '', { maxAge: 0, path: '/' });
+      }
+    });
+  };
+
+  // On /auth page: clear stale cookies on ANY auth error so login starts fresh
+  if (error && pathname.startsWith('/auth')) {
+    clearSupabaseCookies(response);
+    return response;
+  }
+
+  // On protected pages: redirect to /auth if refresh token is invalid
   if (
     error &&
     (error.message.includes('Invalid Refresh Token') ||
       error.message.includes('Refresh Token Not Found'))
   ) {
-    // Clear all Supabase cookies
-    const clearCookies = (res: NextResponse) => {
-      request.cookies.getAll().forEach((cookie) => {
-        if (cookie.name.startsWith('sb-')) {
-          res.cookies.set(cookie.name, '', { maxAge: 0, path: '/' });
-        }
-      });
-    };
-
-    // If already on /auth, just clear cookies and continue (no redirect loop)
-    if (pathname.startsWith('/auth')) {
-      clearCookies(response);
-      return response;
-    }
-
-    // Otherwise redirect to /auth with clean cookies
     const redirectUrl = new URL('/auth', request.url);
     redirectUrl.searchParams.set('next', pathWithQuery);
     const redirectResponse = NextResponse.redirect(redirectUrl);
-    clearCookies(redirectResponse);
+    clearSupabaseCookies(redirectResponse);
     return redirectResponse;
   }
 
