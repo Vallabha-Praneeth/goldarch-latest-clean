@@ -118,6 +118,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
+    // 3b. Check for existing quotation to prevent duplicates
+    const { data: existingQuote } = await supabaseAdmin
+      .from('quotations')
+      .select('id')
+      .eq('extraction_job_id', jobId)
+      .eq('user_id', user.id)
+      .limit(1)
+      .single();
+
+    if (existingQuote) {
+      return NextResponse.json(
+        { error: 'A quote already exists for this job. Please view it in the Quotes section.' },
+        { status: 409 }
+      );
+    }
+
     // 4. Fetch analysis results
     const { data: analysis, error: analysisError } = await supabase
       .from('plan_analyses')

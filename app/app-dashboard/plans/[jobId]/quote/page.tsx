@@ -71,12 +71,6 @@ export default function GenerateQuotePage({ params }: { params: Promise<{ jobId:
       }
 
       setQuote(data);
-
-      // Redirect to quotes page after short delay
-      setTimeout(() => {
-        router.push('/app-dashboard/quotes');
-      }, 2000);
-
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate quote');
     } finally {

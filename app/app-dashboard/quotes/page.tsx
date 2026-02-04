@@ -531,7 +531,7 @@ export default function QuotesPage() {
                     <div>
                       <p className="text-muted-foreground">Quote Date</p>
                       <p className="font-medium">
-                        {new Date(quote.quote_date).toLocaleDateString()}
+                        {quote.created_at ? new Date(quote.created_at).toLocaleDateString() : 'N/A'}
                       </p>
                     </div>
                     <div>
