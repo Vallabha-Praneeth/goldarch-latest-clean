@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { PlanExtractionResult } from '@/lib/types/extraction-schema';
+import { supabaseAdmin } from '@/lib/supabase-service';
 
 // Mapping rules: extraction path → price book lookup
 const MAPPING_RULES = [
@@ -247,7 +248,7 @@ export async function POST(request: NextRequest) {
       ? 'ESTIMATE - This quote contains items with low confidence. Please review the analysis before finalizing.'
       : 'Auto-generated quote from construction plan analysis.';
 
-    const { data: quote, error: quoteError } = await supabase
+    const { data: quote, error: quoteError } = await supabaseAdmin
       .from('quotations')
       .insert({
         user_id: user.id,
@@ -279,7 +280,7 @@ export async function POST(request: NextRequest) {
       line_number: index + 1,
     }));
 
-    const { data: createdLines, error: linesError } = await supabase
+    const { data: createdLines, error: linesError } = await supabaseAdmin
       .from('quotation_lines')
       .insert(linesWithQuoteId)
       .select();
@@ -287,7 +288,7 @@ export async function POST(request: NextRequest) {
     if (linesError) {
       console.error('Quote lines creation error:', linesError);
       // Rollback: delete the quote
-      await supabase.from('quotations').delete().eq('id', quote.id);
+      await supabaseAdmin.from('quotations').delete().eq('id', quote.id);
       return NextResponse.json(
         { error: 'Failed to create quote lines', details: linesError.message },
         { status: 500 }
