@@ -1,32 +1,11 @@
--- Disable RLS on organization_members and create/configure projects table
--- for e2e testing.
+-- Create projects table and project_status enum for local/CI environments.
 --
--- organization_members: RLS insert policy requires an existing admin/owner
---   in the same org, creating a chicken-and-egg problem when a new user
---   tries to add themselves after creating an org in e2e tests.
+-- The projects table exists in production (remote schema) but not in local
+-- migrations. This migration bridges that gap so e2e tests can run locally.
 --
--- projects: table only exists in remote schema (not local migrations).
---   Create it here so the projects-crud e2e tests can run locally and in CI.
---
--- This is a TEMPORARY workaround for e2e tests.
--- Production should have RLS enabled with proper policies.
+-- All statements use IF NOT EXISTS — safe no-op if already present.
 
 begin;
-
--- =========================================================
--- organization_members: drop policies & disable RLS
--- =========================================================
-drop policy if exists "org_members_select_same_org" on public.organization_members;
-drop policy if exists "org_members_insert_admin_owner" on public.organization_members;
-drop policy if exists "org_members_insert_via_invite" on public.organization_members;
-drop policy if exists "org_members_update_admin_owner" on public.organization_members;
-drop policy if exists "org_members_delete_admin_owner" on public.organization_members;
-
-alter table public.organization_members disable row level security;
-
--- =========================================================
--- projects: create if not exists + disable RLS
--- =========================================================
 
 -- Enum used by the projects table
 do $$
@@ -61,11 +40,5 @@ create table if not exists public.projects (
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
-
--- Drop any existing policies (safe if table was just created)
-drop policy if exists "Allow all access to projects" on public.projects;
-drop policy if exists "Public full access to projects" on public.projects;
-
-alter table public.projects disable row level security;
 
 commit;
