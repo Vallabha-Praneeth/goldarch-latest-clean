@@ -71,7 +71,8 @@ export default function QuoteReviewPage({ params }: PageProps) {
           subtotal: data.subtotal || 0,
           tax_placeholder: data.tax_placeholder || 0,
           total: data.total || 0,
-          currency: data.currency || 'USD',
+          currency: 'USD',
+          terms_and_conditions: data.terms_and_conditions || null,
         };
 
         if (cancelled) return;
@@ -190,7 +191,8 @@ export default function QuoteReviewPage({ params }: PageProps) {
     tax: quote.tax_placeholder,
     discount: 0,
     total: quote.total,
-    currency: quote.currency,
+    currency: 'USD',
+    termsAndConditions: quote.terms_and_conditions || null,
   };
 
   return (

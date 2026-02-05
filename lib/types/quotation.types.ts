@@ -75,4 +75,5 @@ export interface QuoteBOMData {
   discount: number;
   total: number;
   currency: string;
+  termsAndConditions?: string | null;
 }

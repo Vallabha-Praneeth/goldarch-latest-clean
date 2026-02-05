@@ -37,7 +37,8 @@ function mapQuotationToBOM(raw: Quotation): QuoteBOMData {
     tax: raw.tax_placeholder || 0,
     discount: raw.discount_amount || 0,
     total: raw.total || 0,
-    currency: raw.currency || 'USD',
+    currency: 'USD',
+    termsAndConditions: raw.terms_and_conditions || null,
   };
 }
 
