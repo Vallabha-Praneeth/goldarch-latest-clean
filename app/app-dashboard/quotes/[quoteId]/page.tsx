@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ArrowLeft, Printer, FileDown, Pencil, Loader2 } from 'lucide-react';
 import QuoteBOMPreview from '@/components/quote/QuoteBOMPreview';
+import { downloadQuotePDF } from '@/lib/utils/generate-pdf';
 import type { QuoteBOMData } from '@/lib/types/quotation.types';
 import type { Quotation } from '@/lib/types/quotation.types';
 
@@ -52,6 +53,8 @@ export default function QuoteDetailPage({ params }: PageProps) {
   const [quote, setQuote] = useState<Quotation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState(false);
+  const [pdfError, setPdfError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchQuote = async () => {
@@ -75,6 +78,19 @@ export default function QuoteDetailPage({ params }: PageProps) {
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleDownloadPDF = async () => {
+    if (!bomRef.current) return;
+    setDownloading(true);
+    setPdfError(null);
+    try {
+      await downloadQuotePDF(bomRef.current, quote?.quote_number ?? 'quote');
+    } catch (err) {
+      setPdfError('Failed to generate PDF. Please try printing instead.');
+    } finally {
+      setDownloading(false);
+    }
   };
 
   if (loading) {
@@ -125,11 +141,15 @@ export default function QuoteDetailPage({ params }: PageProps) {
             </Button>
             <Button
               variant="outline"
-              disabled
-              title="Coming in Phase 2"
+              onClick={handleDownloadPDF}
+              disabled={downloading}
             >
-              <FileDown className="mr-2 h-4 w-4" />
-              Download PDF
+              {downloading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <FileDown className="mr-2 h-4 w-4" />
+              )}
+              {downloading ? 'Generating...' : 'Download PDF'}
             </Button>
             <Button
               onClick={() =>
@@ -142,6 +162,15 @@ export default function QuoteDetailPage({ params }: PageProps) {
           </div>
         </div>
       </div>
+
+      {/* PDF error feedback */}
+      {pdfError && (
+        <div className="container mx-auto max-w-4xl" data-print-hide>
+          <Alert variant="destructive" className="mb-4">
+            <AlertDescription>{pdfError}</AlertDescription>
+          </Alert>
+        </div>
+      )}
 
       {/* BOM Preview — visible on screen and print */}
       <div className="container mx-auto max-w-4xl pb-12">
