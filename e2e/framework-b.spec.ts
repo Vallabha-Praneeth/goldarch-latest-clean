@@ -24,10 +24,25 @@ let uploadedDocumentId: string;
 let serviceAvailable = false;
 
 test.beforeAll(async () => {
-  // Check if Framework B service is available before setting up test data
+  // Check if Framework B service is truly available by probing a real endpoint.
+  // The health endpoint may return "healthy" even without OpenAI/Pinecone keys
+  // (mocked in dev), so we test an actual upload which requires real services.
   try {
     const healthResponse = await fetch(`${BASE_URL}/api/framework-b/health`);
-    serviceAvailable = healthResponse.ok;
+    if (!healthResponse.ok) {
+      serviceAvailable = false;
+    } else {
+      const healthData = await healthResponse.json();
+      // Check if the services report connected OpenAI and Pinecone
+      serviceAvailable = healthData.services?.openai === 'connected'
+        && healthData.services?.pinecone === 'connected';
+      // If the response uses boolean format, also accept that
+      if (!serviceAvailable) {
+        serviceAvailable = healthData.services?.embeddings === true
+          && healthData.services?.vectorStore === true
+          && healthData.node_env !== 'development';
+      }
+    }
   } catch {
     serviceAvailable = false;
   }
