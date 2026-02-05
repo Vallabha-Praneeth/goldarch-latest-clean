@@ -186,20 +186,19 @@ const QuoteBOMPreview = forwardRef<HTMLDivElement, QuoteBOMPreviewProps>(
         </div>
 
         {/* Terms & Conditions */}
-        <div className="px-4 py-3 mb-6" style={{ background: bgWarm, borderRadius: '6px' }}>
-          <h3
-            className="text-[11px] font-semibold mb-2"
-            style={{ color: navy }}
-          >
-            Terms &amp; Conditions
-          </h3>
-          <ul className="ml-4 list-disc">
-            <li className="text-[10px] my-0.5" style={{ color: textMuted }}>Payment due within 30 days of invoice date</li>
-            <li className="text-[10px] my-0.5" style={{ color: textMuted }}>This quote is valid for 30 days from the issue date</li>
-            <li className="text-[10px] my-0.5" style={{ color: textMuted }}>Prices subject to change based on material availability</li>
-            <li className="text-[10px] my-0.5" style={{ color: textMuted }}>Installation and delivery charges may apply</li>
-          </ul>
-        </div>
+        {data.termsAndConditions && (
+          <div className="px-4 py-3 mb-6" style={{ background: bgWarm, borderRadius: '6px' }}>
+            <h3
+              className="text-[11px] font-semibold mb-2"
+              style={{ color: navy }}
+            >
+              Terms &amp; Conditions
+            </h3>
+            <p className="text-[10px] whitespace-pre-line" style={{ color: textMuted }}>
+              {data.termsAndConditions}
+            </p>
+          </div>
+        )}
 
         {/* Footer */}
         <div className="text-center pt-3" style={{ borderTop: `1px solid ${borderLight}` }}>
