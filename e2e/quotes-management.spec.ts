@@ -22,6 +22,7 @@ let testUser: any;
 let testOrg: any;
 let testSupplier: any;
 let testCategory: any;
+let testLead: any;
 let createdQuoteId: string;
 let quoteToken: string;
 
@@ -58,9 +59,10 @@ test.beforeAll(async () => {
   testOrg = org;
 
   // Add user as owner
-  await authClient
+  const { error: memberError } = await authClient
     .from('organization_members')
     .insert({ org_id: testOrg.id, user_id: testUser.id, role: 'owner' });
+  if (memberError) throw memberError;
 
   // Create test category
   const { data: category, error: catError } = await authClient
@@ -88,7 +90,21 @@ test.beforeAll(async () => {
   if (supError) throw supError;
   testSupplier = supplier;
 
-  console.log(`Test setup complete: user=${testUser.id}, org=${testOrg.id}, supplier=${testSupplier.id}`);
+  // Create test lead for quote creation
+  const { data: lead, error: leadError } = await authClient
+    .from('quote_leads')
+    .insert({
+      user_id: testUser.id,
+      full_name: 'Test Lead',
+      email: `lead-${timestamp}@test.local`,
+    })
+    .select()
+    .single();
+
+  if (leadError) throw leadError;
+  testLead = lead;
+
+  console.log(`Test setup complete: user=${testUser.id}, org=${testOrg.id}, supplier=${testSupplier.id}, lead=${testLead.id}`);
 });
 
 test.describe('Quotes Management', () => {
@@ -105,21 +121,18 @@ test.describe('Quotes Management', () => {
         'Content-Type': 'application/json',
       },
       data: {
-        title: 'E2E Test Quote',
-        description: 'Quote created via E2E testing',
-        project_name: 'Test Project',
-        deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
+        lead_id: testLead.id,
+        status: 'draft',
+        currency: 'USD',
       },
     });
 
     expect(response.ok()).toBeTruthy();
     const data = await response.json();
-    expect(data.success).toBe(true);
-    expect(data.data.id).toBeTruthy();
-    expect(data.data.title).toBe('E2E Test Quote');
-    expect(data.data.status).toBe('draft');
+    expect(data.quote).toBeTruthy();
+    expect(data.quote.id).toBeTruthy();
 
-    createdQuoteId = data.data.id;
+    createdQuoteId = data.quote.id;
     console.log(`Quote created: ${createdQuoteId}`);
   });
 
@@ -130,7 +143,7 @@ test.describe('Quotes Management', () => {
       password: 'TestPassword123!',
     });
 
-    const response = await page.request.get(`${BASE_URL}/api/quotes`, {
+    const response = await page.request.get(`${BASE_URL}/api/quote`, {
       headers: {
         'Authorization': `Bearer ${signInData.session!.access_token}`,
       },
@@ -138,14 +151,14 @@ test.describe('Quotes Management', () => {
 
     expect(response.ok()).toBeTruthy();
     const data = await response.json();
-    expect(data.success).toBe(true);
-    expect(Array.isArray(data.data)).toBe(true);
+    expect(data.quotes).toBeTruthy();
+    expect(Array.isArray(data.quotes)).toBe(true);
 
     // Should include our created quote
-    const foundQuote = data.data.find((q: any) => q.id === createdQuoteId);
+    const foundQuote = data.quotes.find((q: any) => q.id === createdQuoteId);
     expect(foundQuote).toBeTruthy();
 
-    console.log(`Quotes listed: ${data.data.length} total`);
+    console.log(`Quotes listed: ${data.quotes.length} total`);
   });
 
   test('should add items to quote', async ({ page }) => {
@@ -403,6 +416,9 @@ test.afterAll(async () => {
   });
 
   // Cleanup test data
+  if (testLead) {
+    await authClient.from('quote_leads').delete().eq('id', testLead.id);
+  }
   if (testSupplier) {
     await authClient.from('suppliers').delete().eq('id', testSupplier.id);
   }

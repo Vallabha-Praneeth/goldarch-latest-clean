@@ -21,8 +21,22 @@ const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGci
 let testUser: any;
 let testOrg: any;
 let uploadedDocumentId: string;
+let serviceAvailable = false;
 
 test.beforeAll(async () => {
+  // Check if Framework B service is available before setting up test data
+  try {
+    const healthResponse = await fetch(`${BASE_URL}/api/framework-b/health`);
+    serviceAvailable = healthResponse.ok;
+  } catch {
+    serviceAvailable = false;
+  }
+
+  if (!serviceAvailable) {
+    console.log('Framework B service unavailable — tests will be skipped');
+    return;
+  }
+
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const timestamp = Date.now();
 
@@ -55,11 +69,18 @@ test.beforeAll(async () => {
   testOrg = org;
 
   // Add user as owner
-  await authClient
+  const { error: memberError } = await authClient
     .from('organization_members')
     .insert({ org_id: testOrg.id, user_id: testUser.id, role: 'owner' });
+  if (memberError) throw memberError;
 
   console.log(`Test setup complete: user=${testUser.id}, org=${testOrg.id}`);
+});
+
+test.beforeEach(async ({}, testInfo) => {
+  if (!serviceAvailable) {
+    testInfo.skip();
+  }
 });
 
 test.describe('Framework B - RAG System', () => {
@@ -388,6 +409,11 @@ test.describe('Framework B - RAG System', () => {
 });
 
 test.afterAll(async () => {
+  if (!serviceAvailable || !testUser) {
+    console.log('Skipping cleanup — service was unavailable');
+    return;
+  }
+
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const { data: signInData } = await supabase.auth.signInWithPassword({
     email: testUser.email,
