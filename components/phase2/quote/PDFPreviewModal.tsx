@@ -1,11 +1,13 @@
 import React from 'react';
-import { X, Download, Mail } from 'lucide-react';
+import { X } from 'lucide-react';
 import { QuoteActions } from './QuoteActions';
+import QuoteBOMPreview from '@/components/quote/QuoteBOMPreview';
+import type { QuoteBOMData } from '@/lib/types/quotation.types';
 
 interface PDFPreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
-  pdfUrl?: string;
+  bomData?: QuoteBOMData | null;
   onDownload?: () => void;
   onSendEmail?: () => void;
 }
@@ -13,7 +15,7 @@ interface PDFPreviewModalProps {
 export const PDFPreviewModal: React.FC<PDFPreviewModalProps> = ({
   isOpen,
   onClose,
-  pdfUrl = '',
+  bomData,
   onDownload,
   onSendEmail,
 }) => {
@@ -38,7 +40,7 @@ export const PDFPreviewModal: React.FC<PDFPreviewModalProps> = ({
 
           <div className="flex items-center gap-3">
             <QuoteActions onDownload={onDownload} onSendEmail={onSendEmail} />
-            
+
             <button
               onClick={onClose}
               className="p-2 text-gray-400 hover:text-gold-brand hover:bg-gray-100 rounded-lg transition-colors"
@@ -49,16 +51,14 @@ export const PDFPreviewModal: React.FC<PDFPreviewModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-hidden p-6">
-          <div className="w-full h-full border border-gold-brand border-opacity-18 rounded-lg overflow-hidden bg-gray-50">
-            {pdfUrl ? (
-              <iframe
-                src={pdfUrl}
-                className="w-full h-full"
-                title="PDF Preview"
-              />
+        <div className="flex-1 overflow-y-auto p-6">
+          <div className="w-full border border-gold-brand border-opacity-18 rounded-lg overflow-hidden bg-white">
+            {bomData ? (
+              <div className="p-8">
+                <QuoteBOMPreview data={bomData} />
+              </div>
             ) : (
-              <div className="w-full h-full flex items-center justify-center">
+              <div className="w-full h-64 flex items-center justify-center">
                 <div className="text-center">
                   <div className="w-16 h-16 bg-gold-light bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
                     <svg
@@ -76,7 +76,7 @@ export const PDFPreviewModal: React.FC<PDFPreviewModalProps> = ({
                     </svg>
                   </div>
                   <p className="text-sm text-navy-light">
-                    PDF preview will appear here
+                    No quote data available for preview
                   </p>
                 </div>
               </div>
