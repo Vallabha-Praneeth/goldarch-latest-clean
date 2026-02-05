@@ -1,7 +1,7 @@
 // FILE: app/app-dashboard/quotes/[quoteId]/review/page.tsx
 'use client';
 
-import { use, useState, useEffect } from 'react';
+import { use, useState, useEffect, useRef } from 'react';
 import { QuoteActions } from '@/components/phase2/quote/QuoteActions';
 import { QuantityEditor } from '@/components/phase2/quote/QuantityEditor';
 import { EmailToast } from '@/components/phase2/quote/EmailToast';
@@ -9,6 +9,9 @@ import { PDFPreviewModal } from '@/components/phase2/quote/PDFPreviewModal';
 import { ShareQuoteButton } from '@/components/quote/ShareQuoteButton';
 import { StatusTimeline } from '@/components/quote/StatusTimeline';
 import ResponsesList from '@/components/quote/ResponsesList';
+import QuoteBOMPreview from '@/components/quote/QuoteBOMPreview';
+import { downloadQuotePDF } from '@/lib/utils/generate-pdf';
+import type { QuoteBOMData } from '@/lib/types/quotation.types';
 import { Edit2, Mail, CheckCircle, Share2, Clock, MessageSquare, History } from 'lucide-react';
 
 interface PageProps {
@@ -26,6 +29,7 @@ export default function QuoteReviewPage({ params }: PageProps) {
   const [quoteStatus, setQuoteStatus] = useState<'draft' | 'sent'>('draft');
   const [emailHistory, setEmailHistory] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<'details' | 'status' | 'responses' | 'versions'>('details');
+  const bomPreviewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -107,22 +111,11 @@ export default function QuoteReviewPage({ params }: PageProps) {
   }, [quoteId]);
 
   const handleDownload = async () => {
+    if (!bomPreviewRef.current) return;
     try {
-      const response = await fetch(`/api/quote/pdf/${quoteId}`);
-      if (!response.ok) throw new Error('PDF generation failed');
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Quote-${quote.quote_number}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      await downloadQuotePDF(bomPreviewRef.current, quote?.quote_number ?? 'quote');
     } catch (error) {
       console.error('PDF download failed:', error);
-      alert('Failed to download PDF. Please try again.');
     }
   };
 
@@ -175,6 +168,30 @@ export default function QuoteReviewPage({ params }: PageProps) {
       </div>
     );
   }
+
+  const bomData: QuoteBOMData = {
+    quoteNumber: quote.quote_number,
+    createdAt: quote.created_at,
+    validUntil: quote.valid_until || null,
+    lead: {
+      name: quote.lead.name,
+      email: quote.lead.email,
+    },
+    lineItems: quote.lineItems.map((item: any, idx: number) => ({
+      lineNumber: idx + 1,
+      description: item.description,
+      category: item.category || undefined,
+      quantity: item.quantity,
+      unit: item.unit || undefined,
+      unitPrice: item.unit_price,
+      lineTotal: item.line_total,
+    })),
+    subtotal: quote.subtotal,
+    tax: quote.tax_placeholder,
+    discount: 0,
+    total: quote.total,
+    currency: quote.currency,
+  };
 
   return (
     <>
@@ -445,10 +462,16 @@ export default function QuoteReviewPage({ params }: PageProps) {
         recipientEmail={quote.lead.email}
       />
 
+      {/* Hidden BOM preview for PDF capture */}
+      <div style={{ position: 'absolute', left: '-9999px', top: 0 }}>
+        <QuoteBOMPreview ref={bomPreviewRef} data={bomData} />
+      </div>
+
       {/* PDF Preview Modal */}
       <PDFPreviewModal
         isOpen={showPDFModal}
         onClose={() => setShowPDFModal(false)}
+        bomData={bomData}
         onDownload={handleDownload}
         onSendEmail={handleSendEmail}
       />
