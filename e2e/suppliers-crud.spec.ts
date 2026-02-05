@@ -55,9 +55,10 @@ test.beforeAll(async () => {
   testOrg = org;
 
   // Add user as owner
-  await authClient
+  const { error: memberError } = await authClient
     .from('organization_members')
     .insert({ org_id: testOrg.id, user_id: testUser.id, role: 'owner' });
+  if (memberError) throw memberError;
 
   // Create test category
   const { data: category, error: catError } = await authClient

@@ -53,9 +53,10 @@ test.beforeAll(async () => {
   testOrg = org;
 
   // Add user as owner
-  await authClient
+  const { error: memberError } = await authClient
     .from('organization_members')
     .insert({ org_id: testOrg.id, user_id: testUser.id, role: 'owner' });
+  if (memberError) throw memberError;
 
   console.log(`Test setup complete: user=${testUser.id}, org=${testOrg.id}`);
 });
@@ -249,7 +250,7 @@ test.describe('Projects CRUD Operations', () => {
 
     expect(response.status()).toBe(401);
     const data = await response.json();
-    expect(data.error).toContain('Unauthorized');
+    expect(data.error).toMatch(/unauthorized/i);
 
     console.log('Unauthorized access correctly rejected');
   });

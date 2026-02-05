@@ -53,9 +53,10 @@ test.beforeAll(async () => {
   testOrg = org;
 
   // Add user as owner
-  await authClient
+  const { error: memberError } = await authClient
     .from('organization_members')
     .insert({ org_id: testOrg.id, user_id: testUser.id, role: 'owner' });
+  if (memberError) throw memberError;
 
   console.log(`Test setup complete: user=${testUser.id}, org=${testOrg.id}`);
 });
@@ -70,10 +71,15 @@ test.describe('Template Editor UI', () => {
     });
 
     // Set auth cookies
+    const projectRef = new URL(SUPABASE_URL).hostname.split('.')[0] || '127.0.0.1';
     await page.context().addCookies([
       {
-        name: 'sb-access-token',
-        value: signInData.session!.access_token,
+        name: `sb-${projectRef}-auth-token`,
+        value: JSON.stringify({
+          access_token: signInData.session!.access_token,
+          refresh_token: signInData.session!.refresh_token,
+          expires_at: Math.floor(Date.now() / 1000) + 3600,
+        }),
         domain: 'localhost',
         path: '/',
       },
@@ -96,10 +102,15 @@ test.describe('Template Editor UI', () => {
       password: 'TestPassword123!',
     });
 
+    const projectRef = new URL(SUPABASE_URL).hostname.split('.')[0] || '127.0.0.1';
     await page.context().addCookies([
       {
-        name: 'sb-access-token',
-        value: signInData.session!.access_token,
+        name: `sb-${projectRef}-auth-token`,
+        value: JSON.stringify({
+          access_token: signInData.session!.access_token,
+          refresh_token: signInData.session!.refresh_token,
+          expires_at: Math.floor(Date.now() / 1000) + 3600,
+        }),
         domain: 'localhost',
         path: '/',
       },
@@ -122,10 +133,15 @@ test.describe('Template Editor UI', () => {
       password: 'TestPassword123!',
     });
 
+    const projectRef = new URL(SUPABASE_URL).hostname.split('.')[0] || '127.0.0.1';
     await page.context().addCookies([
       {
-        name: 'sb-access-token',
-        value: signInData.session!.access_token,
+        name: `sb-${projectRef}-auth-token`,
+        value: JSON.stringify({
+          access_token: signInData.session!.access_token,
+          refresh_token: signInData.session!.refresh_token,
+          expires_at: Math.floor(Date.now() / 1000) + 3600,
+        }),
         domain: 'localhost',
         path: '/',
       },
@@ -154,10 +170,15 @@ test.describe('Template Editor UI', () => {
       password: 'TestPassword123!',
     });
 
+    const projectRef = new URL(SUPABASE_URL).hostname.split('.')[0] || '127.0.0.1';
     await page.context().addCookies([
       {
-        name: 'sb-access-token',
-        value: signInData.session!.access_token,
+        name: `sb-${projectRef}-auth-token`,
+        value: JSON.stringify({
+          access_token: signInData.session!.access_token,
+          refresh_token: signInData.session!.refresh_token,
+          expires_at: Math.floor(Date.now() / 1000) + 3600,
+        }),
         domain: 'localhost',
         path: '/',
       },
@@ -179,10 +200,15 @@ test.describe('Template Editor UI', () => {
       password: 'TestPassword123!',
     });
 
+    const projectRef = new URL(SUPABASE_URL).hostname.split('.')[0] || '127.0.0.1';
     await page.context().addCookies([
       {
-        name: 'sb-access-token',
-        value: signInData.session!.access_token,
+        name: `sb-${projectRef}-auth-token`,
+        value: JSON.stringify({
+          access_token: signInData.session!.access_token,
+          refresh_token: signInData.session!.refresh_token,
+          expires_at: Math.floor(Date.now() / 1000) + 3600,
+        }),
         domain: 'localhost',
         path: '/',
       },
@@ -212,10 +238,15 @@ test.describe('Template Editor UI', () => {
       password: 'TestPassword123!',
     });
 
+    const projectRef = new URL(SUPABASE_URL).hostname.split('.')[0] || '127.0.0.1';
     await page.context().addCookies([
       {
-        name: 'sb-access-token',
-        value: signInData.session!.access_token,
+        name: `sb-${projectRef}-auth-token`,
+        value: JSON.stringify({
+          access_token: signInData.session!.access_token,
+          refresh_token: signInData.session!.refresh_token,
+          expires_at: Math.floor(Date.now() / 1000) + 3600,
+        }),
         domain: 'localhost',
         path: '/',
       },
@@ -245,10 +276,15 @@ test.describe('Template Editor UI', () => {
       password: 'TestPassword123!',
     });
 
+    const projectRef = new URL(SUPABASE_URL).hostname.split('.')[0] || '127.0.0.1';
     await page.context().addCookies([
       {
-        name: 'sb-access-token',
-        value: signInData.session!.access_token,
+        name: `sb-${projectRef}-auth-token`,
+        value: JSON.stringify({
+          access_token: signInData.session!.access_token,
+          refresh_token: signInData.session!.refresh_token,
+          expires_at: Math.floor(Date.now() / 1000) + 3600,
+        }),
         domain: 'localhost',
         path: '/',
       },
@@ -278,10 +314,15 @@ test.describe('Template Editor UI', () => {
       password: 'TestPassword123!',
     });
 
+    const projectRef = new URL(SUPABASE_URL).hostname.split('.')[0] || '127.0.0.1';
     await page.context().addCookies([
       {
-        name: 'sb-access-token',
-        value: signInData.session!.access_token,
+        name: `sb-${projectRef}-auth-token`,
+        value: JSON.stringify({
+          access_token: signInData.session!.access_token,
+          refresh_token: signInData.session!.refresh_token,
+          expires_at: Math.floor(Date.now() / 1000) + 3600,
+        }),
         domain: 'localhost',
         path: '/',
       },
@@ -315,10 +356,15 @@ test.describe('Template Editor UI', () => {
       password: 'TestPassword123!',
     });
 
+    const projectRef = new URL(SUPABASE_URL).hostname.split('.')[0] || '127.0.0.1';
     await page.context().addCookies([
       {
-        name: 'sb-access-token',
-        value: signInData.session!.access_token,
+        name: `sb-${projectRef}-auth-token`,
+        value: JSON.stringify({
+          access_token: signInData.session!.access_token,
+          refresh_token: signInData.session!.refresh_token,
+          expires_at: Math.floor(Date.now() / 1000) + 3600,
+        }),
         domain: 'localhost',
         path: '/',
       },
@@ -327,7 +373,7 @@ test.describe('Template Editor UI', () => {
     await page.goto(`${BASE_URL}/app-dashboard/templates`);
 
     // Should see "New Template" or "Create" button
-    const createButton = page.locator('button:has-text(/New Template|Create/i)').first();
+    const createButton = page.getByRole('button', { name: /New Template|Create/i }).first();
     await expect(createButton).toBeVisible();
 
     console.log('Create template button visible');
