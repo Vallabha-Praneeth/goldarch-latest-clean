@@ -1,7 +1,6 @@
 'use client';
 
 import { forwardRef } from 'react';
-import Image from 'next/image';
 import type { QuoteBOMData } from '@/lib/types/quotation.types';
 
 function formatCurrency(amount: number, currency: string = 'USD'): string {
@@ -26,115 +25,105 @@ interface QuoteBOMPreviewProps {
   data: QuoteBOMData;
 }
 
+/* Color palette matching Gold.Arch app theme */
+const navy = '#1a2332';
+const navyLight = '#2d3a4a';
+const gold = '#c8952e';
+const goldLight = '#e0be7a';
+const textDark = '#1e293b';
+const textMuted = '#64748b';
+const bgWarm = '#faf9f7';
+const borderLight = '#e8e5df';
+
 const QuoteBOMPreview = forwardRef<HTMLDivElement, QuoteBOMPreviewProps>(
   function QuoteBOMPreview({ data }, ref) {
-    const primaryColor = '#2563eb';
-
     return (
       <div
         ref={ref}
-        className="bom-preview bg-white text-gray-800 max-w-[210mm] mx-auto"
-        style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", lineHeight: 1.6 }}
+        className="bom-preview max-w-[210mm] mx-auto"
+        style={{
+          fontFamily: "'Space Grotesk', 'Helvetica Neue', Arial, sans-serif",
+          lineHeight: 1.5,
+          color: textDark,
+          background: '#ffffff',
+        }}
       >
         {/* Header */}
         <div
-          className="flex justify-between items-start pb-5 mb-10"
-          style={{ borderBottom: `3px solid ${primaryColor}` }}
+          className="flex justify-between items-start pb-3 mb-6"
+          style={{ borderBottom: `2px solid ${borderLight}` }}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/goldarch-logo.png"
               alt="Gold.Arch Logo"
-              className="h-14 w-auto print:h-12"
+              className="h-9 w-auto"
             />
             <span
-              className="text-2xl font-bold"
-              style={{ color: primaryColor, letterSpacing: '-0.5px' }}
+              className="text-base font-bold"
+              style={{ color: navy, letterSpacing: '-0.3px' }}
             >
               GoldArch Construction
             </span>
           </div>
           <div className="text-right">
             <h1
-              className="text-3xl font-bold mb-2"
-              style={{ color: primaryColor }}
+              className="text-lg font-bold mb-1"
+              style={{ color: navy }}
             >
-              QUOTATION
+              Quote {data.quoteNumber}
             </h1>
-            <p className="text-sm my-1">
-              <strong>Quote #:</strong> {data.quoteNumber}
-            </p>
-            <p className="text-sm my-1">
-              <strong>Date:</strong> {formatDate(data.createdAt)}
+            <p className="text-[11px] my-0.5" style={{ color: textMuted }}>
+              Created: <strong style={{ color: textDark }}>{formatDate(data.createdAt)}</strong>
             </p>
             {data.validUntil && (
-              <p className="text-sm my-1">
-                <strong>Valid Until:</strong> {formatDate(data.validUntil)}
+              <p className="text-[11px] my-0.5" style={{ color: textMuted }}>
+                Valid Until: <strong style={{ color: textDark }}>{formatDate(data.validUntil)}</strong>
               </p>
             )}
           </div>
         </div>
 
         {/* Customer Info */}
-        <div
-          className="rounded-lg mb-10 p-6"
-          style={{
-            background: '#f8fafc',
-            borderLeft: `4px solid ${primaryColor}`,
-          }}
-        >
-          <h2
-            className="text-lg font-semibold mb-3"
-            style={{ color: primaryColor }}
-          >
-            Quote Prepared For:
-          </h2>
-          <p className="text-sm my-1">
-            <strong>{data.lead.name}</strong>
+        <div className="mb-5 px-4 py-3" style={{ background: bgWarm, borderRadius: '6px' }}>
+          <p className="text-[11px] mb-1" style={{ color: textMuted }}>Prepared for</p>
+          <p className="text-xs font-semibold" style={{ color: textDark }}>
+            {data.lead.name}
+            {data.lead.company && <span style={{ color: textMuted }}> &bull; {data.lead.company}</span>}
           </p>
-          {data.lead.company && (
-            <p className="text-sm my-1">{data.lead.company}</p>
-          )}
-          {data.lead.email && (
-            <p className="text-sm my-1">Email: {data.lead.email}</p>
-          )}
-          {data.lead.phone && (
-            <p className="text-sm my-1">Phone: {data.lead.phone}</p>
+          {(data.lead.email || data.lead.phone) && (
+            <p className="text-[11px] mt-0.5" style={{ color: textMuted }}>
+              {data.lead.email}{data.lead.email && data.lead.phone && ' · '}{data.lead.phone}
+            </p>
           )}
         </div>
 
         {/* Line Items Table */}
-        <table className="w-full mb-10" style={{ borderCollapse: 'collapse' }}>
+        <table className="w-full mb-5" style={{ borderCollapse: 'collapse' }}>
           <thead>
             <tr>
               <th
-                className="px-3 py-3 text-left text-sm font-semibold text-white"
-                style={{ background: primaryColor, width: '5%' }}
+                className="px-3 py-2 text-left text-[11px] font-semibold"
+                style={{ background: navy, color: goldLight, width: '50%', borderRadius: '4px 0 0 0' }}
               >
-                #
+                Item
               </th>
               <th
-                className="px-3 py-3 text-left text-sm font-semibold text-white"
-                style={{ background: primaryColor, width: '45%' }}
+                className="px-3 py-2 text-right text-[11px] font-semibold"
+                style={{ background: navy, color: goldLight, width: '12%' }}
               >
-                Description
+                Qty
               </th>
               <th
-                className="px-3 py-3 text-left text-sm font-semibold text-white"
-                style={{ background: primaryColor, width: '15%' }}
-              >
-                Quantity
-              </th>
-              <th
-                className="px-3 py-3 text-left text-sm font-semibold text-white"
-                style={{ background: primaryColor, width: '17.5%' }}
+                className="px-3 py-2 text-right text-[11px] font-semibold"
+                style={{ background: navy, color: goldLight, width: '19%' }}
               >
                 Unit Price
               </th>
               <th
-                className="px-3 py-3 text-right text-sm font-semibold text-white"
-                style={{ background: primaryColor, width: '17.5%' }}
+                className="px-3 py-2 text-right text-[11px] font-semibold"
+                style={{ background: navy, color: goldLight, width: '19%', borderRadius: '0 4px 0 0' }}
               >
                 Total
               </th>
@@ -145,26 +134,25 @@ const QuoteBOMPreview = forwardRef<HTMLDivElement, QuoteBOMPreviewProps>(
               <tr
                 key={item.lineNumber}
                 style={{
-                  background: index % 2 === 0 ? '#ffffff' : '#f8fafc',
-                  borderBottom: '1px solid #e2e8f0',
+                  background: index % 2 === 0 ? '#ffffff' : bgWarm,
+                  borderBottom: `1px solid ${borderLight}`,
                 }}
               >
-                <td className="px-3 py-3 text-sm">{item.lineNumber}</td>
-                <td className="px-3 py-3 text-sm">
+                <td className="px-3 py-2 text-xs">
                   {item.description}
                   {item.category && (
-                    <span className="block text-xs text-gray-500">
+                    <span className="block text-[10px]" style={{ color: textMuted }}>
                       {item.category}
                     </span>
                   )}
                 </td>
-                <td className="px-3 py-3 text-sm">
+                <td className="px-3 py-2 text-xs text-right">
                   {item.quantity} {item.unit || 'units'}
                 </td>
-                <td className="px-3 py-3 text-sm">
+                <td className="px-3 py-2 text-xs text-right">
                   {formatCurrency(item.unitPrice, data.currency)}
                 </td>
-                <td className="px-3 py-3 text-sm text-right">
+                <td className="px-3 py-2 text-xs text-right font-medium">
                   {formatCurrency(item.lineTotal, data.currency)}
                 </td>
               </tr>
@@ -173,62 +161,53 @@ const QuoteBOMPreview = forwardRef<HTMLDivElement, QuoteBOMPreviewProps>(
         </table>
 
         {/* Totals */}
-        <div className="ml-auto w-[350px] rounded-lg p-5 mb-10" style={{ background: '#f8fafc' }}>
-          <div className="flex justify-between py-2 text-[15px]">
+        <div className="ml-auto w-[280px] mb-5">
+          <div className="flex justify-between py-1.5 text-xs" style={{ color: textMuted }}>
             <span>Subtotal:</span>
-            <span>{formatCurrency(data.subtotal, data.currency)}</span>
+            <span style={{ color: textDark }}>{formatCurrency(data.subtotal, data.currency)}</span>
           </div>
           {data.discount > 0 && (
-            <div className="flex justify-between py-2 text-[15px] text-red-500">
+            <div className="flex justify-between py-1.5 text-xs text-red-500">
               <span>Discount:</span>
               <span>-{formatCurrency(data.discount, data.currency)}</span>
             </div>
           )}
-          <div className="flex justify-between py-2 text-[15px]">
+          <div className="flex justify-between py-1.5 text-xs" style={{ color: textMuted }}>
             <span>Tax:</span>
-            <span>{formatCurrency(data.tax, data.currency)}</span>
+            <span style={{ color: textDark }}>{formatCurrency(data.tax, data.currency)}</span>
           </div>
           <div
-            className="flex justify-between pt-4 mt-2 text-[22px] font-bold"
-            style={{ borderTop: '2px solid #333', color: primaryColor }}
+            className="flex justify-between pt-2 mt-1 text-sm font-bold"
+            style={{ borderTop: `2px solid ${navy}`, color: gold }}
           >
-            <span>TOTAL:</span>
+            <span>Total:</span>
             <span>{formatCurrency(data.total, data.currency)}</span>
           </div>
         </div>
 
         {/* Terms & Conditions */}
-        <div className="rounded-lg p-5 mb-12" style={{ background: '#f8fafc' }}>
+        <div className="px-4 py-3 mb-6" style={{ background: bgWarm, borderRadius: '6px' }}>
           <h3
-            className="text-base font-semibold mb-3"
-            style={{ color: primaryColor }}
+            className="text-[11px] font-semibold mb-2"
+            style={{ color: navy }}
           >
             Terms &amp; Conditions
           </h3>
-          <ul className="ml-5 list-disc">
-            <li className="text-[13px] my-2">Payment due within 30 days of invoice date</li>
-            <li className="text-[13px] my-2">This quote is valid for 30 days from the issue date</li>
-            <li className="text-[13px] my-2">Prices are subject to change based on material availability</li>
-            <li className="text-[13px] my-2">Installation and delivery charges may apply</li>
-            <li className="text-[13px] my-2">All work subject to final site inspection and approval</li>
+          <ul className="ml-4 list-disc">
+            <li className="text-[10px] my-0.5" style={{ color: textMuted }}>Payment due within 30 days of invoice date</li>
+            <li className="text-[10px] my-0.5" style={{ color: textMuted }}>This quote is valid for 30 days from the issue date</li>
+            <li className="text-[10px] my-0.5" style={{ color: textMuted }}>Prices subject to change based on material availability</li>
+            <li className="text-[10px] my-0.5" style={{ color: textMuted }}>Installation and delivery charges may apply</li>
           </ul>
         </div>
 
         {/* Footer */}
-        <div
-          className="text-center text-[12px] pt-5"
-          style={{ color: '#64748b', borderTop: '1px solid #e2e8f0' }}
-        >
-          <p className="my-1">
-            <strong>GoldArch Construction</strong>
+        <div className="text-center pt-3" style={{ borderTop: `1px solid ${borderLight}` }}>
+          <p className="text-[11px] font-semibold my-0.5" style={{ color: gold }}>
+            GoldArch Construction
           </p>
-          <p className="my-1">Thank you for your business!</p>
-          <p className="my-1">
-            For questions, please contact us at the information provided above.
-          </p>
-          <p className="my-1">
-            &copy; {new Date().getFullYear()} GoldArch Construction. All rights
-            reserved.
+          <p className="text-[10px] my-0.5" style={{ color: textMuted }}>
+            Thank you for your business!
           </p>
         </div>
       </div>
