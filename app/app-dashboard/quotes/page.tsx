@@ -31,6 +31,7 @@ import { Breadcrumbs } from '@/components/cross-section/Breadcrumbs';
 import { QuoteStatusBadge } from '@/components/quote-status-badge';
 import { QuoteApprovalDialog } from '@/components/quote-approval-dialog';
 import {
+  useQuotes,
   useSubmitQuote,
   useApproveQuote,
   useRejectQuote,
@@ -98,17 +99,8 @@ export default function QuotesPage() {
     getUserRole();
   }, []);
 
-  const { data: quotes, isLoading } = useQuery({
-    queryKey: ['quotes'],
-    queryFn: async () => {
-      const response = await fetch('/api/quote');
-      if (!response.ok) {
-        throw new Error('Failed to fetch quotes');
-      }
-      const data = await response.json();
-      return data.quotes || [];
-    },
-  });
+  // MODULE-1C: Use real quotes from the quotes table
+  const { data: quotes, isLoading } = useQuotes();
 
   const { data: suppliers } = useQuery({
     queryKey: ['suppliers-list'],
