@@ -30,9 +30,9 @@ export async function POST(
         cookies: {
           getAll: () => cookieStore.getAll(),
           setAll: (cookiesToSet) => {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            );
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options);
+            });
           },
         },
       }
@@ -71,22 +71,22 @@ export async function POST(
       );
     }
 
-    // Update quote status to declined
+    // Update quote status to declined (atomic: also check status to prevent TOCTOU race)
+    // Note: updated_at is handled by DB trigger (trg_quotes_touch)
     const { data: updatedQuote, error: updateError } = await supabase
       .from('quotes')
-      .update({
-        status: 'declined',
-        updated_at: new Date().toISOString(),
-      })
+      .update({ status: 'declined' })
       .eq('id', quoteId)
+      .eq('status', 'approved')
       .select()
       .single();
 
-    if (updateError) {
+    if (updateError || !updatedQuote) {
+      // Could be concurrent modification - quote status changed between check and update
       console.error('Error declining quote:', updateError);
       return NextResponse.json(
-        { error: 'Failed to decline quote' },
-        { status: 500 }
+        { error: 'Failed to decline quote. It may have been modified by another user.' },
+        { status: 409 }
       );
     }
 
@@ -95,10 +95,10 @@ export async function POST(
       quote: updatedQuote,
       message: 'Quote declined successfully',
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Decline quote error:', error);
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: error instanceof Error ? error.message : 'Internal server error' },
       { status: 500 }
     );
   }

@@ -3,8 +3,11 @@
  * File: hooks/use-quote-approval.ts
  *
  * React Query hooks for quote approval operations.
- * Reads use direct Supabase client queries (RLS handles access).
- * Mutations go through API routes (server-side role enforcement).
+ * Reads use direct Supabase client queries (RLS is currently disabled for dev).
+ * Mutations go through API routes (server-side role/ownership enforcement).
+ *
+ * NOTE: RLS is disabled on quotes/quote_lines tables for local development.
+ * Production should re-enable RLS or move reads to server-side routes.
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -13,7 +16,6 @@ import { supabase } from '../supabase-client';
 // Types
 import type {
   Quote,
-  QuoteWithRelations,
   QuoteStatus,
   ApproveQuoteRequest,
   RejectQuoteRequest,
@@ -51,7 +53,7 @@ interface QuoteFilters {
 // ============================================================================
 
 const apiClient = {
-  getQuotes: async (filters?: QuoteFilters): Promise<QuoteWithRelations[]> => {
+  getQuotes: async (filters?: QuoteFilters): Promise<Quote[]> => {
     let query = supabase
       .from('quotes')
       .select('*')
@@ -73,10 +75,10 @@ const apiClient = {
     const { data, error } = await query;
 
     if (error) throw new Error(error.message);
-    return (data ?? []) as QuoteWithRelations[];
+    return (data ?? []) as Quote[];
   },
 
-  getQuoteDetails: async (id: string): Promise<QuoteWithRelations> => {
+  getQuoteDetails: async (id: string): Promise<Quote> => {
     const { data, error } = await supabase
       .from('quotes')
       .select('*')
@@ -84,7 +86,7 @@ const apiClient = {
       .single();
 
     if (error) throw new Error(error.message);
-    return data as QuoteWithRelations;
+    return data as Quote;
   },
 
   submitQuote: async (data: SubmitQuoteRequest): Promise<void> => {
@@ -94,8 +96,12 @@ const apiClient = {
       body: JSON.stringify({ notes: data.notes }),
     });
     if (!response.ok) {
-      const err = await response.json();
-      throw new Error(err.error || 'Failed to submit quote');
+      let message = 'Failed to submit quote';
+      try {
+        const err = await response.json();
+        message = err.error || message;
+      } catch { /* non-JSON response body */ }
+      throw new Error(message);
     }
   },
 
@@ -106,8 +112,12 @@ const apiClient = {
       body: JSON.stringify({ notes: data.notes }),
     });
     if (!response.ok) {
-      const err = await response.json();
-      throw new Error(err.error || 'Failed to approve quote');
+      let message = 'Failed to approve quote';
+      try {
+        const err = await response.json();
+        message = err.error || message;
+      } catch { /* non-JSON response body */ }
+      throw new Error(message);
     }
   },
 
@@ -118,8 +128,12 @@ const apiClient = {
       body: JSON.stringify({ reason: data.reason }),
     });
     if (!response.ok) {
-      const err = await response.json();
-      throw new Error(err.error || 'Failed to reject quote');
+      let message = 'Failed to reject quote';
+      try {
+        const err = await response.json();
+        message = err.error || message;
+      } catch { /* non-JSON response body */ }
+      throw new Error(message);
     }
   },
 
@@ -130,8 +144,12 @@ const apiClient = {
       body: JSON.stringify({ notes: data.notes }),
     });
     if (!response.ok) {
-      const err = await response.json();
-      throw new Error(err.error || 'Failed to accept quote');
+      let message = 'Failed to accept quote';
+      try {
+        const err = await response.json();
+        message = err.error || message;
+      } catch { /* non-JSON response body */ }
+      throw new Error(message);
     }
   },
 
@@ -142,8 +160,12 @@ const apiClient = {
       body: JSON.stringify({}),
     });
     if (!response.ok) {
-      const err = await response.json();
-      throw new Error(err.error || 'Failed to decline quote');
+      let message = 'Failed to decline quote';
+      try {
+        const err = await response.json();
+        message = err.error || message;
+      } catch { /* non-JSON response body */ }
+      throw new Error(message);
     }
   },
 };
@@ -173,6 +195,10 @@ export function usePendingQuotes() {
 
 /**
  * Fetch user's own quotes
+ *
+ * TODO: Currently returns all quotes. Should filter by createdBy using
+ * the current user's ID from auth context once integrated.
+ * For now, RLS policies (when enabled) should handle access control.
  */
 export function useMyQuotes() {
   return useQuery({
