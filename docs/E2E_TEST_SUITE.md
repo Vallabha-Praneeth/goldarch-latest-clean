@@ -1,8 +1,29 @@
 # E2E Test Suite Documentation
 
-**Status:** Phase 10 Complete - 60 tests across 7 test files
+**Status:** Phase 10 Complete - CI Integration Active
 **Framework:** Playwright with TypeScript
-**Date:** February 3, 2026
+**Last Updated:** February 6, 2026
+
+---
+
+## CI/CD Status
+
+**GitHub Actions Workflow:** `.github/workflows/e2e-invite.yml`
+
+| Test Suite | CI Status | Notes |
+|------------|-----------|-------|
+| `auth-flow.spec.ts` | Enabled | Core authentication tests |
+| `invite-flow.spec.ts` | Enabled | Organization invite flow |
+| `suppliers-crud.spec.ts` | Enabled | Full CRUD + filtering (PR #15) |
+| `projects-crud.spec.ts` | Enabled | Full CRUD operations (PR #15) |
+| `template-editor-ui.spec.ts` | Skipped | UI not implemented (Phase 6) |
+| `quotes-management.spec.ts` | Skipped | Some endpoints pending |
+| `framework-b.spec.ts` | Skipped | External API dependencies |
+| `supplier-filter.spec.ts` | Skipped | Access rules UI testing |
+
+**Latest CI Run:** All enabled tests passing (33 passed, 30 skipped, 0 failed)
+
+---
 
 ## Test Suite Overview
 
@@ -200,45 +221,83 @@ BASE_URL="http://localhost:3000"
 
 ### CI/CD Integration
 
-Add to `.github/workflows/test.yml`:
+**Active Workflow:** `.github/workflows/e2e-invite.yml`
+
+This workflow runs on every push and pull request to the `main` branch:
 
 ```yaml
-name: E2E Tests
+name: E2E Invite Flow Tests
 
-on: [push, pull_request]
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
 
 jobs:
-  test:
+  e2e-tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Start Supabase
-        run: npx supabase start
-
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Run E2E tests
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-          BASE_URL: http://localhost:3000
-        run: npm run test:e2e
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
 
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v3
+      - name: Start Supabase
+        run: npx supabase start
+
+      - name: Reset Supabase database
+        run: npx supabase db reset
+
+      - name: Start Next.js dev server
+        run: |
+          NEXT_PUBLIC_SUPABASE_URL="http://127.0.0.1:54321" \
+          NEXT_PUBLIC_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+          npm run dev &
+          npx wait-on http://localhost:3000 --timeout 120000
+
+      - name: Run E2E tests
+        run: |
+          NEXT_PUBLIC_SUPABASE_URL="http://127.0.0.1:54321" \
+          NEXT_PUBLIC_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+          BASE_URL="http://localhost:3000" \
+          npm run test:e2e
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: playwright-report/
+          retention-days: 7
+
+      - name: Stop Supabase
+        if: always()
+        run: npx supabase stop
 ```
+
+**Key Features:**
+- Runs `supabase db reset` to apply all migrations
+- Uses `wait-on` to ensure dev server is ready before tests
+- Uploads Playwright report artifact on failure
+- 15-minute timeout to prevent hanging jobs
 
 ## Test Patterns and Best Practices
 
@@ -335,9 +394,19 @@ npx playwright test e2e/auth-flow.spec.ts e2e/suppliers-crud.spec.ts
 
 ## Coverage Gaps and Future Tests
 
+### Recently Enabled (February 6, 2026):
+
+1. **Projects CRUD** - Now enabled in CI (PR #15)
+   - Migration: `20260206210000_create_projects_table.sql`
+   - Tests: Create, list, filter by status, update, delete (soft delete)
+
+2. **Suppliers CRUD** - Now enabled in CI (PR #15)
+   - Migration: `20260206230000_add_suppliers_extra_columns.sql`
+   - Tests: Create, list, search, filter, update, delete
+
 ### Not Yet Covered:
 
-1. **Projects CRUD** - Create, list, update, delete projects
+1. ~~**Projects CRUD**~~ - Now enabled in CI
 2. **Tasks Management** - Task creation, assignment, status updates
 3. **Analytics Dashboard** - Data visualization endpoints
 4. **Team Management** - User roles, permissions matrix
@@ -384,5 +453,21 @@ npx playwright codegen http://localhost:3000
 
 ---
 
-**Status:** ✅ Phase 10 Complete - Production-ready test coverage established
-**Next Steps:** Run tests in CI/CD, expand coverage for Projects/Tasks modules
+## Recent Changes
+
+### February 6, 2026 (PR #15)
+
+- Enabled `projects-crud.spec.ts` in CI
+- Enabled `suppliers-crud.spec.ts` in CI
+- Created migration `20260206230000_add_suppliers_extra_columns.sql`
+- Added CI skip for `template-editor-ui.spec.ts` (UI not ready)
+
+### February 6, 2026 (PR #14)
+
+- Fixed "New Quote" button to use correct `quotes` table
+- Created Templates API routes (`/api/templates`)
+
+---
+
+**Status:** CI Integration Active - 33 tests passing in automated pipeline
+**Next Steps:** Build template editor UI (Phase 6), enable remaining test suites
