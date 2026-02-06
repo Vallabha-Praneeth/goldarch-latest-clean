@@ -63,6 +63,9 @@ test.beforeAll(async () => {
 });
 
 test.describe('Framework B - RAG System', () => {
+  // Skip all tests in this suite in CI - requires external services (OpenAI, Pinecone)
+  test.skip(!!process.env.CI, 'Skipping in CI - requires external services');
+
   test('should check Framework B health endpoint', async ({ page }) => {
     const response = await page.request.get(`${BASE_URL}/api/framework-b/health`);
 
