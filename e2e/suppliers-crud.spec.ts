@@ -73,8 +73,7 @@ test.beforeAll(async () => {
 });
 
 test.describe('Suppliers CRUD Operations', () => {
-  // Skip in CI - suppliers table not in local migrations yet
-  test.skip(!!process.env.CI, 'Skipping in CI - suppliers table not migrated');
+  // Suppliers table now available via migration 20260202110000
 
   test('should create a new supplier via API', async ({ page }) => {
     // Sign in to get fresh session

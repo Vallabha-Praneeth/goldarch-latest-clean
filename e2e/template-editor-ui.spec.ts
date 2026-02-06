@@ -61,8 +61,7 @@ test.beforeAll(async () => {
 });
 
 test.describe('Template Editor UI', () => {
-  // Skip in CI - template system depends on tables not fully migrated
-  test.skip(!!process.env.CI, 'Skipping in CI - template tables not migrated');
+  // Templates table now available via migration 20260206220000
 
   test('should navigate to templates page when authenticated', async ({ page }) => {
     // Sign in
