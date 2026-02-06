@@ -1,10 +1,9 @@
 -- Migration: Create projects table
 -- Required for MODULE-1C E2E tests (projects-crud.spec.ts)
 
--- Create projects table
+-- Create projects table if it doesn't exist
 CREATE TABLE IF NOT EXISTS projects (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
   description TEXT,
   client_name TEXT,
@@ -13,19 +12,40 @@ CREATE TABLE IF NOT EXISTS projects (
   budget NUMERIC(12, 2),
   start_date DATE,
   end_date DATE,
-  status TEXT DEFAULT 'planning' CHECK (status IN ('planning', 'in_progress', 'on_hold', 'completed', 'archived')),
-  priority TEXT DEFAULT 'medium' CHECK (priority IN ('low', 'medium', 'high', 'urgent')),
-  completion_percentage INTEGER DEFAULT 0 CHECK (completion_percentage >= 0 AND completion_percentage <= 100),
+  status TEXT DEFAULT 'planning',
+  priority TEXT DEFAULT 'medium',
+  completion_percentage INTEGER DEFAULT 0,
   notes TEXT,
-  created_by UUID REFERENCES auth.users(id),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Create index on org_id for faster lookups
-CREATE INDEX IF NOT EXISTS idx_projects_org_id ON projects(org_id);
-CREATE INDEX IF NOT EXISTS idx_projects_status ON projects(status);
-CREATE INDEX IF NOT EXISTS idx_projects_created_by ON projects(created_by);
+-- Add missing columns to existing projects table (safe for both local and production)
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS org_id UUID REFERENCES organizations(id) ON DELETE CASCADE;
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS created_by UUID REFERENCES auth.users(id);
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS client_name TEXT;
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS client_email TEXT;
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS location TEXT;
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS budget NUMERIC(12, 2);
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS start_date DATE;
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS end_date DATE;
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS priority TEXT DEFAULT 'medium';
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS completion_percentage INTEGER DEFAULT 0;
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS notes TEXT;
+
+-- Create indexes only if column exists (safe for varying schemas)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'projects' AND column_name = 'org_id') THEN
+    CREATE INDEX IF NOT EXISTS idx_projects_org_id ON projects(org_id);
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'projects' AND column_name = 'status') THEN
+    CREATE INDEX IF NOT EXISTS idx_projects_status ON projects(status);
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'projects' AND column_name = 'created_by') THEN
+    CREATE INDEX IF NOT EXISTS idx_projects_created_by ON projects(created_by);
+  END IF;
+END $$;
 
 -- Create updated_at trigger
 CREATE OR REPLACE FUNCTION update_projects_updated_at()
