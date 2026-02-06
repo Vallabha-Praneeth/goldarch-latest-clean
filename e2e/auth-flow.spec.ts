@@ -131,26 +131,21 @@ test.describe('Authentication Flow', () => {
   });
 
   test('should maintain session after sign in', async ({ page }) => {
-    // Sign in via API
-    const { data: signInData } = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_ANON_KEY,
-      },
-      body: JSON.stringify({
-        email: testUser.email,
-        password: testUser.password,
-      }),
-    }).then(r => r.json());
+    // Sign in using Supabase client (more reliable than raw fetch)
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const { data: signInData, error } = await supabase.auth.signInWithPassword({
+      email: testUser.email,
+      password: testUser.password,
+    });
 
-    expect(signInData.access_token).toBeTruthy();
+    expect(error).toBeNull();
+    expect(signInData.session?.access_token).toBeTruthy();
 
     // Set session cookies
     await page.context().addCookies([
       {
         name: 'sb-access-token',
-        value: signInData.access_token,
+        value: signInData.session!.access_token,
         domain: 'localhost',
         path: '/',
       },
