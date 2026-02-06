@@ -327,7 +327,7 @@ test.describe('Template Editor UI', () => {
     await page.goto(`${BASE_URL}/app-dashboard/templates`);
 
     // Should see "New Template" or "Create" button
-    const createButton = page.locator('button:has-text(/New Template|Create/i)').first();
+    const createButton = page.getByRole('button', { name: /New Template|Create/i }).first();
     await expect(createButton).toBeVisible();
 
     console.log('Create template button visible');

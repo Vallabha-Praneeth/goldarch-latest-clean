@@ -24,10 +24,34 @@ let testUser: {
 };
 
 test.describe('Authentication Flow', () => {
-  test('should sign up a new user successfully', async () => {
+  // Set up test user before all tests to ensure shared state is reliable
+  test.beforeAll(async () => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const timestamp = Date.now();
     const email = `auth-test-${timestamp}@example.com`;
+    const password = 'SecurePassword123!';
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) throw error;
+
+    testUser = {
+      email,
+      password,
+      userId: data.user!.id,
+      accessToken: data.session!.access_token,
+    };
+
+    console.log(`Test user created: ${email}`);
+  });
+
+  test('should sign up a new user successfully', async () => {
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const timestamp = Date.now();
+    const email = `auth-test-signup-${timestamp}@example.com`;
     const password = 'SecurePassword123!';
 
     const { data, error } = await supabase.auth.signUp({
@@ -39,14 +63,6 @@ test.describe('Authentication Flow', () => {
     expect(data.user).toBeTruthy();
     expect(data.user?.email).toBe(email);
     expect(data.session).toBeTruthy();
-
-    // Store for subsequent tests
-    testUser = {
-      email,
-      password,
-      userId: data.user!.id,
-      accessToken: data.session!.access_token,
-    };
 
     console.log(`User signed up successfully: ${email}`);
   });
@@ -171,7 +187,7 @@ test.describe('Authentication Flow', () => {
 
     expect(response.status()).toBe(401);
     const data = await response.json();
-    expect(data.error).toContain('Unauthorized');
+    expect(data.error.toLowerCase()).toContain('unauthorized');
 
     console.log('Unauthenticated API request correctly rejected');
   });
