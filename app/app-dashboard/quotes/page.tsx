@@ -148,31 +148,33 @@ export default function QuotesPage() {
       const tax = formData.tax ? parseFloat(formData.tax) : 0;
       const total = formData.total ? parseFloat(formData.total) : subtotal + tax;
 
-      // Create a minimal lead first (required for quotations table)
-      const { data: lead, error: leadError } = await supabase.from('quote_leads').insert({
-        name: 'Draft Lead',
-        email: 'draft@example.com',
-      }).select().single();
-
-      if (leadError) throw leadError;
-
-      const response = await fetch('/api/quote', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          lead_id: lead.id,
-          status: formData.status,
-          subtotal,
-          tax_placeholder: tax,
-          total,
-          internal_notes: formData.notes.trim() || null,
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to create quote');
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('You must be logged in to create a quote');
       }
+
+      // MODULE-1C: Create quote directly in quotes table (not legacy quotations)
+      const { data: quote, error: quoteError } = await supabase
+        .from('quotes')
+        .insert({
+          quote_number: formData.quote_number.trim(),
+          title: formData.quote_number.trim(), // Use quote number as title
+          status: formData.status,
+          supplier_id: formData.supplier_id || null,
+          deal_id: formData.deal_id || null,
+          valid_until: formData.valid_until || null,
+          subtotal,
+          tax,
+          total,
+          currency: 'USD',
+          notes: formData.notes.trim() || null,
+          created_by: user.id,
+        })
+        .select()
+        .single();
+
+      if (quoteError) throw quoteError;
 
       toast.success('Quote created successfully');
       queryClient.invalidateQueries({ queryKey: ['quotes'] });
