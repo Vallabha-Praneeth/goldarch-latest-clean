@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { sendQuoteNotification } from '@/lib/notifications/quote-notifications';
 
 interface RouteContext {
   params: Promise<{ quoteId: string }>;
@@ -94,6 +95,54 @@ export async function POST(
         { status: 500 }
       );
     }
+
+    // Send notifications to managers/admins (async, don't block response)
+    (async () => {
+      try {
+        // Find managers and admins to notify
+        const { data: approvers } = await supabase
+          .from('user_roles')
+          .select('user_id, role')
+          .in('role', ['Admin', 'Manager']);
+
+        if (approvers && approvers.length > 0) {
+          // Get submitter name
+          const { data: submitterProfile } = await supabase
+            .from('profiles')
+            .select('full_name')
+            .eq('id', user.id)
+            .single();
+
+          const actorName = submitterProfile?.full_name || user.email?.split('@')[0] || 'A team member';
+
+          for (const approver of approvers) {
+            // Get approver email
+            const { data: approverProfile } = await supabase
+              .from('profiles')
+              .select('email, full_name')
+              .eq('id', approver.user_id)
+              .single();
+
+            if (approverProfile?.email) {
+              await sendQuoteNotification({
+                type: 'quote_submitted',
+                quoteId: updatedQuote.id,
+                quoteNumber: updatedQuote.quote_number,
+                title: updatedQuote.title,
+                total: updatedQuote.total,
+                currency: updatedQuote.currency,
+                recipientEmail: approverProfile.email,
+                recipientName: approverProfile.full_name || 'Approver',
+                actorName,
+                notes,
+              });
+            }
+          }
+        }
+      } catch (notifyError) {
+        console.error('[Submit Quote] Notification error:', notifyError);
+      }
+    })();
 
     return NextResponse.json({
       success: true,

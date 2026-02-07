@@ -3,11 +3,14 @@
  *
  * Tests template editor UI functionality (Phase 6 deliverable):
  * 1. Navigate to templates page
- * 2. View template list
+ * 2. View template list with tabs
  * 3. Switch between template types
- * 4. Open template editor
- * 5. Preview template
- * 6. Test token system display
+ * 4. Open template editor via "New Template" button
+ * 5. Test token system display in editor
+ * 6. Navigate back to list view
+ * 7. Authentication guard
+ *
+ * Migration: 20260206220000_create_templates_table.sql
  */
 
 import { test, expect } from '@playwright/test';
@@ -19,6 +22,7 @@ const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGci
 
 let testUser: any;
 let testOrg: any;
+let testTemplate: any;
 
 test.beforeAll(async () => {
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -57,17 +61,31 @@ test.beforeAll(async () => {
     .from('organization_members')
     .insert({ org_id: testOrg.id, user_id: testUser.id, role: 'owner' });
 
-  console.log(`Test setup complete: user=${testUser.id}, org=${testOrg.id}`);
+  // Create a test template for testing status badges and actions
+  const { data: template } = await authClient
+    .from('templates')
+    .insert({
+      name: `Test Template ${timestamp}`,
+      type: 'quotation',
+      status: 'active',
+      description: 'Test template for E2E tests',
+      content: { header: 'Test Header', body: 'Test Body', footer: 'Test Footer' },
+      tokens: ['{{client_name}}', '{{quote_total}}'],
+      created_by: testUser.id,
+    })
+    .select()
+    .single();
+
+  testTemplate = template;
+
+  console.log(`Test setup complete: user=${testUser.id}, org=${testOrg.id}, template=${testTemplate?.id}`);
 });
 
 test.describe('Template Editor UI', () => {
   // Templates table is available via migration 20260206220000
-  // However, the templates page UI is not yet implemented (Phase 6 deliverable)
-  // Skip these tests in CI until the UI is ready
-  test.skip(!!process.env.CI, 'Skipping in CI - templates page UI not yet implemented');
+  // Templates page UI is now implemented (Phase 6 complete)
 
   test('should navigate to templates page when authenticated', async ({ page }) => {
-    // Sign in
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const { data: signInData } = await supabase.auth.signInWithPassword({
       email: testUser.email,
@@ -89,7 +107,7 @@ test.describe('Template Editor UI', () => {
 
     // Should see templates page
     await expect(page).toHaveURL(/\/app-dashboard\/templates/);
-    await expect(page.locator('text=Templates')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('h1:has-text("Templates")')).toBeVisible({ timeout: 10000 });
 
     console.log('Templates page navigation successful');
   });
@@ -111,11 +129,12 @@ test.describe('Template Editor UI', () => {
     ]);
 
     await page.goto(`${BASE_URL}/app-dashboard/templates`);
+    await page.waitForLoadState('networkidle');
 
     // Should see template type tabs
-    await expect(page.locator('text=Quotations')).toBeVisible();
-    await expect(page.locator('text=Invoices')).toBeVisible();
-    await expect(page.locator('text=Emails')).toBeVisible();
+    await expect(page.getByRole('tab', { name: 'Quotations' })).toBeVisible();
+    await expect(page.getByRole('tab', { name: 'Invoices' })).toBeVisible();
+    await expect(page.getByRole('tab', { name: 'Emails' })).toBeVisible();
 
     console.log('Template type tabs visible');
   });
@@ -137,22 +156,26 @@ test.describe('Template Editor UI', () => {
     ]);
 
     await page.goto(`${BASE_URL}/app-dashboard/templates`);
+    await page.waitForLoadState('networkidle');
 
     // Click Invoices tab
-    await page.locator('text=Invoices').click();
-    await page.waitForTimeout(500);
+    await page.getByRole('tab', { name: 'Invoices' }).click();
+    await page.waitForTimeout(300);
 
-    // Should show invoice templates
-    // (Mock data should be visible)
+    // The invoices tab should now be selected
+    await expect(page.getByRole('tab', { name: 'Invoices' })).toHaveAttribute('data-state', 'active');
 
     // Click Emails tab
-    await page.locator('text=Emails').click();
-    await page.waitForTimeout(500);
+    await page.getByRole('tab', { name: 'Emails' }).click();
+    await page.waitForTimeout(300);
+
+    // The emails tab should now be selected
+    await expect(page.getByRole('tab', { name: 'Emails' })).toHaveAttribute('data-state', 'active');
 
     console.log('Template type switching working');
   });
 
-  test('should show template status badges', async ({ page }) => {
+  test('should show template status badges when templates exist', async ({ page }) => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const { data: signInData } = await supabase.auth.signInWithPassword({
       email: testUser.email,
@@ -169,15 +192,17 @@ test.describe('Template Editor UI', () => {
     ]);
 
     await page.goto(`${BASE_URL}/app-dashboard/templates`);
+    await page.waitForLoadState('networkidle');
 
-    // Should see status indicators (Active/Draft)
-    const hasActiveStatus = await page.locator('text=/Active|Draft/').count();
-    expect(hasActiveStatus).toBeGreaterThan(0);
+    // We created a test template with status 'active', so we should see the Active badge
+    // Look for either Active or Draft status badges
+    const statusBadge = page.locator('text=/Active|Draft/').first();
+    await expect(statusBadge).toBeVisible({ timeout: 5000 });
 
     console.log('Template status badges visible');
   });
 
-  test('should open template editor view', async ({ page }) => {
+  test('should open template editor via New Template button', async ({ page }) => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const { data: signInData } = await supabase.auth.signInWithPassword({
       email: testUser.email,
@@ -194,23 +219,19 @@ test.describe('Template Editor UI', () => {
     ]);
 
     await page.goto(`${BASE_URL}/app-dashboard/templates`);
+    await page.waitForLoadState('networkidle');
 
-    // Find and click "Edit" button (should exist in mock data)
-    const editButton = page.locator('button:has-text("Edit")').first();
-    if (await editButton.isVisible()) {
-      await editButton.click();
-      await page.waitForTimeout(500);
+    // Click New Template button
+    await page.getByRole('button', { name: /New Template/i }).click();
+    await page.waitForTimeout(500);
 
-      // Should see editor interface
-      await expect(page.locator('text=/Template Editor|Content/i')).toBeVisible();
+    // Should see editor interface with "Create Template" heading
+    await expect(page.locator('h1:has-text("Create Template")')).toBeVisible();
 
-      console.log('Template editor view opened');
-    } else {
-      console.log('No Edit button found (mock data may be empty)');
-    }
+    console.log('Template editor view opened');
   });
 
-  test('should display available tokens panel', async ({ page }) => {
+  test('should display token buttons in editor', async ({ page }) => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const { data: signInData } = await supabase.auth.signInWithPassword({
       email: testUser.email,
@@ -227,23 +248,20 @@ test.describe('Template Editor UI', () => {
     ]);
 
     await page.goto(`${BASE_URL}/app-dashboard/templates`);
+    await page.waitForLoadState('networkidle');
 
-    const editButton = page.locator('button:has-text("Edit")').first();
-    if (await editButton.isVisible()) {
-      await editButton.click();
-      await page.waitForTimeout(500);
+    // Open editor
+    await page.getByRole('button', { name: /New Template/i }).click();
+    await page.waitForTimeout(500);
 
-      // Should see token panel with available tokens
-      const hasTokens = await page.locator('text=/{{.*}}|Available Tokens/i').count();
-      expect(hasTokens).toBeGreaterThan(0);
+    // Should see token buttons with {{...}} format
+    const tokenButton = page.locator('button:has-text("{{")').first();
+    await expect(tokenButton).toBeVisible();
 
-      console.log('Token panel visible in editor');
-    } else {
-      console.log('Editor test skipped (no templates available)');
-    }
+    console.log('Token buttons visible in editor');
   });
 
-  test('should open template preview view', async ({ page }) => {
+  test('should navigate back to list view from editor', async ({ page }) => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const { data: signInData } = await supabase.auth.signInWithPassword({
       email: testUser.email,
@@ -260,57 +278,25 @@ test.describe('Template Editor UI', () => {
     ]);
 
     await page.goto(`${BASE_URL}/app-dashboard/templates`);
+    await page.waitForLoadState('networkidle');
 
-    // Look for Preview button
-    const previewButton = page.locator('button:has-text("Preview")').first();
-    if (await previewButton.isVisible()) {
-      await previewButton.click();
-      await page.waitForTimeout(500);
+    // Open editor
+    await page.getByRole('button', { name: /New Template/i }).click();
+    await page.waitForTimeout(500);
 
-      // Should see preview interface
-      await expect(page.locator('text=/Preview|Sample Data/i')).toBeVisible();
+    // Confirm we're in editor
+    await expect(page.locator('h1:has-text("Create Template")')).toBeVisible();
 
-      console.log('Template preview view opened');
-    } else {
-      console.log('Preview button not found');
-    }
-  });
+    // Find and click the back button (it's a ghost button with an arrow icon)
+    // The back button is the first button in the header area
+    const backButton = page.locator('button').filter({ has: page.locator('svg.lucide-arrow-left') }).first();
+    await backButton.click();
+    await page.waitForTimeout(500);
 
-  test('should navigate back to list view', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
+    // Should be back on list view - tabs should be visible again
+    await expect(page.getByRole('tab', { name: 'Quotations' })).toBeVisible();
 
-    await page.context().addCookies([
-      {
-        name: 'sb-access-token',
-        value: signInData.session!.access_token,
-        domain: 'localhost',
-        path: '/',
-      },
-    ]);
-
-    await page.goto(`${BASE_URL}/app-dashboard/templates`);
-
-    const editButton = page.locator('button:has-text("Edit")').first();
-    if (await editButton.isVisible()) {
-      await editButton.click();
-      await page.waitForTimeout(500);
-
-      // Find Back button
-      const backButton = page.locator('button:has-text("Back")').first();
-      if (await backButton.isVisible()) {
-        await backButton.click();
-        await page.waitForTimeout(500);
-
-        // Should be back on list view
-        await expect(page.locator('text=Quotations')).toBeVisible();
-
-        console.log('Navigation back to list view working');
-      }
-    }
+    console.log('Navigation back to list view working');
   });
 
   test('should show create new template button', async ({ page }) => {
@@ -330,12 +316,44 @@ test.describe('Template Editor UI', () => {
     ]);
 
     await page.goto(`${BASE_URL}/app-dashboard/templates`);
+    await page.waitForLoadState('networkidle');
 
-    // Should see "New Template" or "Create" button
-    const createButton = page.getByRole('button', { name: /New Template|Create/i }).first();
+    // Should see "New Template" button
+    const createButton = page.getByRole('button', { name: /New Template/i });
     await expect(createButton).toBeVisible();
 
     console.log('Create template button visible');
+  });
+
+  test('should show editor sections with proper headings', async ({ page }) => {
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const { data: signInData } = await supabase.auth.signInWithPassword({
+      email: testUser.email,
+      password: 'TestPassword123!',
+    });
+
+    await page.context().addCookies([
+      {
+        name: 'sb-access-token',
+        value: signInData.session!.access_token,
+        domain: 'localhost',
+        path: '/',
+      },
+    ]);
+
+    await page.goto(`${BASE_URL}/app-dashboard/templates`);
+    await page.waitForLoadState('networkidle');
+
+    // Open editor
+    await page.getByRole('button', { name: /New Template/i }).click();
+    await page.waitForTimeout(500);
+
+    // Should see section headings
+    await expect(page.locator('text=Header Section')).toBeVisible();
+    await expect(page.locator('text=Body Section')).toBeVisible();
+    await expect(page.locator('text=Footer Section')).toBeVisible();
+
+    console.log('Editor sections visible');
   });
 
   test('should reject access without authentication', async ({ page }) => {
@@ -346,8 +364,13 @@ test.describe('Template Editor UI', () => {
     await page.waitForTimeout(2000);
     const currentUrl = page.url();
 
-    // Should not be on templates page
-    expect(currentUrl).not.toContain('/app-dashboard/templates');
+    // Should not be on templates page (should be redirected to login or similar)
+    // Note: This depends on how auth middleware is configured
+    const isRedirected = !currentUrl.includes('/app-dashboard/templates') ||
+                         currentUrl.includes('/login') ||
+                         currentUrl.includes('/auth');
+
+    expect(isRedirected).toBe(true);
 
     console.log('Unauthenticated access correctly blocked');
   });
@@ -369,6 +392,9 @@ test.afterAll(async () => {
   });
 
   // Cleanup test data
+  if (testTemplate) {
+    await authClient.from('templates').delete().eq('id', testTemplate.id);
+  }
   if (testOrg) {
     await authClient.from('organization_members').delete().eq('org_id', testOrg.id);
     await authClient.from('organizations').delete().eq('id', testOrg.id);

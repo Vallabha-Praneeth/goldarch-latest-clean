@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { sendQuoteNotification } from '@/lib/notifications/quote-notifications';
 
 interface RouteContext {
   params: Promise<{ quoteId: string }>;
@@ -109,6 +110,44 @@ export async function POST(
         { status: 500 }
       );
     }
+
+    // Send notification to quote owner (async, don't block response)
+    (async () => {
+      try {
+        // Get owner email
+        const { data: ownerProfile } = await supabase
+          .from('profiles')
+          .select('email, full_name')
+          .eq('id', quote.created_by)
+          .single();
+
+        // Get approver name
+        const { data: approverProfile } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', user.id)
+          .single();
+
+        const actorName = approverProfile?.full_name || user.email?.split('@')[0] || 'A manager';
+
+        if (ownerProfile?.email) {
+          await sendQuoteNotification({
+            type: 'quote_approved',
+            quoteId: updatedQuote.id,
+            quoteNumber: updatedQuote.quote_number,
+            title: updatedQuote.title,
+            total: updatedQuote.total,
+            currency: updatedQuote.currency,
+            recipientEmail: ownerProfile.email,
+            recipientName: ownerProfile.full_name || 'Team Member',
+            actorName,
+            notes: notes.trim(),
+          });
+        }
+      } catch (notifyError) {
+        console.error('[Approve Quote] Notification error:', notifyError);
+      }
+    })();
 
     return NextResponse.json({
       success: true,
