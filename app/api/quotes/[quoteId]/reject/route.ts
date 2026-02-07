@@ -6,7 +6,7 @@
  * Requires: Manager or Admin role
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse, after } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { sendQuoteNotification } from '@/lib/notifications/quote-notifications';
@@ -111,8 +111,8 @@ export async function POST(
       );
     }
 
-    // Send notification to quote owner (async, don't block response)
-    (async () => {
+    // Send notification to quote owner (runs after response is sent)
+    after(async () => {
       try {
         // Get owner email
         const { data: ownerProfile } = await supabase
@@ -147,7 +147,7 @@ export async function POST(
       } catch (notifyError) {
         console.error('[Reject Quote] Notification error:', notifyError);
       }
-    })();
+    });
 
     return NextResponse.json({
       success: true,

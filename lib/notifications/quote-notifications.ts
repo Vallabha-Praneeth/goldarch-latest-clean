@@ -27,6 +27,18 @@ const FROM_ADDRESS = process.env.EMAIL_FROM_ADDRESS || 'noreply@goldarch.app';
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
 /**
+ * Escape HTML special characters to prevent XSS
+ */
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+/**
  * Send quote workflow notification
  */
 export async function sendQuoteNotification(
@@ -35,7 +47,7 @@ export async function sendQuoteNotification(
   // Check if email is configured
   if (!resend) {
     console.log('[Notifications] Email not configured, skipping notification');
-    return { success: true, error: 'Email not configured' };
+    return { success: true, skipped: true };
   }
 
   try {
@@ -53,7 +65,7 @@ export async function sendQuoteNotification(
       return { success: false, error: 'Failed to send email' };
     }
 
-    console.log(`[Notifications] Sent ${data.type} email to ${data.recipientEmail}`);
+    console.log(`[Notifications] Sent ${data.type} email for quote ${data.quoteId}`);
     return { success: true, emailId: result.data.id };
   } catch (error) {
     console.error('[Notifications] Error sending email:', error);
@@ -80,16 +92,21 @@ function generateTemplate(data: QuoteNotificationData): {
       }).format(data.total)
     : null;
 
+  // Escape user-controlled values for HTML context
+  const safeActorName = escapeHtml(data.actorName || 'A team member');
+  const safeQuoteNumber = escapeHtml(data.quoteNumber);
+  const safeRecipientName = escapeHtml(data.recipientName);
+
   switch (data.type) {
     case 'quote_submitted':
       return {
         subject: `Quote ${data.quoteNumber} Awaiting Your Approval`,
         html: generateHtml({
-          greeting: `Hi ${data.recipientName}`,
+          greeting: `Hi ${safeRecipientName}`,
           headline: 'Quote Submitted for Approval',
           icon: '📋',
           iconBg: '#FEF3C7',
-          message: `${data.actorName || 'A team member'} has submitted quote <strong>${data.quoteNumber}</strong> for your approval.`,
+          message: `${safeActorName} has submitted quote <strong>${safeQuoteNumber}</strong> for your approval.`,
           details: [
             { label: 'Quote Number', value: data.quoteNumber },
             ...(data.title ? [{ label: 'Title', value: data.title }] : []),
@@ -108,11 +125,11 @@ function generateTemplate(data: QuoteNotificationData): {
       return {
         subject: `Quote ${data.quoteNumber} Has Been Approved`,
         html: generateHtml({
-          greeting: `Hi ${data.recipientName}`,
+          greeting: `Hi ${safeRecipientName}`,
           headline: 'Your Quote Has Been Approved!',
           icon: '✅',
           iconBg: '#D1FAE5',
-          message: `Great news! Quote <strong>${data.quoteNumber}</strong> has been approved by ${data.actorName || 'a manager'}.`,
+          message: `Great news! Quote <strong>${safeQuoteNumber}</strong> has been approved by ${safeActorName}.`,
           details: [
             { label: 'Quote Number', value: data.quoteNumber },
             ...(data.title ? [{ label: 'Title', value: data.title }] : []),
@@ -131,11 +148,11 @@ function generateTemplate(data: QuoteNotificationData): {
       return {
         subject: `Quote ${data.quoteNumber} Requires Changes`,
         html: generateHtml({
-          greeting: `Hi ${data.recipientName}`,
+          greeting: `Hi ${safeRecipientName}`,
           headline: 'Quote Requires Changes',
           icon: '↩️',
           iconBg: '#FEE2E2',
-          message: `Quote <strong>${data.quoteNumber}</strong> has been returned by ${data.actorName || 'a manager'} and requires changes.`,
+          message: `Quote <strong>${safeQuoteNumber}</strong> has been returned by ${safeActorName} and requires changes.`,
           details: [
             { label: 'Quote Number', value: data.quoteNumber },
             ...(data.title ? [{ label: 'Title', value: data.title }] : []),
@@ -153,11 +170,11 @@ function generateTemplate(data: QuoteNotificationData): {
       return {
         subject: `Quote ${data.quoteNumber} Accepted by Client`,
         html: generateHtml({
-          greeting: `Hi ${data.recipientName}`,
+          greeting: `Hi ${safeRecipientName}`,
           headline: 'Quote Accepted!',
           icon: '🎉',
           iconBg: '#D1FAE5',
-          message: `Quote <strong>${data.quoteNumber}</strong> has been accepted. Time to celebrate!`,
+          message: `Quote <strong>${safeQuoteNumber}</strong> has been accepted. Time to celebrate!`,
           details: [
             { label: 'Quote Number', value: data.quoteNumber },
             ...(data.title ? [{ label: 'Title', value: data.title }] : []),
@@ -175,11 +192,11 @@ function generateTemplate(data: QuoteNotificationData): {
       return {
         subject: `Quote ${data.quoteNumber} Was Declined`,
         html: generateHtml({
-          greeting: `Hi ${data.recipientName}`,
+          greeting: `Hi ${safeRecipientName}`,
           headline: 'Quote Declined',
           icon: '📭',
           iconBg: '#F3F4F6',
-          message: `Quote <strong>${data.quoteNumber}</strong> was declined after approval.`,
+          message: `Quote <strong>${safeQuoteNumber}</strong> was declined after approval.`,
           details: [
             { label: 'Quote Number', value: data.quoteNumber },
             ...(data.title ? [{ label: 'Title', value: data.title }] : []),
@@ -196,11 +213,11 @@ function generateTemplate(data: QuoteNotificationData): {
       return {
         subject: `Quote ${data.quoteNumber} Update`,
         html: generateHtml({
-          greeting: `Hi ${data.recipientName}`,
+          greeting: `Hi ${safeRecipientName}`,
           headline: 'Quote Update',
           icon: '📄',
           iconBg: '#E5E7EB',
-          message: `There's an update on quote <strong>${data.quoteNumber}</strong>.`,
+          message: `There's an update on quote <strong>${safeQuoteNumber}</strong>.`,
           details: [{ label: 'Quote Number', value: data.quoteNumber }],
           ctaText: 'View Quote',
           ctaUrl: quoteUrl,
@@ -231,8 +248,8 @@ function generateHtml(options: {
     .map(
       (d) => `
       <tr>
-        <td style="padding: 12px 0; border-bottom: 1px solid #E5E7EB; color: #6B7280; font-weight: 500;">${d.label}</td>
-        <td style="padding: 12px 0; border-bottom: 1px solid #E5E7EB; text-align: right; color: #1F2937;">${d.value}</td>
+        <td style="padding: 12px 0; border-bottom: 1px solid #E5E7EB; color: #6B7280; font-weight: 500;">${escapeHtml(d.label)}</td>
+        <td style="padding: 12px 0; border-bottom: 1px solid #E5E7EB; text-align: right; color: #1F2937;">${escapeHtml(d.value)}</td>
       </tr>
     `
     )
@@ -269,7 +286,7 @@ function generateHtml(options: {
           <tr>
             <td style="padding: 32px;">
               <p style="margin: 0 0 8px; font-size: 16px; color: #374151;">
-                ${options.greeting},
+                ${escapeHtml(options.greeting)},
               </p>
               <p style="margin: 0 0 24px; font-size: 15px; color: #4B5563; line-height: 1.6;">
                 ${options.message}

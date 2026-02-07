@@ -6,7 +6,7 @@
  * Requires: Manager or Admin role
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse, after } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { sendQuoteNotification } from '@/lib/notifications/quote-notifications';
@@ -38,9 +38,9 @@ export async function POST(request: NextRequest) {
         cookies: {
           getAll: () => cookieStore.getAll(),
           setAll: (cookiesToSet) => {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            );
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options);
+            });
           },
         },
       }
@@ -166,19 +166,21 @@ export async function POST(request: NextRequest) {
                 updated_at: new Date().toISOString(),
               };
 
+        // Atomic update: only update if status is still 'pending' (prevents TOCTOU race)
         const { data: updatedQuote, error: updateError } = await supabase
           .from('quotes')
           .update(updateData)
           .eq('id', quoteId)
+          .eq('status', 'pending')
           .select()
           .single();
 
-        if (updateError) {
+        if (updateError || !updatedQuote) {
           results.push({
             quoteId,
             quoteNumber: quote.quote_number,
             success: false,
-            error: `Failed to ${action} quote`,
+            error: updateError ? `Failed to ${action} quote` : 'Quote status changed by another user',
           });
           continue;
         }
@@ -189,8 +191,8 @@ export async function POST(request: NextRequest) {
           success: true,
         });
 
-        // Send notification to quote owner (async)
-        (async () => {
+        // Send notification to quote owner (runs after response is sent)
+        after(async () => {
           try {
             const { data: ownerProfile } = await supabase
               .from('profiles')
@@ -216,7 +218,7 @@ export async function POST(request: NextRequest) {
           } catch (notifyError) {
             console.error(`[Bulk ${action}] Notification error for ${quoteId}:`, notifyError);
           }
-        })();
+        });
       } catch (error) {
         results.push({
           quoteId,

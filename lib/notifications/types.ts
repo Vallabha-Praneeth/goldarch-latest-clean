@@ -28,6 +28,7 @@ export interface NotificationResult {
   success: boolean;
   emailId?: string;
   error?: string;
+  skipped?: boolean;
 }
 
 export interface NotificationConfig {

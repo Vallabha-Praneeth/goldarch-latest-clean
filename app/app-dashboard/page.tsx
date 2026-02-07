@@ -124,7 +124,7 @@ export default function DashboardPage() {
   });
 
   // Pending quote approvals
-  const { data: pendingApprovals } = useQuery({
+  const { data: pendingApprovals, isLoading: isLoadingApprovals } = useQuery({
     queryKey: ['pending-approvals'],
     queryFn: async () => {
       const { data } = await supabase
@@ -264,7 +264,7 @@ export default function DashboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-4">
-            {isLoading ? (
+            {isLoading || isLoadingApprovals ? (
               <div className="space-y-2">
                 {[1, 2, 3].map((i) => (
                   <Skeleton key={i} className="h-14 w-full" />

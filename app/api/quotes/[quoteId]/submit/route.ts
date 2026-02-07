@@ -5,7 +5,7 @@
  * Submit a draft quote for approval (draft → pending)
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse, after } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { sendQuoteNotification } from '@/lib/notifications/quote-notifications';
@@ -97,7 +97,7 @@ export async function POST(
     }
 
     // Send notifications to managers/admins (async, don't block response)
-    (async () => {
+    after(async () => {
       try {
         // Find managers and admins to notify
         const { data: approvers } = await supabase
@@ -142,7 +142,7 @@ export async function POST(
       } catch (notifyError) {
         console.error('[Submit Quote] Notification error:', notifyError);
       }
-    })();
+    });
 
     return NextResponse.json({
       success: true,
