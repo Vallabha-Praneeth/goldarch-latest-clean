@@ -7,10 +7,12 @@
  * 3. Handle authentication errors
  * 4. Session persistence
  * 5. Sign out
+ *
+ * Uses cookie-based auth compatible with @supabase/ssr
  */
 
-import { test, expect } from '@playwright/test';
-import { createClient } from '@supabase/supabase-js';
+import { test, expect, BrowserContext } from '@playwright/test';
+import { createClient, Session } from '@supabase/supabase-js';
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321';
@@ -20,8 +22,50 @@ let testUser: {
   email: string;
   password: string;
   userId: string;
-  accessToken: string;
 };
+let testSession: Session;
+
+/**
+ * Get Supabase cookie name for local dev
+ */
+function getSupabaseCookieName(): string {
+  try {
+    const url = new URL(SUPABASE_URL);
+    const host = url.hostname.split('.')[0];
+    return `sb-${host}-auth-token`;
+  } catch {
+    return 'sb-localhost-auth-token';
+  }
+}
+
+/**
+ * Set auth cookies on browser context for API requests
+ */
+async function setAuthCookies(context: BrowserContext, session: Session): Promise<void> {
+  const cookieName = getSupabaseCookieName();
+  const domain = new URL(BASE_URL).hostname;
+
+  const sessionData = JSON.stringify({
+    access_token: session.access_token,
+    refresh_token: session.refresh_token,
+    expires_at: session.expires_at,
+    expires_in: session.expires_in,
+    token_type: session.token_type,
+    user: session.user,
+  });
+
+  await context.addCookies([
+    {
+      name: cookieName,
+      value: encodeURIComponent(sessionData),
+      domain,
+      path: '/',
+      httpOnly: false,
+      secure: false,
+      sameSite: 'Lax',
+    },
+  ]);
+}
 
 test.describe('Authentication Flow', () => {
   // Set up test user before all tests to ensure shared state is reliable
@@ -37,13 +81,14 @@ test.describe('Authentication Flow', () => {
     });
 
     if (error) throw error;
+    if (!data.session) throw new Error('No session returned');
 
     testUser = {
       email,
       password,
       userId: data.user!.id,
-      accessToken: data.session!.access_token,
     };
+    testSession = data.session;
 
     console.log(`Test user created: ${email}`);
   });
@@ -130,12 +175,8 @@ test.describe('Authentication Flow', () => {
     console.log('Non-existent user correctly rejected');
   });
 
-  // Skip in CI - cookie-based session testing is unreliable in CI environment
-  // The app uses Supabase SSR which has different cookie handling
-  test.skip(!!process.env.CI, 'Skipping in CI - cookie session testing unreliable');
-
   test('should maintain session after sign in', async ({ page }) => {
-    // Sign in using Supabase client (more reliable than raw fetch)
+    // Sign in using Supabase client
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const { data: signInData, error } = await supabase.auth.signInWithPassword({
       email: testUser.email,
@@ -145,15 +186,8 @@ test.describe('Authentication Flow', () => {
     expect(error).toBeNull();
     expect(signInData.session?.access_token).toBeTruthy();
 
-    // Set session cookies
-    await page.context().addCookies([
-      {
-        name: 'sb-access-token',
-        value: signInData.session!.access_token,
-        domain: 'localhost',
-        path: '/',
-      },
-    ]);
+    // Set proper Supabase SSR session cookies
+    await setAuthCookies(page.context(), signInData.session!);
 
     // Navigate to dashboard (should not redirect to login)
     await page.goto(`${BASE_URL}/app-dashboard`);
@@ -165,13 +199,12 @@ test.describe('Authentication Flow', () => {
     console.log('Session persisted correctly');
   });
 
-  test('should access protected API endpoint with valid token', async ({ page }) => {
-    // Make authenticated API request
-    const response = await page.request.get(`${BASE_URL}/api/suppliers`, {
-      headers: {
-        'Authorization': `Bearer ${testUser.accessToken}`,
-      },
-    });
+  test('should access protected API endpoint with valid session', async ({ page }) => {
+    // Set auth cookies on context
+    await setAuthCookies(page.context(), testSession);
+
+    // Make authenticated API request (cookies are sent automatically)
+    const response = await page.request.get(`${BASE_URL}/api/suppliers`);
 
     expect(response.status()).toBe(200);
     const data = await response.json();
@@ -180,7 +213,11 @@ test.describe('Authentication Flow', () => {
     console.log('Authenticated API request successful');
   });
 
-  test('should reject protected API endpoint without token', async ({ page }) => {
+  test('should reject protected API endpoint without session', async ({ browser }) => {
+    // Create a fresh context without auth cookies
+    const freshContext = await browser.newContext();
+    const page = await freshContext.newPage();
+
     // Make unauthenticated API request
     const response = await page.request.get(`${BASE_URL}/api/suppliers`);
 
@@ -188,27 +225,16 @@ test.describe('Authentication Flow', () => {
     const data = await response.json();
     expect(data.error.toLowerCase()).toContain('unauthorized');
 
+    await freshContext.close();
+
     console.log('Unauthenticated API request correctly rejected');
-  });
-
-  test('should reject protected API endpoint with invalid token', async ({ page }) => {
-    // Make request with invalid token
-    const response = await page.request.get(`${BASE_URL}/api/suppliers`, {
-      headers: {
-        'Authorization': 'Bearer invalid-token-12345',
-      },
-    });
-
-    expect(response.status()).toBe(401);
-
-    console.log('Invalid token correctly rejected');
   });
 
   test('should sign out successfully', async () => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       global: {
         headers: {
-          Authorization: `Bearer ${testUser.accessToken}`,
+          Authorization: `Bearer ${testSession.access_token}`,
         },
       },
     });

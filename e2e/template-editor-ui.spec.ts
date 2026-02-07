@@ -11,10 +11,11 @@
  * 7. Authentication guard
  *
  * Migration: 20260206220000_create_templates_table.sql
+ * Uses cookie-based auth compatible with @supabase/ssr
  */
 
-import { test, expect } from '@playwright/test';
-import { createClient } from '@supabase/supabase-js';
+import { test, expect, BrowserContext } from '@playwright/test';
+import { createClient, Session } from '@supabase/supabase-js';
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321';
@@ -23,6 +24,50 @@ const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGci
 let testUser: any;
 let testOrg: any;
 let testTemplate: any;
+let testSession: Session;
+let authClient: ReturnType<typeof createClient>;
+
+/**
+ * Get Supabase cookie name for local dev
+ */
+function getSupabaseCookieName(): string {
+  try {
+    const url = new URL(SUPABASE_URL);
+    const host = url.hostname.split('.')[0];
+    return `sb-${host}-auth-token`;
+  } catch {
+    return 'sb-localhost-auth-token';
+  }
+}
+
+/**
+ * Set auth cookies on browser context for API requests
+ */
+async function setAuthCookies(context: BrowserContext, session: Session): Promise<void> {
+  const cookieName = getSupabaseCookieName();
+  const domain = new URL(BASE_URL).hostname;
+
+  const sessionData = JSON.stringify({
+    access_token: session.access_token,
+    refresh_token: session.refresh_token,
+    expires_at: session.expires_at,
+    expires_in: session.expires_in,
+    token_type: session.token_type,
+    user: session.user,
+  });
+
+  await context.addCookies([
+    {
+      name: cookieName,
+      value: encodeURIComponent(sessionData),
+      domain,
+      path: '/',
+      httpOnly: false,
+      secure: false,
+      sameSite: 'Lax',
+    },
+  ]);
+}
 
 test.beforeAll(async () => {
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -35,13 +80,16 @@ test.beforeAll(async () => {
   });
 
   if (authError) throw authError;
-  testUser = authData.user;
+  if (!authData.session) throw new Error('No session returned');
 
-  // Create authenticated client
-  const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  testUser = authData.user;
+  testSession = authData.session;
+
+  // Create authenticated client for DB setup
+  authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     global: {
       headers: {
-        Authorization: `Bearer ${authData.session!.access_token}`,
+        Authorization: `Bearer ${testSession.access_token}`,
       },
     },
   });
@@ -81,27 +129,16 @@ test.beforeAll(async () => {
   console.log(`Test setup complete: user=${testUser.id}, org=${testOrg.id}, template=${testTemplate?.id}`);
 });
 
+test.beforeEach(async ({ context }) => {
+  // Set auth cookies before each test
+  await setAuthCookies(context, testSession);
+});
+
 test.describe('Template Editor UI', () => {
   // Templates table is available via migration 20260206220000
   // Templates page UI is now implemented (Phase 6 complete)
 
   test('should navigate to templates page when authenticated', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
-    // Set auth cookies
-    await page.context().addCookies([
-      {
-        name: 'sb-access-token',
-        value: signInData.session!.access_token,
-        domain: 'localhost',
-        path: '/',
-      },
-    ]);
-
     // Navigate to templates page
     await page.goto(`${BASE_URL}/app-dashboard/templates`);
 
@@ -113,21 +150,6 @@ test.describe('Template Editor UI', () => {
   });
 
   test('should display template list with tabs', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
-    await page.context().addCookies([
-      {
-        name: 'sb-access-token',
-        value: signInData.session!.access_token,
-        domain: 'localhost',
-        path: '/',
-      },
-    ]);
-
     await page.goto(`${BASE_URL}/app-dashboard/templates`);
     await page.waitForLoadState('networkidle');
 
@@ -140,21 +162,6 @@ test.describe('Template Editor UI', () => {
   });
 
   test('should switch between template types', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
-    await page.context().addCookies([
-      {
-        name: 'sb-access-token',
-        value: signInData.session!.access_token,
-        domain: 'localhost',
-        path: '/',
-      },
-    ]);
-
     await page.goto(`${BASE_URL}/app-dashboard/templates`);
     await page.waitForLoadState('networkidle');
 
@@ -176,21 +183,6 @@ test.describe('Template Editor UI', () => {
   });
 
   test('should show template status badges when templates exist', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
-    await page.context().addCookies([
-      {
-        name: 'sb-access-token',
-        value: signInData.session!.access_token,
-        domain: 'localhost',
-        path: '/',
-      },
-    ]);
-
     await page.goto(`${BASE_URL}/app-dashboard/templates`);
     await page.waitForLoadState('networkidle');
 
@@ -203,21 +195,6 @@ test.describe('Template Editor UI', () => {
   });
 
   test('should open template editor via New Template button', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
-    await page.context().addCookies([
-      {
-        name: 'sb-access-token',
-        value: signInData.session!.access_token,
-        domain: 'localhost',
-        path: '/',
-      },
-    ]);
-
     await page.goto(`${BASE_URL}/app-dashboard/templates`);
     await page.waitForLoadState('networkidle');
 
@@ -232,21 +209,6 @@ test.describe('Template Editor UI', () => {
   });
 
   test('should display token buttons in editor', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
-    await page.context().addCookies([
-      {
-        name: 'sb-access-token',
-        value: signInData.session!.access_token,
-        domain: 'localhost',
-        path: '/',
-      },
-    ]);
-
     await page.goto(`${BASE_URL}/app-dashboard/templates`);
     await page.waitForLoadState('networkidle');
 
@@ -262,21 +224,6 @@ test.describe('Template Editor UI', () => {
   });
 
   test('should navigate back to list view from editor', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
-    await page.context().addCookies([
-      {
-        name: 'sb-access-token',
-        value: signInData.session!.access_token,
-        domain: 'localhost',
-        path: '/',
-      },
-    ]);
-
     await page.goto(`${BASE_URL}/app-dashboard/templates`);
     await page.waitForLoadState('networkidle');
 
@@ -300,21 +247,6 @@ test.describe('Template Editor UI', () => {
   });
 
   test('should show create new template button', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
-    await page.context().addCookies([
-      {
-        name: 'sb-access-token',
-        value: signInData.session!.access_token,
-        domain: 'localhost',
-        path: '/',
-      },
-    ]);
-
     await page.goto(`${BASE_URL}/app-dashboard/templates`);
     await page.waitForLoadState('networkidle');
 
@@ -326,21 +258,6 @@ test.describe('Template Editor UI', () => {
   });
 
   test('should show editor sections with proper headings', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
-    await page.context().addCookies([
-      {
-        name: 'sb-access-token',
-        value: signInData.session!.access_token,
-        domain: 'localhost',
-        path: '/',
-      },
-    ]);
-
     await page.goto(`${BASE_URL}/app-dashboard/templates`);
     await page.waitForLoadState('networkidle');
 
@@ -356,7 +273,11 @@ test.describe('Template Editor UI', () => {
     console.log('Editor sections visible');
   });
 
-  test('should reject access without authentication', async ({ page }) => {
+  test('should reject access without authentication', async ({ browser }) => {
+    // Create a fresh context without auth cookies
+    const freshContext = await browser.newContext();
+    const page = await freshContext.newPage();
+
     // Try to access templates page without auth
     await page.goto(`${BASE_URL}/app-dashboard/templates`);
 
@@ -372,25 +293,13 @@ test.describe('Template Editor UI', () => {
 
     expect(isRedirected).toBe(true);
 
+    await freshContext.close();
+
     console.log('Unauthenticated access correctly blocked');
   });
 });
 
 test.afterAll(async () => {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  const { data: signInData } = await supabase.auth.signInWithPassword({
-    email: testUser.email,
-    password: 'TestPassword123!',
-  });
-
-  const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    global: {
-      headers: {
-        Authorization: `Bearer ${signInData.session!.access_token}`,
-      },
-    },
-  });
-
   // Cleanup test data
   if (testTemplate) {
     await authClient.from('templates').delete().eq('id', testTemplate.id);

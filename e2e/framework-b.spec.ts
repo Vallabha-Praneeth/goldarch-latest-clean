@@ -7,12 +7,12 @@
  * 3. Generate document summary
  * 4. Chat with documents
  * 5. Health check endpoints
+ *
+ * Uses cookie-based auth compatible with @supabase/ssr
  */
 
-import { test, expect } from '@playwright/test';
-import { createClient } from '@supabase/supabase-js';
-import * as fs from 'fs';
-import * as path from 'path';
+import { test, expect, BrowserContext } from '@playwright/test';
+import { createClient, Session } from '@supabase/supabase-js';
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321';
@@ -20,7 +20,51 @@ const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGci
 
 let testUser: any;
 let testOrg: any;
+let testSession: Session;
+let authClient: ReturnType<typeof createClient>;
 let uploadedDocumentId: string;
+
+/**
+ * Get Supabase cookie name for local dev
+ */
+function getSupabaseCookieName(): string {
+  try {
+    const url = new URL(SUPABASE_URL);
+    const host = url.hostname.split('.')[0];
+    return `sb-${host}-auth-token`;
+  } catch {
+    return 'sb-localhost-auth-token';
+  }
+}
+
+/**
+ * Set auth cookies on browser context for API requests
+ */
+async function setAuthCookies(context: BrowserContext, session: Session): Promise<void> {
+  const cookieName = getSupabaseCookieName();
+  const domain = new URL(BASE_URL).hostname;
+
+  const sessionData = JSON.stringify({
+    access_token: session.access_token,
+    refresh_token: session.refresh_token,
+    expires_at: session.expires_at,
+    expires_in: session.expires_in,
+    token_type: session.token_type,
+    user: session.user,
+  });
+
+  await context.addCookies([
+    {
+      name: cookieName,
+      value: encodeURIComponent(sessionData),
+      domain,
+      path: '/',
+      httpOnly: false,
+      secure: false,
+      sameSite: 'Lax',
+    },
+  ]);
+}
 
 test.beforeAll(async () => {
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -33,13 +77,16 @@ test.beforeAll(async () => {
   });
 
   if (authError) throw authError;
-  testUser = authData.user;
+  if (!authData.session) throw new Error('No session returned');
 
-  // Create authenticated client
-  const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  testUser = authData.user;
+  testSession = authData.session;
+
+  // Create authenticated client for DB setup
+  authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     global: {
       headers: {
-        Authorization: `Bearer ${authData.session!.access_token}`,
+        Authorization: `Bearer ${testSession.access_token}`,
       },
     },
   });
@@ -62,6 +109,11 @@ test.beforeAll(async () => {
   console.log(`Test setup complete: user=${testUser.id}, org=${testOrg.id}`);
 });
 
+test.beforeEach(async ({ context }) => {
+  // Set auth cookies before each test
+  await setAuthCookies(context, testSession);
+});
+
 test.describe('Framework B - RAG System', () => {
   // Skip all tests in this suite in CI - requires external services (OpenAI, Pinecone)
   test.skip(!!process.env.CI, 'Skipping in CI - requires external services');
@@ -79,12 +131,6 @@ test.describe('Framework B - RAG System', () => {
   });
 
   test('should upload a test document', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
     // Create a test text file
     const testContent = `
       This is a test document for Framework B E2E testing.
@@ -97,16 +143,7 @@ test.describe('Framework B - RAG System', () => {
       - Quality standards
     `;
 
-    const formData = new FormData();
-    const blob = new Blob([testContent], { type: 'text/plain' });
-    formData.append('file', blob, 'test-document.txt');
-    formData.append('namespace', 'test-namespace');
-    formData.append('projectId', testOrg.id);
-
     const response = await page.request.post(`${BASE_URL}/api/framework-b/documents/upload`, {
-      headers: {
-        'Authorization': `Bearer ${signInData.session!.access_token}`,
-      },
       multipart: {
         file: {
           name: 'test-document.txt',
@@ -133,18 +170,11 @@ test.describe('Framework B - RAG System', () => {
   });
 
   test('should search documents with query', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
     // Wait a bit for document to be processed
     await page.waitForTimeout(2000);
 
     const response = await page.request.post(`${BASE_URL}/api/framework-b/documents/search`, {
       headers: {
-        'Authorization': `Bearer ${signInData.session!.access_token}`,
         'Content-Type': 'application/json',
       },
       data: {
@@ -170,12 +200,6 @@ test.describe('Framework B - RAG System', () => {
   });
 
   test('should generate document summary', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
     if (!uploadedDocumentId) {
       console.log('Skipping summary test (no document uploaded)');
       return;
@@ -183,7 +207,6 @@ test.describe('Framework B - RAG System', () => {
 
     const response = await page.request.post(`${BASE_URL}/api/framework-b/documents/summarize`, {
       headers: {
-        'Authorization': `Bearer ${signInData.session!.access_token}`,
         'Content-Type': 'application/json',
       },
       data: {
@@ -210,15 +233,8 @@ test.describe('Framework B - RAG System', () => {
   });
 
   test('should create chat conversation', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
     const response = await page.request.post(`${BASE_URL}/api/framework-b/chat/conversations`, {
       headers: {
-        'Authorization': `Bearer ${signInData.session!.access_token}`,
         'Content-Type': 'application/json',
       },
       data: {
@@ -243,15 +259,8 @@ test.describe('Framework B - RAG System', () => {
   });
 
   test('should send chat message and get AI response', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
     const response = await page.request.post(`${BASE_URL}/api/framework-b/chat/send`, {
       headers: {
-        'Authorization': `Bearer ${signInData.session!.access_token}`,
         'Content-Type': 'application/json',
       },
       data: {
@@ -278,19 +287,10 @@ test.describe('Framework B - RAG System', () => {
   });
 
   test('should handle rate limiting on document upload', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
     // Attempt to upload many documents rapidly to trigger rate limit
     const uploadPromises = [];
     for (let i = 0; i < 60; i++) {
       const promise = page.request.post(`${BASE_URL}/api/framework-b/documents/upload`, {
-        headers: {
-          'Authorization': `Bearer ${signInData.session!.access_token}`,
-        },
         multipart: {
           file: {
             name: `rapid-test-${i}.txt`,
@@ -316,7 +316,11 @@ test.describe('Framework B - RAG System', () => {
     }
   });
 
-  test('should reject document upload without authentication', async ({ page }) => {
+  test('should reject document upload without authentication', async ({ browser }) => {
+    // Create a fresh context without auth cookies
+    const freshContext = await browser.newContext();
+    const page = await freshContext.newPage();
+
     const testContent = 'Unauthorized upload attempt';
 
     const response = await page.request.post(`${BASE_URL}/api/framework-b/documents/upload`, {
@@ -332,20 +336,13 @@ test.describe('Framework B - RAG System', () => {
 
     expect(response.status()).toBe(401);
 
+    await freshContext.close();
+
     console.log('Unauthorized upload correctly rejected');
   });
 
   test('should reject unsupported file types', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
     const response = await page.request.post(`${BASE_URL}/api/framework-b/documents/upload`, {
-      headers: {
-        'Authorization': `Bearer ${signInData.session!.access_token}`,
-      },
       multipart: {
         file: {
           name: 'test.exe',
@@ -365,17 +362,7 @@ test.describe('Framework B - RAG System', () => {
   });
 
   test('should check Framework B analytics endpoint', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
-    const response = await page.request.get(`${BASE_URL}/api/framework-b/analytics?namespace=test-namespace`, {
-      headers: {
-        'Authorization': `Bearer ${signInData.session!.access_token}`,
-      },
-    });
+    const response = await page.request.get(`${BASE_URL}/api/framework-b/analytics?namespace=test-namespace`);
 
     if (!response.ok()) {
       // Analytics endpoint may not be implemented yet
@@ -391,20 +378,6 @@ test.describe('Framework B - RAG System', () => {
 });
 
 test.afterAll(async () => {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  const { data: signInData } = await supabase.auth.signInWithPassword({
-    email: testUser.email,
-    password: 'TestPassword123!',
-  });
-
-  const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    global: {
-      headers: {
-        Authorization: `Bearer ${signInData.session!.access_token}`,
-      },
-    },
-  });
-
   // Cleanup test data
   if (testOrg) {
     await authClient.from('organization_members').delete().eq('org_id', testOrg.id);

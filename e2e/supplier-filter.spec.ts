@@ -5,10 +5,12 @@
  * 1. Admin creates access rules
  * 2. Restricted users see filtered supplier lists
  * 3. Admin users see all suppliers
+ *
+ * Uses cookie-based auth compatible with @supabase/ssr
  */
 
-import { test, expect } from '@playwright/test';
-import { createClient } from '@supabase/supabase-js';
+import { test, expect, BrowserContext } from '@playwright/test';
+import { createClient, Session } from '@supabase/supabase-js';
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321';
@@ -17,11 +19,55 @@ const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGci
 let supabaseAdmin: ReturnType<typeof createClient>;
 let testOrg: any;
 let adminUser: any;
+let adminSession: Session;
 let restrictedUser: any;
+let restrictedSession: Session;
 let kitchenCategory: any;
 let bathroomCategory: any;
 let kitchenSupplier: any;
 let bathroomSupplier: any;
+
+/**
+ * Get Supabase cookie name for local dev
+ */
+function getSupabaseCookieName(): string {
+  try {
+    const url = new URL(SUPABASE_URL);
+    const host = url.hostname.split('.')[0];
+    return `sb-${host}-auth-token`;
+  } catch {
+    return 'sb-localhost-auth-token';
+  }
+}
+
+/**
+ * Set auth cookies on browser context for API requests
+ */
+async function setAuthCookies(context: BrowserContext, session: Session): Promise<void> {
+  const cookieName = getSupabaseCookieName();
+  const domain = new URL(BASE_URL).hostname;
+
+  const sessionData = JSON.stringify({
+    access_token: session.access_token,
+    refresh_token: session.refresh_token,
+    expires_at: session.expires_at,
+    expires_in: session.expires_in,
+    token_type: session.token_type,
+    user: session.user,
+  });
+
+  await context.addCookies([
+    {
+      name: cookieName,
+      value: encodeURIComponent(sessionData),
+      domain,
+      path: '/',
+      httpOnly: false,
+      secure: false,
+      sameSite: 'Lax',
+    },
+  ]);
+}
 
 test.beforeAll(async () => {
   // Initialize Supabase anon client
@@ -38,6 +84,7 @@ test.beforeAll(async () => {
     throw new Error('Failed to create admin user or get session');
   }
   adminUser = authAdmin.user;
+  adminSession = authAdmin.session;
 
   // Create authenticated client for admin
   const adminClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -75,13 +122,15 @@ test.beforeAll(async () => {
   if (adminMemberError) throw adminMemberError;
 
   // Create restricted user
-  const { data: authRestricted, error: restrictedAuthError } = await supabaseAdmin.auth.signUp({
+  const { data: authRestricted, error: restrictedAuthError } = await anonClient.auth.signUp({
     email: `restricted-filter-${Date.now()}@test.local`,
     password: 'TestPassword123!',
   });
 
   if (restrictedAuthError) throw restrictedAuthError;
+  if (!authRestricted.session) throw new Error('No session for restricted user');
   restrictedUser = authRestricted.user;
+  restrictedSession = authRestricted.session;
 
   // Add restricted user to organization as viewer
   const { error: restrictedMemberError } = await supabaseAdmin
@@ -179,21 +228,12 @@ test.afterAll(async () => {
 
 test.describe('Supplier Access Control', () => {
   test('admin can create access rule for restricted user', async ({ page }) => {
-    // Login as admin using session
-    const { data: sessionData } = await supabaseAdmin.auth.getSession();
-
-    // Sign in as admin
-    const { data: signInData, error: signInError } = await supabaseAdmin.auth.signInWithPassword({
-      email: adminUser.email,
-      password: 'TestPassword123!',
-    });
-
-    if (signInError) throw signInError;
+    // Set admin auth cookies
+    await setAuthCookies(page.context(), adminSession);
 
     // Create access rule via API
     const response = await page.request.post(`${BASE_URL}/api/suppliers/access-rules`, {
       headers: {
-        'Authorization': `Bearer ${signInData.session.access_token}`,
         'Content-Type': 'application/json',
       },
       data: {
@@ -213,77 +253,50 @@ test.describe('Supplier Access Control', () => {
   });
 
   test('restricted user sees only filtered suppliers', async ({ page }) => {
-    // Sign in as restricted user to get session
-    const { data: signInData, error: signInError } = await supabaseAdmin.auth.signInWithPassword({
-      email: restrictedUser.email,
-      password: 'TestPassword123!',
-    });
+    // Set restricted user auth cookies
+    await setAuthCookies(page.context(), restrictedSession);
 
-    if (signInError) throw signInError;
-
-    // Fetch suppliers via API with Authorization header (simulates authenticated request)
-    const response = await page.request.get(`${BASE_URL}/api/suppliers`, {
-      headers: {
-        'Authorization': `Bearer ${signInData.session.access_token}`,
-      },
-    });
+    // Fetch suppliers via API
+    const response = await page.request.get(`${BASE_URL}/api/suppliers`);
 
     expect(response.ok()).toBeTruthy();
     const responseData = await response.json();
     const suppliers = responseData.data || [];
 
     // Should see kitchen supplier (filtered)
-    const kitchenSupplier = suppliers.find((s: any) => s.name === 'Kitchen Suppliers Inc');
-    expect(kitchenSupplier).toBeDefined();
+    const kitchenSup = suppliers.find((s: any) => s.name === 'Kitchen Suppliers Inc');
+    expect(kitchenSup).toBeDefined();
 
     // Should NOT see bathroom supplier (filtered out)
-    const bathroomSupplier = suppliers.find((s: any) => s.name === 'Bathroom Fixtures Ltd');
-    expect(bathroomSupplier).toBeUndefined();
+    const bathroomSup = suppliers.find((s: any) => s.name === 'Bathroom Fixtures Ltd');
+    expect(bathroomSup).toBeUndefined();
   });
 
   test('admin sees all suppliers', async ({ page }) => {
-    // Sign in as admin to get session
-    const { data: signInData, error: signInError } = await supabaseAdmin.auth.signInWithPassword({
-      email: adminUser.email,
-      password: 'TestPassword123!',
-    });
+    // Set admin auth cookies
+    await setAuthCookies(page.context(), adminSession);
 
-    if (signInError) throw signInError;
-
-    // Fetch suppliers via API with Authorization header
-    const response = await page.request.get(`${BASE_URL}/api/suppliers`, {
-      headers: {
-        'Authorization': `Bearer ${signInData.session.access_token}`,
-      },
-    });
+    // Fetch suppliers via API
+    const response = await page.request.get(`${BASE_URL}/api/suppliers`);
 
     expect(response.ok()).toBeTruthy();
     const responseData = await response.json();
     const suppliers = responseData.data || [];
 
     // Admin should see both suppliers (no filtering)
-    const kitchenSupplier = suppliers.find((s: any) => s.name === 'Kitchen Suppliers Inc');
-    expect(kitchenSupplier).toBeDefined();
+    const kitchenSup = suppliers.find((s: any) => s.name === 'Kitchen Suppliers Inc');
+    expect(kitchenSup).toBeDefined();
 
-    const bathroomSupplier = suppliers.find((s: any) => s.name === 'Bathroom Fixtures Ltd');
-    expect(bathroomSupplier).toBeDefined();
+    const bathroomSup = suppliers.find((s: any) => s.name === 'Bathroom Fixtures Ltd');
+    expect(bathroomSup).toBeDefined();
   });
 
   test('admin can view and delete access rules', async ({ page }) => {
-    // Sign in as admin
-    const { data: signInData, error: signInError } = await supabaseAdmin.auth.signInWithPassword({
-      email: adminUser.email,
-      password: 'TestPassword123!',
-    });
-
-    if (signInError) throw signInError;
+    // Set admin auth cookies
+    await setAuthCookies(page.context(), adminSession);
 
     // Fetch access rules via API
-    const response = await page.request.get(`${BASE_URL}/api/suppliers/access-rules`, {
-      headers: {
-        'Authorization': `Bearer ${signInData.session.access_token}`,
-      },
-    });
+    const response = await page.request.get(`${BASE_URL}/api/suppliers/access-rules`);
 
     expect(response.ok()).toBeTruthy();
     const data = await response.json();
@@ -293,11 +306,7 @@ test.describe('Supplier Access Control', () => {
     const ruleId = data.data[0].id;
 
     // Delete the access rule
-    const deleteResponse = await page.request.delete(`${BASE_URL}/api/suppliers/access-rules/${ruleId}`, {
-      headers: {
-        'Authorization': `Bearer ${signInData.session.access_token}`,
-      },
-    });
+    const deleteResponse = await page.request.delete(`${BASE_URL}/api/suppliers/access-rules/${ruleId}`);
 
     expect(deleteResponse.ok()).toBeTruthy();
     const deleteData = await deleteResponse.json();
@@ -305,20 +314,11 @@ test.describe('Supplier Access Control', () => {
   });
 
   test('restricted user has no access after rule deletion', async ({ page }) => {
-    // Sign in as restricted user to get session
-    const { data: signInData, error: signInError} = await supabaseAdmin.auth.signInWithPassword({
-      email: restrictedUser.email,
-      password: 'TestPassword123!',
-    });
+    // Set restricted user auth cookies
+    await setAuthCookies(page.context(), restrictedSession);
 
-    if (signInError) throw signInError;
-
-    // Fetch suppliers via API with Authorization header
-    const response = await page.request.get(`${BASE_URL}/api/suppliers`, {
-      headers: {
-        'Authorization': `Bearer ${signInData.session.access_token}`,
-      },
-    });
+    // Fetch suppliers via API
+    const response = await page.request.get(`${BASE_URL}/api/suppliers`);
 
     expect(response.ok()).toBeTruthy();
     const responseData = await response.json();
@@ -329,20 +329,11 @@ test.describe('Supplier Access Control', () => {
   });
 
   test('admin can check if supplier access management API responds', async ({ page }) => {
-    // Sign in as admin to get session
-    const { data: signInData, error: signInError } = await supabaseAdmin.auth.signInWithPassword({
-      email: adminUser.email,
-      password: 'TestPassword123!',
-    });
-
-    if (signInError) throw signInError;
+    // Set admin auth cookies
+    await setAuthCookies(page.context(), adminSession);
 
     // Test that the admin API endpoint exists and responds
-    const response = await page.request.get(`${BASE_URL}/api/suppliers/access-rules`, {
-      headers: {
-        'Authorization': `Bearer ${signInData.session.access_token}`,
-      },
-    });
+    const response = await page.request.get(`${BASE_URL}/api/suppliers/access-rules`);
 
     // Should return successfully (even if empty list)
     expect(response.ok()).toBeTruthy();

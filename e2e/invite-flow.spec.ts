@@ -1,5 +1,18 @@
-import { test, expect } from '@playwright/test';
-import { createClient } from '@supabase/supabase-js';
+/**
+ * E2E Tests: Organization Invite Flow
+ *
+ * Tests the complete organization invite flow:
+ * 1. Owner sends invite
+ * 2. Invitee accepts invite
+ * 3. Verify membership created
+ * 4. Verify invite marked as used
+ * 5. Reject duplicate accept
+ *
+ * Uses cookie-based auth compatible with @supabase/ssr
+ */
+
+import { test, expect, BrowserContext } from '@playwright/test';
+import { createClient, Session } from '@supabase/supabase-js';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321';
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
@@ -9,8 +22,7 @@ interface TestUser {
   email: string;
   password: string;
   userId: string;
-  accessToken: string;
-  refreshToken: string;
+  session: Session;
 }
 
 interface TestOrg {
@@ -18,11 +30,54 @@ interface TestOrg {
   name: string;
 }
 
+/**
+ * Get Supabase cookie name for local dev
+ */
+function getSupabaseCookieName(): string {
+  try {
+    const url = new URL(SUPABASE_URL);
+    const host = url.hostname.split('.')[0];
+    return `sb-${host}-auth-token`;
+  } catch {
+    return 'sb-localhost-auth-token';
+  }
+}
+
+/**
+ * Set auth cookies on browser context for API requests
+ */
+async function setAuthCookies(context: BrowserContext, session: Session): Promise<void> {
+  const cookieName = getSupabaseCookieName();
+  const domain = new URL(BASE_URL).hostname;
+
+  const sessionData = JSON.stringify({
+    access_token: session.access_token,
+    refresh_token: session.refresh_token,
+    expires_at: session.expires_at,
+    expires_in: session.expires_in,
+    token_type: session.token_type,
+    user: session.user,
+  });
+
+  await context.addCookies([
+    {
+      name: cookieName,
+      value: encodeURIComponent(sessionData),
+      domain,
+      path: '/',
+      httpOnly: false,
+      secure: false,
+      sameSite: 'Lax',
+    },
+  ]);
+}
+
 test.describe('Organization Invite Flow', () => {
   let ownerUser: TestUser;
   let inviteeUser: TestUser;
   let testOrg: TestOrg;
   let inviteToken: string;
+  let ownerClient: ReturnType<typeof createClient>;
 
   test.beforeAll(async () => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -47,8 +102,7 @@ test.describe('Organization Invite Flow', () => {
       email: ownerEmail,
       password: 'password123',
       userId: ownerAuth.data.user.id,
-      accessToken: ownerAuth.data.session.access_token,
-      refreshToken: ownerAuth.data.session.refresh_token,
+      session: ownerAuth.data.session,
     };
 
     // Create invitee user
@@ -65,15 +119,14 @@ test.describe('Organization Invite Flow', () => {
       email: inviteeEmail,
       password: 'password123',
       userId: inviteeAuth.data.user.id,
-      accessToken: inviteeAuth.data.session.access_token,
-      refreshToken: inviteeAuth.data.session.refresh_token,
+      session: inviteeAuth.data.session,
     };
 
     // Create test organization as owner
-    const ownerClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    ownerClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       global: {
         headers: {
-          Authorization: `Bearer ${ownerUser.accessToken}`,
+          Authorization: `Bearer ${ownerUser.session.access_token}`,
         },
       },
     });
@@ -103,11 +156,14 @@ test.describe('Organization Invite Flow', () => {
     console.log(`Test setup complete: owner=${ownerEmail}, invitee=${inviteeEmail}, org=${testOrg.id}`);
   });
 
-  test('should send invite as owner with Authorization header', async ({ page, context }) => {
-    // Send invite via API request with Authorization header
+  test('should send invite as owner', async ({ page }) => {
+    // Set owner auth cookies
+    await setAuthCookies(page.context(), ownerUser.session);
+
+    // Send invite via API request
     const response = await page.request.post(`${BASE_URL}/api/send-invite`, {
       headers: {
-        'Authorization': `Bearer ${ownerUser.accessToken}`,
+        'Content-Type': 'application/json',
       },
       data: {
         orgId: testOrg.id,
@@ -131,11 +187,14 @@ test.describe('Organization Invite Flow', () => {
     console.log(`Invite sent successfully, token: ${inviteToken.substring(0, 40)}...`);
   });
 
-  test('should accept invite as invitee with Authorization header', async ({ page, context }) => {
-    // Accept invite via API request with Authorization header
+  test('should accept invite as invitee', async ({ page }) => {
+    // Set invitee auth cookies
+    await setAuthCookies(page.context(), inviteeUser.session);
+
+    // Accept invite via API request
     const response = await page.request.post(`${BASE_URL}/api/accept-invite`, {
       headers: {
-        'Authorization': `Bearer ${inviteeUser.accessToken}`,
+        'Content-Type': 'application/json',
       },
       data: {
         token: inviteToken,
@@ -156,7 +215,7 @@ test.describe('Organization Invite Flow', () => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       global: {
         headers: {
-          Authorization: `Bearer ${inviteeUser.accessToken}`,
+          Authorization: `Bearer ${inviteeUser.session.access_token}`,
         },
       },
     });
@@ -179,7 +238,7 @@ test.describe('Organization Invite Flow', () => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       global: {
         headers: {
-          Authorization: `Bearer ${inviteeUser.accessToken}`,
+          Authorization: `Bearer ${inviteeUser.session.access_token}`,
         },
       },
     });
@@ -199,11 +258,14 @@ test.describe('Organization Invite Flow', () => {
     console.log('Invite marked as used in database');
   });
 
-  test('should reject duplicate accept with 409', async ({ page, context }) => {
-    // Try to accept same invite again with Authorization header
+  test('should reject duplicate accept with 409', async ({ page }) => {
+    // Set invitee auth cookies
+    await setAuthCookies(page.context(), inviteeUser.session);
+
+    // Try to accept same invite again
     const response = await page.request.post(`${BASE_URL}/api/accept-invite`, {
       headers: {
-        'Authorization': `Bearer ${inviteeUser.accessToken}`,
+        'Content-Type': 'application/json',
       },
       data: {
         token: inviteToken,
@@ -216,5 +278,16 @@ test.describe('Organization Invite Flow', () => {
     expect(data.error).toContain('already used');
 
     console.log('Duplicate accept correctly rejected with 409');
+  });
+
+  test.afterAll(async () => {
+    // Cleanup test data
+    if (testOrg && ownerClient) {
+      await ownerClient.from('organization_members').delete().eq('org_id', testOrg.id);
+      await ownerClient.from('organization_invites').delete().eq('org_id', testOrg.id);
+      await ownerClient.from('organizations').delete().eq('id', testOrg.id);
+    }
+
+    console.log('Test cleanup complete');
   });
 });

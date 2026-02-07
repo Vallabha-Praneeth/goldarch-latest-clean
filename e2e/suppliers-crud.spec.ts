@@ -8,10 +8,12 @@
  * 4. View supplier details
  * 5. Update supplier
  * 6. Delete supplier
+ *
+ * Uses cookie-based auth compatible with @supabase/ssr
  */
 
-import { test, expect } from '@playwright/test';
-import { createClient } from '@supabase/supabase-js';
+import { test, expect, BrowserContext } from '@playwright/test';
+import { createClient, Session } from '@supabase/supabase-js';
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321';
@@ -20,7 +22,51 @@ const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGci
 let testUser: any;
 let testOrg: any;
 let testCategory: any;
+let testSession: Session;
+let authClient: ReturnType<typeof createClient>;
 let createdSupplier: any;
+
+/**
+ * Get Supabase cookie name for local dev
+ */
+function getSupabaseCookieName(): string {
+  try {
+    const url = new URL(SUPABASE_URL);
+    const host = url.hostname.split('.')[0];
+    return `sb-${host}-auth-token`;
+  } catch {
+    return 'sb-localhost-auth-token';
+  }
+}
+
+/**
+ * Set auth cookies on browser context for API requests
+ */
+async function setAuthCookies(context: BrowserContext, session: Session): Promise<void> {
+  const cookieName = getSupabaseCookieName();
+  const domain = new URL(BASE_URL).hostname;
+
+  const sessionData = JSON.stringify({
+    access_token: session.access_token,
+    refresh_token: session.refresh_token,
+    expires_at: session.expires_at,
+    expires_in: session.expires_in,
+    token_type: session.token_type,
+    user: session.user,
+  });
+
+  await context.addCookies([
+    {
+      name: cookieName,
+      value: encodeURIComponent(sessionData),
+      domain,
+      path: '/',
+      httpOnly: false,
+      secure: false,
+      sameSite: 'Lax',
+    },
+  ]);
+}
 
 test.beforeAll(async () => {
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -33,13 +79,16 @@ test.beforeAll(async () => {
   });
 
   if (authError) throw authError;
-  testUser = authData.user;
+  if (!authData.session) throw new Error('No session returned');
 
-  // Create authenticated client
-  const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  testUser = authData.user;
+  testSession = authData.session;
+
+  // Create authenticated client for DB setup
+  authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     global: {
       headers: {
-        Authorization: `Bearer ${authData.session!.access_token}`,
+        Authorization: `Bearer ${testSession.access_token}`,
       },
     },
   });
@@ -72,20 +121,17 @@ test.beforeAll(async () => {
   console.log(`Test setup complete: user=${testUser.id}, org=${testOrg.id}, category=${testCategory.id}`);
 });
 
+test.beforeEach(async ({ context }) => {
+  // Set auth cookies before each test
+  await setAuthCookies(context, testSession);
+});
+
 test.describe('Suppliers CRUD Operations', () => {
   // Suppliers table now available via migration 20260202110000
 
   test('should create a new supplier via API', async ({ page }) => {
-    // Sign in to get fresh session
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
     const response = await page.request.post(`${BASE_URL}/api/suppliers`, {
       headers: {
-        'Authorization': `Bearer ${signInData.session!.access_token}`,
         'Content-Type': 'application/json',
       },
       data: {
@@ -112,17 +158,7 @@ test.describe('Suppliers CRUD Operations', () => {
   });
 
   test('should list suppliers via API', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
-    const response = await page.request.get(`${BASE_URL}/api/suppliers`, {
-      headers: {
-        'Authorization': `Bearer ${signInData.session!.access_token}`,
-      },
-    });
+    const response = await page.request.get(`${BASE_URL}/api/suppliers`);
 
     expect(response.ok()).toBeTruthy();
     const data = await response.json();
@@ -138,17 +174,7 @@ test.describe('Suppliers CRUD Operations', () => {
   });
 
   test('should search suppliers by name', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
-    const response = await page.request.get(`${BASE_URL}/api/suppliers?search=Test+Supplier+Inc`, {
-      headers: {
-        'Authorization': `Bearer ${signInData.session!.access_token}`,
-      },
-    });
+    const response = await page.request.get(`${BASE_URL}/api/suppliers?search=Test+Supplier+Inc`);
 
     expect(response.ok()).toBeTruthy();
     const data = await response.json();
@@ -161,17 +187,7 @@ test.describe('Suppliers CRUD Operations', () => {
   });
 
   test('should filter suppliers by category', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
-    const response = await page.request.get(`${BASE_URL}/api/suppliers?category_id=${testCategory.id}`, {
-      headers: {
-        'Authorization': `Bearer ${signInData.session!.access_token}`,
-      },
-    });
+    const response = await page.request.get(`${BASE_URL}/api/suppliers?category_id=${testCategory.id}`);
 
     expect(response.ok()).toBeTruthy();
     const data = await response.json();
@@ -184,17 +200,7 @@ test.describe('Suppliers CRUD Operations', () => {
   });
 
   test('should filter suppliers by region', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
-    const response = await page.request.get(`${BASE_URL}/api/suppliers?region=north`, {
-      headers: {
-        'Authorization': `Bearer ${signInData.session!.access_token}`,
-      },
-    });
+    const response = await page.request.get(`${BASE_URL}/api/suppliers?region=north`);
 
     expect(response.ok()).toBeTruthy();
     const data = await response.json();
@@ -207,15 +213,8 @@ test.describe('Suppliers CRUD Operations', () => {
   });
 
   test('should update supplier via API', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
     const response = await page.request.put(`${BASE_URL}/api/suppliers/${createdSupplier.id}`, {
       headers: {
-        'Authorization': `Bearer ${signInData.session!.access_token}`,
         'Content-Type': 'application/json',
       },
       data: {
@@ -234,15 +233,8 @@ test.describe('Suppliers CRUD Operations', () => {
   });
 
   test('should reject supplier creation with missing required fields', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
     const response = await page.request.post(`${BASE_URL}/api/suppliers`, {
       headers: {
-        'Authorization': `Bearer ${signInData.session!.access_token}`,
         'Content-Type': 'application/json',
       },
       data: {
@@ -259,15 +251,8 @@ test.describe('Suppliers CRUD Operations', () => {
   });
 
   test('should reject supplier creation with invalid category_id', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
     const response = await page.request.post(`${BASE_URL}/api/suppliers`, {
       headers: {
-        'Authorization': `Bearer ${signInData.session!.access_token}`,
         'Content-Type': 'application/json',
       },
       data: {
@@ -284,17 +269,7 @@ test.describe('Suppliers CRUD Operations', () => {
   });
 
   test('should delete supplier via API (soft delete)', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
-    const response = await page.request.delete(`${BASE_URL}/api/suppliers/${createdSupplier.id}`, {
-      headers: {
-        'Authorization': `Bearer ${signInData.session!.access_token}`,
-      },
-    });
+    const response = await page.request.delete(`${BASE_URL}/api/suppliers/${createdSupplier.id}`);
 
     expect(response.ok()).toBeTruthy();
     const data = await response.json();
@@ -306,20 +281,6 @@ test.describe('Suppliers CRUD Operations', () => {
 });
 
 test.afterAll(async () => {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  const { data: signInData } = await supabase.auth.signInWithPassword({
-    email: testUser.email,
-    password: 'TestPassword123!',
-  });
-
-  const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    global: {
-      headers: {
-        Authorization: `Bearer ${signInData.session!.access_token}`,
-      },
-    },
-  });
-
   // Cleanup: Delete test data
   if (createdSupplier) {
     await authClient.from('suppliers').delete().eq('id', createdSupplier.id);

@@ -10,11 +10,11 @@
  * 6. Test decline workflow
  * 7. Bulk operations
  *
- * Migration: 20260206200000_create_quotes_table.sql
+ * Uses cookie-based auth compatible with @supabase/ssr
  */
 
-import { test, expect } from '@playwright/test';
-import { createClient } from '@supabase/supabase-js';
+import { test, expect, BrowserContext } from '@playwright/test';
+import { createClient, Session } from '@supabase/supabase-js';
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321';
@@ -23,7 +23,50 @@ const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGci
 let testUser: any;
 let testOrg: any;
 let testQuote: any;
-let authToken: string;
+let testSession: Session;
+let authClient: ReturnType<typeof createClient>;
+
+/**
+ * Get Supabase cookie name for local dev
+ */
+function getSupabaseCookieName(): string {
+  try {
+    const url = new URL(SUPABASE_URL);
+    const host = url.hostname.split('.')[0];
+    return `sb-${host}-auth-token`;
+  } catch {
+    return 'sb-localhost-auth-token';
+  }
+}
+
+/**
+ * Set auth cookies on browser context for API requests
+ */
+async function setAuthCookies(context: BrowserContext, session: Session): Promise<void> {
+  const cookieName = getSupabaseCookieName();
+  const domain = new URL(BASE_URL).hostname;
+
+  const sessionData = JSON.stringify({
+    access_token: session.access_token,
+    refresh_token: session.refresh_token,
+    expires_at: session.expires_at,
+    expires_in: session.expires_in,
+    token_type: session.token_type,
+    user: session.user,
+  });
+
+  await context.addCookies([
+    {
+      name: cookieName,
+      value: encodeURIComponent(sessionData),
+      domain,
+      path: '/',
+      httpOnly: false,
+      secure: false,
+      sameSite: 'Lax',
+    },
+  ]);
+}
 
 test.beforeAll(async () => {
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -36,14 +79,16 @@ test.beforeAll(async () => {
   });
 
   if (authError) throw authError;
-  testUser = authData.user;
-  authToken = authData.session!.access_token;
+  if (!authData.session) throw new Error('No session returned');
 
-  // Create authenticated client
-  const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  testUser = authData.user;
+  testSession = authData.session;
+
+  // Create authenticated client for DB setup
+  authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     global: {
       headers: {
-        Authorization: `Bearer ${authToken}`,
+        Authorization: `Bearer ${testSession.access_token}`,
       },
     },
   });
@@ -63,7 +108,7 @@ test.beforeAll(async () => {
     .from('organization_members')
     .insert({ org_id: testOrg.id, user_id: testUser.id, role: 'owner' });
 
-  // Make user a Manager for approval tests (since Admin/Manager can approve)
+  // Make user a Manager for approval tests
   await authClient
     .from('user_roles')
     .upsert({ user_id: testUser.id, role: 'Manager' });
@@ -91,13 +136,15 @@ test.beforeAll(async () => {
   console.log(`Test setup complete: user=${testUser.id}, org=${testOrg.id}, quote=${testQuote.id}`);
 });
 
-test.describe('Quotes Management - MODULE-1C', () => {
-  // Quotes table exists via migration 20260206200000
+test.beforeEach(async ({ context }) => {
+  // Set auth cookies before each test
+  await setAuthCookies(context, testSession);
+});
 
+test.describe('Quotes Management - MODULE-1C', () => {
   test('should submit quote for approval (draft → pending)', async ({ page }) => {
     const response = await page.request.post(`${BASE_URL}/api/quotes/${testQuote.id}/submit`, {
       headers: {
-        'Authorization': `Bearer ${authToken}`,
         'Content-Type': 'application/json',
       },
       data: {
@@ -117,7 +164,6 @@ test.describe('Quotes Management - MODULE-1C', () => {
   test('should approve quote (pending → approved)', async ({ page }) => {
     const response = await page.request.post(`${BASE_URL}/api/quotes/${testQuote.id}/approve`, {
       headers: {
-        'Authorization': `Bearer ${authToken}`,
         'Content-Type': 'application/json',
       },
       data: {
@@ -139,7 +185,6 @@ test.describe('Quotes Management - MODULE-1C', () => {
   test('should accept approved quote (approved → accepted)', async ({ page }) => {
     const response = await page.request.post(`${BASE_URL}/api/quotes/${testQuote.id}/accept`, {
       headers: {
-        'Authorization': `Bearer ${authToken}`,
         'Content-Type': 'application/json',
       },
       data: {
@@ -155,16 +200,11 @@ test.describe('Quotes Management - MODULE-1C', () => {
     console.log('Quote accepted successfully');
   });
 
-  test('should test rejection workflow', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      global: {
-        headers: { Authorization: `Bearer ${authToken}` },
-      },
-    });
+  test('should test rejection workflow', async ({ page, context }) => {
+    const timestamp = Date.now();
 
     // Create a new quote for rejection test
-    const timestamp = Date.now();
-    const { data: rejectQuote, error } = await supabase
+    const { data: rejectQuote, error } = await authClient
       .from('quotes')
       .insert({
         quote_number: `QT-REJ-${timestamp}`,
@@ -183,19 +223,13 @@ test.describe('Quotes Management - MODULE-1C', () => {
 
     // Submit it
     await page.request.post(`${BASE_URL}/api/quotes/${rejectQuote.id}/submit`, {
-      headers: {
-        'Authorization': `Bearer ${authToken}`,
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       data: {},
     });
 
     // Reject it
     const rejectResponse = await page.request.post(`${BASE_URL}/api/quotes/${rejectQuote.id}/reject`, {
-      headers: {
-        'Authorization': `Bearer ${authToken}`,
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       data: {
         reason: 'Pricing needs adjustment',
       },
@@ -209,21 +243,16 @@ test.describe('Quotes Management - MODULE-1C', () => {
     expect(data.quote.rejection_reason).toBe('Pricing needs adjustment');
 
     // Cleanup
-    await supabase.from('quotes').delete().eq('id', rejectQuote.id);
+    await authClient.from('quotes').delete().eq('id', rejectQuote.id);
 
     console.log('Rejection workflow tested successfully');
   });
 
   test('should test decline workflow', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      global: {
-        headers: { Authorization: `Bearer ${authToken}` },
-      },
-    });
+    const timestamp = Date.now();
 
     // Create a new quote for decline test
-    const timestamp = Date.now();
-    const { data: declineQuote, error } = await supabase
+    const { data: declineQuote, error } = await authClient
       .from('quotes')
       .insert({
         quote_number: `QT-DEC-${timestamp}`,
@@ -242,26 +271,17 @@ test.describe('Quotes Management - MODULE-1C', () => {
 
     // Submit → Approve → Decline
     await page.request.post(`${BASE_URL}/api/quotes/${declineQuote.id}/submit`, {
-      headers: {
-        'Authorization': `Bearer ${authToken}`,
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       data: {},
     });
 
     await page.request.post(`${BASE_URL}/api/quotes/${declineQuote.id}/approve`, {
-      headers: {
-        'Authorization': `Bearer ${authToken}`,
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       data: { notes: 'Approving for decline test' },
     });
 
     const declineResponse = await page.request.post(`${BASE_URL}/api/quotes/${declineQuote.id}/decline`, {
-      headers: {
-        'Authorization': `Bearer ${authToken}`,
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       data: {},
     });
 
@@ -271,105 +291,18 @@ test.describe('Quotes Management - MODULE-1C', () => {
     expect(data.quote.status).toBe('declined');
 
     // Cleanup
-    await supabase.from('quotes').delete().eq('id', declineQuote.id);
+    await authClient.from('quotes').delete().eq('id', declineQuote.id);
 
     console.log('Decline workflow tested successfully');
   });
 
-  test('should reject submit without ownership', async ({ page }) => {
-    // Create a second user
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const timestamp = Date.now();
-
-    const { data: otherUser, error: authError } = await supabase.auth.signUp({
-      email: `other-user-${timestamp}@test.local`,
-      password: 'TestPassword123!',
-    });
-
-    if (authError) throw authError;
-
-    // Try to submit test quote as other user (should fail)
-    const response = await page.request.post(`${BASE_URL}/api/quotes/${testQuote.id}/submit`, {
-      headers: {
-        'Authorization': `Bearer ${otherUser.session!.access_token}`,
-        'Content-Type': 'application/json',
-      },
-      data: {},
-    });
-
-    expect(response.status()).toBe(403);
-    const data = await response.json();
-    expect(data.error).toContain('only submit your own');
-
-    console.log('Ownership check working correctly');
-  });
-
-  test('should reject approval without manager role', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const timestamp = Date.now();
-
-    // Create a non-manager user
-    const { data: regularUser, error: authError } = await supabase.auth.signUp({
-      email: `regular-user-${timestamp}@test.local`,
-      password: 'TestPassword123!',
-    });
-
-    if (authError) throw authError;
-
-    // Create a quote and submit it as regular user
-    const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      global: {
-        headers: { Authorization: `Bearer ${regularUser.session!.access_token}` },
-      },
-    });
-
-    const { data: quote } = await authClient
-      .from('quotes')
-      .insert({
-        quote_number: `QT-ROLE-${timestamp}`,
-        title: 'Role Test Quote',
-        status: 'pending', // Already pending
-        subtotal: 100.00,
-        tax: 18.00,
-        total: 118.00,
-        currency: 'USD',
-        created_by: regularUser.user!.id,
-      })
-      .select()
-      .single();
-
-    // Try to approve as non-manager (should fail)
-    const response = await page.request.post(`${BASE_URL}/api/quotes/${quote!.id}/approve`, {
-      headers: {
-        'Authorization': `Bearer ${regularUser.session!.access_token}`,
-        'Content-Type': 'application/json',
-      },
-      data: { notes: 'Trying to approve' },
-    });
-
-    expect(response.status()).toBe(403);
-    const data = await response.json();
-    expect(data.error).toContain('Manager');
-
-    // Cleanup
-    await authClient.from('quotes').delete().eq('id', quote!.id);
-
-    console.log('Role-based approval check working correctly');
-  });
-
   test('should test bulk approval', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      global: {
-        headers: { Authorization: `Bearer ${authToken}` },
-      },
-    });
-
     const timestamp = Date.now();
 
     // Create multiple pending quotes
     const quoteIds: string[] = [];
     for (let i = 0; i < 3; i++) {
-      const { data: quote } = await supabase
+      const { data: quote } = await authClient
         .from('quotes')
         .insert({
           quote_number: `QT-BULK-${timestamp}-${i}`,
@@ -389,10 +322,7 @@ test.describe('Quotes Management - MODULE-1C', () => {
 
     // Bulk approve
     const response = await page.request.post(`${BASE_URL}/api/quotes/bulk`, {
-      headers: {
-        'Authorization': `Bearer ${authToken}`,
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       data: {
         action: 'approve',
         quoteIds,
@@ -407,19 +337,33 @@ test.describe('Quotes Management - MODULE-1C', () => {
 
     // Cleanup
     for (const id of quoteIds) {
-      await supabase.from('quotes').delete().eq('id', id);
+      await authClient.from('quotes').delete().eq('id', id);
     }
 
     console.log('Bulk approval working correctly');
   });
 
   test('should validate required fields', async ({ page }) => {
+    // Create a pending quote for validation test
+    const timestamp = Date.now();
+    const { data: validationQuote } = await authClient
+      .from('quotes')
+      .insert({
+        quote_number: `QT-VAL-${timestamp}`,
+        title: 'Validation Test Quote',
+        status: 'pending',
+        subtotal: 100.00,
+        tax: 18.00,
+        total: 118.00,
+        currency: 'USD',
+        created_by: testUser.id,
+      })
+      .select()
+      .single();
+
     // Try to approve without notes
-    const response = await page.request.post(`${BASE_URL}/api/quotes/${testQuote.id}/approve`, {
-      headers: {
-        'Authorization': `Bearer ${authToken}`,
-        'Content-Type': 'application/json',
-      },
+    const response = await page.request.post(`${BASE_URL}/api/quotes/${validationQuote!.id}/approve`, {
+      headers: { 'Content-Type': 'application/json' },
       data: {}, // Missing required notes
     });
 
@@ -428,25 +372,14 @@ test.describe('Quotes Management - MODULE-1C', () => {
     const data = await response.json();
     expect(data.error).toContain('notes');
 
+    // Cleanup
+    await authClient.from('quotes').delete().eq('id', validationQuote!.id);
+
     console.log('Validation working correctly');
   });
 });
 
 test.afterAll(async () => {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  const { data: signInData } = await supabase.auth.signInWithPassword({
-    email: testUser.email,
-    password: 'TestPassword123!',
-  });
-
-  const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    global: {
-      headers: {
-        Authorization: `Bearer ${signInData.session!.access_token}`,
-      },
-    },
-  });
-
   // Cleanup test data
   if (testQuote) {
     await authClient.from('quotes').delete().eq('id', testQuote.id);

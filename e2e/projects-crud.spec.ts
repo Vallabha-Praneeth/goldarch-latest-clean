@@ -7,10 +7,12 @@
  * 3. Get single project
  * 4. Update project
  * 5. Delete project (soft delete - archived)
+ *
+ * Uses cookie-based auth compatible with @supabase/ssr
  */
 
-import { test, expect } from '@playwright/test';
-import { createClient } from '@supabase/supabase-js';
+import { test, expect, BrowserContext } from '@playwright/test';
+import { createClient, Session } from '@supabase/supabase-js';
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321';
@@ -18,7 +20,51 @@ const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGci
 
 let testUser: any;
 let testOrg: any;
+let testSession: Session;
+let authClient: ReturnType<typeof createClient>;
 let createdProject: any;
+
+/**
+ * Get Supabase cookie name for local dev
+ */
+function getSupabaseCookieName(): string {
+  try {
+    const url = new URL(SUPABASE_URL);
+    const host = url.hostname.split('.')[0];
+    return `sb-${host}-auth-token`;
+  } catch {
+    return 'sb-localhost-auth-token';
+  }
+}
+
+/**
+ * Set auth cookies on browser context for API requests
+ */
+async function setAuthCookies(context: BrowserContext, session: Session): Promise<void> {
+  const cookieName = getSupabaseCookieName();
+  const domain = new URL(BASE_URL).hostname;
+
+  const sessionData = JSON.stringify({
+    access_token: session.access_token,
+    refresh_token: session.refresh_token,
+    expires_at: session.expires_at,
+    expires_in: session.expires_in,
+    token_type: session.token_type,
+    user: session.user,
+  });
+
+  await context.addCookies([
+    {
+      name: cookieName,
+      value: encodeURIComponent(sessionData),
+      domain,
+      path: '/',
+      httpOnly: false,
+      secure: false,
+      sameSite: 'Lax',
+    },
+  ]);
+}
 
 test.beforeAll(async () => {
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -31,13 +77,16 @@ test.beforeAll(async () => {
   });
 
   if (authError) throw authError;
-  testUser = authData.user;
+  if (!authData.session) throw new Error('No session returned');
 
-  // Create authenticated client
-  const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  testUser = authData.user;
+  testSession = authData.session;
+
+  // Create authenticated client for DB setup
+  authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     global: {
       headers: {
-        Authorization: `Bearer ${authData.session!.access_token}`,
+        Authorization: `Bearer ${testSession.access_token}`,
       },
     },
   });
@@ -60,19 +109,17 @@ test.beforeAll(async () => {
   console.log(`Test setup complete: user=${testUser.id}, org=${testOrg.id}`);
 });
 
+test.beforeEach(async ({ context }) => {
+  // Set auth cookies before each test
+  await setAuthCookies(context, testSession);
+});
+
 test.describe('Projects CRUD Operations', () => {
   // Projects table now available via migration 20260206210000
 
   test('should create a new project via API', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
     const response = await page.request.post(`${BASE_URL}/api/projects`, {
       headers: {
-        'Authorization': `Bearer ${signInData.session!.access_token}`,
         'Content-Type': 'application/json',
       },
       data: {
@@ -100,17 +147,7 @@ test.describe('Projects CRUD Operations', () => {
   });
 
   test('should list projects via API', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
-    const response = await page.request.get(`${BASE_URL}/api/projects`, {
-      headers: {
-        'Authorization': `Bearer ${signInData.session!.access_token}`,
-      },
-    });
+    const response = await page.request.get(`${BASE_URL}/api/projects`);
 
     expect(response.ok()).toBeTruthy();
     const data = await response.json();
@@ -126,17 +163,7 @@ test.describe('Projects CRUD Operations', () => {
   });
 
   test('should get single project via API', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
-    const response = await page.request.get(`${BASE_URL}/api/projects/${createdProject.id}`, {
-      headers: {
-        'Authorization': `Bearer ${signInData.session!.access_token}`,
-      },
-    });
+    const response = await page.request.get(`${BASE_URL}/api/projects/${createdProject.id}`);
 
     expect(response.ok()).toBeTruthy();
     const data = await response.json();
@@ -148,17 +175,7 @@ test.describe('Projects CRUD Operations', () => {
   });
 
   test('should filter projects by status', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
-    const response = await page.request.get(`${BASE_URL}/api/projects?status=planning`, {
-      headers: {
-        'Authorization': `Bearer ${signInData.session!.access_token}`,
-      },
-    });
+    const response = await page.request.get(`${BASE_URL}/api/projects?status=planning`);
 
     expect(response.ok()).toBeTruthy();
     const data = await response.json();
@@ -171,15 +188,8 @@ test.describe('Projects CRUD Operations', () => {
   });
 
   test('should update project via API', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
     const response = await page.request.put(`${BASE_URL}/api/projects/${createdProject.id}`, {
       headers: {
-        'Authorization': `Bearer ${signInData.session!.access_token}`,
         'Content-Type': 'application/json',
       },
       data: {
@@ -200,15 +210,8 @@ test.describe('Projects CRUD Operations', () => {
   });
 
   test('should reject project creation with missing name', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
     const response = await page.request.post(`${BASE_URL}/api/projects`, {
       headers: {
-        'Authorization': `Bearer ${signInData.session!.access_token}`,
         'Content-Type': 'application/json',
       },
       data: {
@@ -226,17 +229,7 @@ test.describe('Projects CRUD Operations', () => {
   });
 
   test('should delete project via API (soft delete - archived)', async ({ page }) => {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: signInData } = await supabase.auth.signInWithPassword({
-      email: testUser.email,
-      password: 'TestPassword123!',
-    });
-
-    const response = await page.request.delete(`${BASE_URL}/api/projects/${createdProject.id}`, {
-      headers: {
-        'Authorization': `Bearer ${signInData.session!.access_token}`,
-      },
-    });
+    const response = await page.request.delete(`${BASE_URL}/api/projects/${createdProject.id}`);
 
     expect(response.ok()).toBeTruthy();
     const data = await response.json();
@@ -246,32 +239,24 @@ test.describe('Projects CRUD Operations', () => {
     console.log('Project soft deleted (status=archived)');
   });
 
-  test('should reject unauthorized project access', async ({ page }) => {
+  test('should reject unauthorized project access', async ({ browser }) => {
+    // Create a fresh context without auth cookies
+    const freshContext = await browser.newContext();
+    const page = await freshContext.newPage();
+
     const response = await page.request.get(`${BASE_URL}/api/projects`);
 
     expect(response.status()).toBe(401);
     const data = await response.json();
     expect(data.error).toContain('Unauthorized');
 
+    await freshContext.close();
+
     console.log('Unauthorized access correctly rejected');
   });
 });
 
 test.afterAll(async () => {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  const { data: signInData } = await supabase.auth.signInWithPassword({
-    email: testUser.email,
-    password: 'TestPassword123!',
-  });
-
-  const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    global: {
-      headers: {
-        Authorization: `Bearer ${signInData.session!.access_token}`,
-      },
-    },
-  });
-
   // Cleanup test data
   if (testOrg) {
     await authClient.from('organization_members').delete().eq('org_id', testOrg.id);
