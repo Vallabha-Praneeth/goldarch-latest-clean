@@ -1,0 +1,29 @@
+-- Enable Row Level Security on all sandbox tables
+
+ALTER TABLE sandbox_contracts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_approval_checkpoints ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_esign_requests ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_payment_milestones ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_invoices ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_invoice_payments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_wip_snapshots ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_rfq_campaigns ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_rfq_suppliers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_supplier_responses ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_supplier_ratings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_kb_categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_kb_documents ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_kb_bookmarks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_kb_document_versions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_intake_forms ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_intake_submissions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_approval_routing_rules ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_submission_approvals ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_risk_register ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_risk_updates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_timeline_tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_task_dependencies ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_category_owners ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_spend_thresholds ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_approval_rules ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sandbox_audit_trail ENABLE ROW LEVEL SECURITY;
