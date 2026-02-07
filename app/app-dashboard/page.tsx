@@ -17,6 +17,8 @@ import {
   DollarSign,
   Calendar,
   ArrowUpRight,
+  Clock,
+  FileCheck,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
@@ -116,6 +118,20 @@ export default function DashboardPage() {
         .select('id, title, stage, estimated_value, supplier:suppliers(name)')
         .not('stage', 'in', '(completed,lost)')
         .order('created_at', { ascending: false })
+        .limit(5);
+      return data || [];
+    },
+  });
+
+  // Pending quote approvals
+  const { data: pendingApprovals, isLoading: isLoadingApprovals } = useQuery({
+    queryKey: ['pending-approvals'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('quotes')
+        .select('id, quote_number, title, total, currency, submitted_at, created_at')
+        .eq('status', 'pending')
+        .order('submitted_at', { ascending: true, nullsFirst: false })
         .limit(5);
       return data || [];
     },
@@ -238,7 +254,70 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {/* Pending Approvals */}
+        <Card className="border-amber-200 bg-amber-50/30">
+          <CardHeader className="bg-slate-800 rounded-t-lg">
+            <CardTitle className="text-sm font-medium flex items-center gap-2 text-white">
+              <Clock className="h-4 w-4 text-amber-400" />
+              Pending Approvals
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-4">
+            {isLoading || isLoadingApprovals ? (
+              <div className="space-y-2">
+                {[1, 2, 3].map((i) => (
+                  <Skeleton key={i} className="h-14 w-full" />
+                ))}
+              </div>
+            ) : pendingApprovals && pendingApprovals.length > 0 ? (
+              <div className="space-y-2">
+                {pendingApprovals.map((quote) => (
+                  <Link
+                    key={quote.id}
+                    href={`/app-dashboard/quotes?status=pending&id=${quote.id}`}
+                    className="block"
+                  >
+                    <div className="p-3 rounded-lg border border-amber-200 bg-white hover:bg-amber-50 transition-colors cursor-pointer">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{quote.quote_number || quote.title}</p>
+                          <p className="text-xs text-muted-foreground truncate">{quote.title}</p>
+                        </div>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700 border border-amber-200 ml-2 shrink-0">
+                          <Clock className="h-3 w-3" />
+                          Pending
+                        </span>
+                      </div>
+                      {quote.total != null && (
+                        <p className="text-xs font-medium text-green-600 mt-1">
+                          {quote.currency || 'USD'} {quote.total.toLocaleString()}
+                        </p>
+                      )}
+                      {quote.submitted_at && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Submitted {new Date(quote.submitted_at).toLocaleDateString()}
+                        </p>
+                      )}
+                    </div>
+                  </Link>
+                ))}
+                <Button variant="ghost" size="sm" className="w-full text-xs" asChild>
+                  <Link href="/app-dashboard/quotes?status=pending">
+                    View All Pending <ArrowUpRight className="h-3 w-3 ml-1" />
+                  </Link>
+                </Button>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <FileCheck className="h-8 w-8 mx-auto text-green-500 opacity-50 mb-2" />
+                <p className="text-sm text-muted-foreground">No pending approvals</p>
+                <p className="text-xs text-green-600 font-medium">All caught up!</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Active Deals */}
         <Card>
           <CardHeader>

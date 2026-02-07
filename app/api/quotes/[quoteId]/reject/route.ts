@@ -6,9 +6,10 @@
  * Requires: Manager or Admin role
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse, after } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { sendQuoteNotification } from '@/lib/notifications/quote-notifications';
 
 interface RouteContext {
   params: Promise<{ quoteId: string }>;
@@ -109,6 +110,44 @@ export async function POST(
         { status: 500 }
       );
     }
+
+    // Send notification to quote owner (runs after response is sent)
+    after(async () => {
+      try {
+        // Get owner email
+        const { data: ownerProfile } = await supabase
+          .from('profiles')
+          .select('email, full_name')
+          .eq('id', quote.created_by)
+          .single();
+
+        // Get rejector name
+        const { data: rejectorProfile } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', user.id)
+          .single();
+
+        const actorName = rejectorProfile?.full_name || user.email?.split('@')[0] || 'A manager';
+
+        if (ownerProfile?.email) {
+          await sendQuoteNotification({
+            type: 'quote_rejected',
+            quoteId: updatedQuote.id,
+            quoteNumber: updatedQuote.quote_number,
+            title: updatedQuote.title,
+            total: updatedQuote.total,
+            currency: updatedQuote.currency,
+            recipientEmail: ownerProfile.email,
+            recipientName: ownerProfile.full_name || 'Team Member',
+            actorName,
+            reason: reason.trim(),
+          });
+        }
+      } catch (notifyError) {
+        console.error('[Reject Quote] Notification error:', notifyError);
+      }
+    });
 
     return NextResponse.json({
       success: true,

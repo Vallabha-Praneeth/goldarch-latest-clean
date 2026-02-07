@@ -6,9 +6,10 @@
  * Requires: Quote owner (Procurement)
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse, after } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { sendQuoteNotification } from '@/lib/notifications/quote-notifications';
 
 interface RouteContext {
   params: Promise<{ quoteId: string }>;
@@ -93,6 +94,45 @@ export async function POST(
         { status: 500 }
       );
     }
+
+    // Send notifications to team (async, don't block response)
+    after(async () => {
+      try {
+        // Get acceptor name
+        const { data: acceptorProfile } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', user.id)
+          .single();
+
+        const actorName = acceptorProfile?.full_name || user.email?.split('@')[0] || 'The owner';
+
+        // Notify the approver (if different from owner)
+        if (quote.approved_by && quote.approved_by !== user.id) {
+          const { data: approverProfile } = await supabase
+            .from('profiles')
+            .select('email, full_name')
+            .eq('id', quote.approved_by)
+            .single();
+
+          if (approverProfile?.email) {
+            await sendQuoteNotification({
+              type: 'quote_accepted',
+              quoteId: updatedQuote.id,
+              quoteNumber: updatedQuote.quote_number,
+              title: updatedQuote.title,
+              total: updatedQuote.total,
+              currency: updatedQuote.currency,
+              recipientEmail: approverProfile.email,
+              recipientName: approverProfile.full_name || 'Team Member',
+              actorName,
+            });
+          }
+        }
+      } catch (notifyError) {
+        console.error('[Accept Quote] Notification error:', notifyError);
+      }
+    });
 
     return NextResponse.json({
       success: true,
