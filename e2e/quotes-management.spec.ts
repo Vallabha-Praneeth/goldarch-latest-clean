@@ -136,17 +136,18 @@ test.beforeAll(async () => {
   console.log(`Test setup complete: user=${testUser.id}, org=${testOrg.id}, quote=${testQuote.id}`);
 });
 
-test.beforeEach(async ({ context }) => {
-  // Set auth cookies before each test
-  await setAuthCookies(context, testSession);
-});
+// Helper to get auth headers for API requests
+function getAuthHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${testSession.access_token}`,
+  };
+}
 
 test.describe('Quotes Management - MODULE-1C', () => {
   test('should submit quote for approval (draft → pending)', async ({ page }) => {
     const response = await page.request.post(`${BASE_URL}/api/quotes/${testQuote.id}/submit`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(),
       data: {
         notes: 'Submitting for approval',
       },
@@ -163,9 +164,7 @@ test.describe('Quotes Management - MODULE-1C', () => {
 
   test('should approve quote (pending → approved)', async ({ page }) => {
     const response = await page.request.post(`${BASE_URL}/api/quotes/${testQuote.id}/approve`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(),
       data: {
         notes: 'Approved via E2E test',
       },
@@ -184,9 +183,7 @@ test.describe('Quotes Management - MODULE-1C', () => {
 
   test('should accept approved quote (approved → accepted)', async ({ page }) => {
     const response = await page.request.post(`${BASE_URL}/api/quotes/${testQuote.id}/accept`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(),
       data: {
         notes: 'Accepted via E2E test',
       },
@@ -223,13 +220,13 @@ test.describe('Quotes Management - MODULE-1C', () => {
 
     // Submit it
     await page.request.post(`${BASE_URL}/api/quotes/${rejectQuote.id}/submit`, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       data: {},
     });
 
     // Reject it
     const rejectResponse = await page.request.post(`${BASE_URL}/api/quotes/${rejectQuote.id}/reject`, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       data: {
         reason: 'Pricing needs adjustment',
       },
@@ -271,17 +268,17 @@ test.describe('Quotes Management - MODULE-1C', () => {
 
     // Submit → Approve → Decline
     await page.request.post(`${BASE_URL}/api/quotes/${declineQuote.id}/submit`, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       data: {},
     });
 
     await page.request.post(`${BASE_URL}/api/quotes/${declineQuote.id}/approve`, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       data: { notes: 'Approving for decline test' },
     });
 
     const declineResponse = await page.request.post(`${BASE_URL}/api/quotes/${declineQuote.id}/decline`, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       data: {},
     });
 
@@ -322,7 +319,7 @@ test.describe('Quotes Management - MODULE-1C', () => {
 
     // Bulk approve
     const response = await page.request.post(`${BASE_URL}/api/quotes/bulk`, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       data: {
         action: 'approve',
         quoteIds,
@@ -363,7 +360,7 @@ test.describe('Quotes Management - MODULE-1C', () => {
 
     // Try to approve without notes
     const response = await page.request.post(`${BASE_URL}/api/quotes/${validationQuote!.id}/approve`, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       data: {}, // Missing required notes
     });
 
