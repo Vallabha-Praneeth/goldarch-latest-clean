@@ -115,8 +115,10 @@ test.beforeEach(async ({ context }) => {
 });
 
 test.describe('Framework B - RAG System', () => {
-  // Skip all tests in this suite in CI - requires external services (OpenAI, Pinecone)
-  test.skip(!!process.env.CI, 'Skipping in CI - requires external services');
+  // Skip all tests when external services aren't configured (CI or local without keys)
+  const hasOpenAI = !!process.env.OPENAI_API_KEY;
+  const hasPinecone = !!process.env.PINECONE_API_KEY;
+  test.skip(!hasOpenAI || !hasPinecone, 'Skipping - requires OPENAI_API_KEY and PINECONE_API_KEY');
 
   test('should check Framework B health endpoint', async ({ page }) => {
     const response = await page.request.get(`${BASE_URL}/api/framework-b/health`);
