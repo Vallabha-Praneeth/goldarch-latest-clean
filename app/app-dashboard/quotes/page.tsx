@@ -148,18 +148,13 @@ export default function QuotesPage() {
       const tax = formData.tax ? parseFloat(formData.tax) : 0;
       const total = formData.total ? parseFloat(formData.total) : subtotal + tax;
 
-      // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error('You must be logged in to create a quote');
-      }
-
-      // MODULE-1C: Create quote directly in quotes table (not legacy quotations)
-      const { data: quote, error: quoteError } = await supabase
-        .from('quotes')
-        .insert({
+      // MODULE-1C: Create quote via server-side API route
+      const response = await fetch('/api/quotes/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           quote_number: formData.quote_number.trim(),
-          title: formData.quote_number.trim(), // Use quote number as title
+          title: formData.quote_number.trim(),
           status: formData.status,
           supplier_id: formData.supplier_id || null,
           deal_id: formData.deal_id || null,
@@ -169,12 +164,14 @@ export default function QuotesPage() {
           total,
           currency: 'USD',
           notes: formData.notes.trim() || null,
-          created_by: user.id,
-        })
-        .select()
-        .single();
+        }),
+      });
 
-      if (quoteError) throw quoteError;
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to create quote');
+      }
 
       toast.success('Quote created successfully');
       queryClient.invalidateQueries({ queryKey: ['quotes'] });
